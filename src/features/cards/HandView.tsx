@@ -37,7 +37,7 @@ const HandView = ({ hand, classes }: HandViewProps) => {
     {
       hand.map(card => {
         return <Grid item>
-          <CardView card={card} key={card.index()}/>
+          <CardView card={card} key={card.index()} isEnabled={true}/>
         </Grid>
       })
     }

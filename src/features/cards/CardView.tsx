@@ -63,16 +63,22 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
 
 type CardViewProps = {
   card: Card;
+  isEnabled: boolean
 } & WithStyles<typeof styles>;
 
-const CardView = ({ card, classes }: CardViewProps) => {
+const CardView = ({ card, isEnabled, classes }: CardViewProps) => {
   const dispatch = useDispatch();
   const turn = useSelector(selectTurn);
 
   return (
     <Button
      className={[classes.button, turn.isSelected(card) ? classes.selected : ""].join(" ")}
-     onClick={() => dispatch(selectCard(card))}
+     onClick={() => {
+         if (isEnabled) {
+           dispatch(selectCard(card))
+         }
+       }
+     }
      >
     <Typography className={classes.suit} variant="body1">
       { FaceValue[card.faceValue] } of { card.suit }

@@ -28,9 +28,10 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
 
 type PilesViewProps = {
   piles: Array<Array<Card>>
+  isEnabled: boolean
 } & WithStyles<typeof styles>;
 
-const PilesView = ({ piles, classes }: PilesViewProps) => {
+const PilesView = ({ piles, isEnabled, classes }: PilesViewProps) => {
 
   return (
     <React.Fragment>
@@ -39,7 +40,7 @@ const PilesView = ({ piles, classes }: PilesViewProps) => {
         // deal with face up/face down cards here
         const card = pile[1];
         return <Grid item>
-        <CardView card={card} key={card.index()} />
+        <CardView card={card} key={card.index()} isEnabled={isEnabled} />
         </Grid>
     })
     }

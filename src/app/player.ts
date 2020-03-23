@@ -32,6 +32,10 @@ export class Player {
   pickUp(cards: Array<Card>) {
     this.board.pickUp(cards);
   }
+
+  isEliminatingPiles(): boolean {
+    return this.board.hand.length === 0;
+  }
 }
 
 export class PlayerBoard {

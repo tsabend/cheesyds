@@ -48,7 +48,7 @@ const GameView = ({ classes }: GameViewProps) => {
     if (card) {
       return <div>
       <p>In Play Pile:</p>
-      <CardView card={card}/>
+      <CardView card={card} isEnabled={false}/>
       </div>
     }
     else {
@@ -67,7 +67,7 @@ const GameView = ({ classes }: GameViewProps) => {
     </Grid>
     <Grid container alignItems="center" justify="center" spacing={3}>
     <p>Board:</p>
-    <PilesView piles={player.board.piles} />
+    <PilesView piles={player.board.piles} isEnabled={player.isEliminatingPiles()} />
     </Grid>
     <Button
     className={classes.button}
