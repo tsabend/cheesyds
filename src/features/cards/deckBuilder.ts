@@ -6,7 +6,7 @@ export class DeckBuilder {
     for (const suit in Suit) {
       for (const faceValue in FaceValue) {
         const myFaceValue: FaceValue = FaceValue[faceValue] as any as FaceValue;
-        if (typeof myFaceValue !== "number") continue 
+        if (typeof myFaceValue !== "number") continue
         cards.push(new CardModel(suit as Suit, myFaceValue));
       }
     }
@@ -33,7 +33,6 @@ export enum Suit {
 }
 
 export enum FaceValue {
-  Ace     = 1,
   Two     = 2,
   Three   = 3,
   Four    = 4,
@@ -45,5 +44,6 @@ export enum FaceValue {
   Ten     = 10,
   Jack    = 11,
   Queen   = 12,
-  King    = 13
+  King    = 13,
+  Ace     = 14,
 }

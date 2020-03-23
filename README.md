@@ -1,3 +1,28 @@
+# CheesyD
+JS implementation of the card game "Cheesy D"
+
+### Rules:
+Each player is dealt 9 cards
+3 in hand
+3 face up (to be played once your hand AND the draw pile are gone)
+3 face down (to be played blind)
+
+### General:
+goal is to go out first
+must have 3 cards in your hand at all times until the draw pile is gone
+if you cant play a card the same or higher (except 7) you pick up
+4 of the same card played in a row clears
+
+### Special Cards:
+ACE: HIGH
+10: WILD & CLEAR
+8: SKIP
+7: NEXT PLAYER MUST PLAY A CARD 7 or LOWER
+666: THE DEVILS HAND (NEXT PLAYER MUST PICK UP, NOT WILD)
+2: WILD
+Play until there is 1 loser, the winner gets to pick a punishment for the loser
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
 
 ## Available Scripts
