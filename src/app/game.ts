@@ -13,23 +13,28 @@ export class GameSnapshot {
   deck: Deck
   currentPlayerIndex: number;
   inPlayPile: Array<Card>;
+  isInReverse: boolean
 
   constructor(players: Array<Player>,
               deck: Deck,
               inPlayPile: Array<Card>,
-              currentPlayerIndex: number) {
+              currentPlayerIndex: number,
+              isInReverse: boolean
+            ) {
     this.players = players;
     this.deck = deck;
     this.inPlayPile = inPlayPile;
-    this.currentPlayerIndex = currentPlayerIndex
+    this.currentPlayerIndex = currentPlayerIndex;
+    this.isInReverse = isInReverse;
   }
 
   copy(): GameSnapshot {
     return new GameSnapshot(
-      Array.from(this.players),
+      Array.from(this.players.map(player => player.copy())),
       this.deck.copy(),
       Array.from(this.inPlayPile),
-      this.currentPlayerIndex
+      this.currentPlayerIndex,
+      this.isInReverse
     );
   }
 
@@ -62,21 +67,21 @@ export class GameSnapshot {
 }
 
 export class GameController {
-  deal(snapshot): GameSnapshot {
-    return this.mutate(snapshot => {
+  deal(snapshot: GameSnapshot): GameSnapshot {
+    return this.mutate(snapshot, snapshot => {
       snapshot.players.forEach((player: Player) => {
         player.deal(snapshot.deck.deal(9));
       });
     });
   }
 
-  mutate(mutation: (snapshot: GameSnapshot) => void): GameSnapshot {
-    const copy = this.snapshot.copy()
+  mutate(snapshot: GameSnapshot, mutation: (snapshot: GameSnapshot) => void): GameSnapshot {
+    const copy = snapshot.copy()
     mutation(copy);
     return copy
   }
 
-  submit(cards: Array<Card>, snapshot: GameSnapshot): Game {
+  submit(cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
     switch (getRule(cards)) {
       case Rule.Play:
       return this.play(cards, snapshot);
@@ -84,60 +89,72 @@ export class GameController {
       return this.clear(cards, snapshot);
       case Rule.ForcePickUp:
       return this.forcePickUp(cards, snapshot);
-      // case Rule.ReverseForOneTurn:
-      // break;
-      // case Rule.SkipOne:
-      // break;
-      // case Rule.SkipTwo:
-      // break;
-      // case Rule.SkipThree:
-      // break;
+      case Rule.ReverseForOneTurn:
+      return this.reverse(cards, snapshot)
+      case Rule.SkipOne:
+      return this.skip(1, cards, snapshot);
+      case Rule.SkipTwo:
+      return this.skip(2, cards, snapshot);
+      case Rule.SkipThree:
+      return this.skip(3, cards, snapshot);
       default:
       return this.play(cards, snapshot);
     }
   }
 
-  play(cards: Array<Card>): GameSnapshot {
-    return this.mutate(snapshot => {
-      const newInPlayPile = snapshot.inPlayPile.concat(cards);
+  play(cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
+    return this._play(cards, false, snapshot);
+  }
 
-      const newPlayer = snapshot.currentPlayer().submit(cards, newDeck);
-      const newPlayers = snapshot.replacePlayer(newPlayer);
-      return new GameSnapshot(newPlayers, newDeck, newInPlayPile, this.nextPlayerIndex());
+  reverse(cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
+    return this._play(cards, true, snapshot);
+  }
+
+  _play(cards: Array<Card>, willReverse: boolean, snapshot: GameSnapshot): GameSnapshot {
+    return this.mutate(snapshot, snapshot => {
+      snapshot.currentPlayer().submit(cards);
+      snapshot.currentPlayer().draw(snapshot.deck);
+      snapshot.inPlayPile = snapshot.inPlayPile.concat(cards);
+      snapshot.currentPlayerIndex = snapshot.nextPlayerIndex()
+      snapshot.isInReverse = willReverse;
     });
   }
 
-  clear(cards: Array<Card>): GameSnapshot {
-    const newInPlayPile = snapshot.inPlayPile.concat(cards);
-    const newDeck = snapshot.deck.copy()
-    const newPlayer = snapshot.currentPlayer().submit(cards, newDeck);
-    const newPlayers = snapshot.replacePlayer(newPlayer)
-    return new Game(newPlayers, newDeck, [], this.nextPlayerIndex());
+  clear(cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
+    return this.mutate(snapshot, snapshot => {
+      snapshot.currentPlayer().submit(cards);
+      snapshot.currentPlayer().draw(snapshot.deck);
+      snapshot.inPlayPile = [];
+      snapshot.currentPlayerIndex = snapshot.nextPlayerIndex()
+    });
   }
 
-  forcePickUp(cards: Array<Card>): GameSnapshot {
-    const newVictim = this.nextPlayer().pickUp(this.inPlayPile);
-    const newPlayers = this.replacePlayer(newVictim)
-    return new Game(newPlayers, this.deck, [], this.playerIndexSkipping(2));
+  forcePickUp(cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
+    return this.mutate(snapshot, snapshot => {
+      snapshot.currentPlayer().submit(cards);
+      snapshot.currentPlayer().draw(snapshot.deck);
+      snapshot.nextPlayer().pickUp(snapshot.inPlayPile);
+      snapshot.inPlayPile = [];
+      snapshot.currentPlayerIndex = snapshot.playerIndexSkipping(2);
+    });
   }
 
-  skip(): GameSnapshot {
-
+  skip(skipCount: number, cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
+    return this.mutate(snapshot, snapshot => {
+      snapshot.currentPlayer().submit(cards);
+      snapshot.currentPlayer().draw(snapshot.deck);
+      snapshot.inPlayPile = snapshot.inPlayPile.concat(cards);
+      snapshot.currentPlayerIndex = snapshot.playerIndexSkipping(skipCount + 1);
+    });
   }
 
-  pickUp(): GameSnapshot {
-    const newPlayer = this.currentPlayer().pickUp(this.inPlayPile);
-    const newPlayers = this.replacePlayer(newPlayer)
-    return new Game(newPlayers, this.deck, [], this.nextPlayerIndex());
+  pickUp(snapshot: GameSnapshot): GameSnapshot {
+    return this.mutate(snapshot, snapshot => {
+      snapshot.currentPlayer().pickUp(snapshot.inPlayPile);
+      snapshot.inPlayPile = [];
+      snapshot.currentPlayerIndex = snapshot.nextPlayerIndex();
+    });
   }
-
-  replacePlayer(relacement: Player): Array<Player> {
-    const newPlayers = Array.from(this.players);
-    const index = newPlayers.firstIndex(player => player.name === relacement.name)
-    newPlayers[index] = relacement;
-    return newPlayers;
-  }
-
 }
 
 export class GameBuilder {
@@ -148,7 +165,7 @@ export class GameBuilder {
       new Player("Jojo")
     ];
 
-    return new GameSnapshot(players, new Deck(), [], 0);
+    return new GameSnapshot(players, new Deck(), [], 0, false);
   }
 }
 

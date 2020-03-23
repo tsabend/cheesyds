@@ -10,26 +10,27 @@ export class Player {
     this.board = board || new PlayerBoard();
   }
 
+  copy(): Player {
+    return new Player(this.name, this.board.copy());
+  }
+
   deal(cards: Array<Card>) {
-    this.board = this.board.deal(cards);
+    this.board.deal(cards);
   }
 
-  submit(cards: Array<Card>, deck: Deck): Player {
-    var newBoard = this.board.submit(cards);
-    return new Player(this.name, newBoard);
+  submit(cards: Array<Card>) {
+    this.board.submit(cards);
   }
 
-  draw(deck: Deck): Player {
-    var newBoard = this.board.copy();
+  draw(deck: Deck) {
     // draw until you have at least 3 cards
-    while (newBoard.hand.length < 3 && deck.isEmpty() === false) {
-      newBoard.hand = newBoard.hand.concat(deck.deal(1));
+    while (this.board.hand.length < 3 && deck.isEmpty() === false) {
+      this.board.hand = this.board.hand.concat(deck.deal(1));
     }
-    return new Player(this.name, newBoard);
   }
 
-  pickUp(cards: Array<Card>): Player {
-    return new Player(this.name, this.board.pickUp(cards));
+  pickUp(cards: Array<Card>) {
+    this.board.pickUp(cards);
   }
 }
 
@@ -45,11 +46,12 @@ export class PlayerBoard {
   }
 
   copy(): PlayerBoard {
-    return new PlayerBoard(this.hand, this.piles);
+    const newPiles = this.piles.map(pile => Array.from(pile))
+    return new PlayerBoard(Array.from(this.hand), newPiles);
   }
 
   // deal out an array of 6 cards
-  deal(cards: Array<Card>): PlayerBoard {
+  deal(cards: Array<Card>) {
     const newHand = cards.splice(0, 3);
     const pile1 = cards.splice(0, 2);
     const pile2 = cards.splice(0, 2);
@@ -59,16 +61,17 @@ export class PlayerBoard {
       pile2,
       pile3
     ];
-    return new PlayerBoard(newHand, newPiles)
+    this.hand = newHand;
+    this.piles = newPiles;
   }
 
-  submit(cards: Array<Card>): PlayerBoard {
+  submit(cards: Array<Card>) {
     const newHand = this.hand.filter(_card => cards.indexOf(_card) === -1);
-    return new PlayerBoard(newHand, this.piles);
+    this.hand = newHand;
   }
 
-  pickUp(cards: Array<Card>): PlayerBoard {
+  pickUp(cards: Array<Card>) {
     const newHand = this.hand.concat(cards);
-    return new PlayerBoard(newHand, this.piles);
+    this.hand = newHand;
   }
 }

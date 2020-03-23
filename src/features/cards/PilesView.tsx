@@ -10,7 +10,7 @@ import {
   Card
 } from "../../app/card"
 import {
-  Game,
+  GameSnapshot,
   GameBuilder
 } from "../../app/game"
 import {

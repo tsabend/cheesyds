@@ -12,7 +12,7 @@ import {
   Card
 } from "../../app/card"
 import {
-  Game,
+  GameSnapshot,
   GameBuilder
 } from "../../app/game"
 import {
@@ -26,7 +26,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import {
   submit,
-  selectGame,
+  selectGameSnapshot,
   pickUp
 } from "./gameSlice";
 
@@ -40,7 +40,7 @@ type GameViewProps = {
 
 const GameView = ({ classes }: GameViewProps) => {
   const dispatch = useDispatch();
-  const game = useSelector(selectGame);
+  const game: GameSnapshot = useSelector(selectGameSnapshot);
   const player = game.currentPlayer();
 
   const inPlayPile = () => {

@@ -27,15 +27,15 @@ export const slice = createSlice({
   initialState,
   reducers: {
     submit: state => {
-      const newSnapshot = state.controller.submit(state.turn.cardsToSubmit);
+      const newSnapshot = state.controller.submit(state.turn.cardsToSubmit, state.snapshot);
       state.snapshot = newSnapshot;
-      state.turn = new Turn(state.controller.topOfInPlayPile(newSnapshot)?.faceValue);
+      state.turn = new Turn(state.snapshot.topOfInPlayPile()?.faceValue, [], state.snapshot.isInReverse);
     },
     selectCard: (state, card: PayloadAction<Card>) => {
       state.turn = state.turn.selectCard(card.payload);
     },
     pickUp: state => {
-      state.snapshot = state.controller.pickUp(snapshot);
+      state.snapshot = state.controller.pickUp(state.snapshot);
       state.turn = new Turn();
     }
   },
@@ -44,7 +44,7 @@ export const slice = createSlice({
 export const { submit, selectCard, pickUp } = slice.actions;
 
 
-export const selectGame = (state: RootState) => state.game.game;
+export const selectGameSnapshot = (state: RootState) => state.game.snapshot;
 export const selectTurn = (state: RootState) => state.game.turn;
 
 export default slice.reducer;

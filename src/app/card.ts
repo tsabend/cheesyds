@@ -58,8 +58,9 @@ export function getRule(cards: Array<Card>): Rule {
   return Rule.Play;
 }
 
-export function canPlayOn(faceValue: FaceValue, onFaceValue: FaceValue): boolean {
-  return isWild(faceValue) || faceValue > onFaceValue;
+export function canPlayOn(faceValue: FaceValue, onFaceValue: FaceValue, isInReverse: boolean): boolean {
+  if (isWild(faceValue)) return true;
+  return isInReverse ? faceValue <= onFaceValue : faceValue >= onFaceValue;
 }
 
 function isWild(faceValue: FaceValue): boolean {
