@@ -39,7 +39,7 @@ const PilesView = ({ piles, classes }: PilesViewProps) => {
         // deal with face up/face down cards here
         const card = pile[1];
         return <Grid item>
-        <CardView suit={card.suit} faceValue={card.faceValue}/>
+        <CardView card={card} key={card.index()} />
         </Grid>
     })
     }

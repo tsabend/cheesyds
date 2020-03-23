@@ -4,8 +4,13 @@ import Button from "@material-ui/core/Button";
 import Input from "@material-ui/core/Input";
 import Typography from "@material-ui/core/Typography";
 import {
+  selectCard,
+  selectTurn
+} from "./gameSlice"
+import {
   Suit,
-  FaceValue
+  FaceValue,
+  Card
 } from "../../app/card";
 import {
   withStyles,
@@ -15,12 +20,19 @@ import {
   WithStyles,
   CircularProgress
 } from "@material-ui/core";
+import { useSelector, useDispatch } from "react-redux";
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
   createStyles({
     suit: {
       fontSize: "12px",
       fontFamily: "'Courier New', Courier, monospace"
+    },
+    button: {
+      border: "1px black solid"
+    },
+    selected: {
+      border: "1px red solid"
     },
     faceValue: {
       color: "rgb(112, 76, 182)",
@@ -50,18 +62,22 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
   });
 
 type CardViewProps = {
-  suit: string;
-  faceValue: number;
+  card: Card;
 } & WithStyles<typeof styles>;
 
-const CardView = ({ suit, faceValue, classes }: CardViewProps) => {
+const CardView = ({ card, classes }: CardViewProps) => {
+  const dispatch = useDispatch();
+  const turn = useSelector(selectTurn);
 
   return (
-    <React.Fragment>
+    <Button
+     className={[classes.button, turn.isSelected(card) ? classes.selected : ""].join(" ")}
+     onClick={() => dispatch(selectCard(card))}
+     >
     <Typography className={classes.suit} variant="body1">
-      { FaceValue[faceValue] } of { suit }
+      { FaceValue[card.faceValue] } of { card.suit }
     </Typography>
-    </React.Fragment>
+    </Button>
   );
 };
 

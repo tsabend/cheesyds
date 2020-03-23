@@ -27,7 +27,7 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
   });
 
 type HandViewProps = {
-  hand: Array<Card>
+  hand: Array<Card>;
 } & WithStyles<typeof styles>;
 
 const HandView = ({ hand, classes }: HandViewProps) => {
@@ -37,7 +37,7 @@ const HandView = ({ hand, classes }: HandViewProps) => {
     {
       hand.map(card => {
         return <Grid item>
-          <CardView suit={card.suit} faceValue={card.faceValue}/>
+          <CardView card={card} key={card.index()}/>
         </Grid>
       })
     }

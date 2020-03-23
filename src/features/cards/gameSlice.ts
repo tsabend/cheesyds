@@ -1,42 +1,44 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk, RootState } from '../../app/store';
 import { Game, GameBuilder } from "../../app/game"
+import { Card } from "../../app/card"
+import { Turn } from "../../app/turn"
 interface GameState {
-  value: Game;
+  game: Game;
+  turn: Turn;
 }
 
-const initialState: GameState = {
-   value: new GameBuilder().makeFakeGame()
-};
+// in case special construction logic is needed
+const makeInitialState = () => {
+  return {
+     game: new GameBuilder().makeFakeGame(),
+     turn: new Turn(),
+  };
+}
+const initialState: GameState = makeInitialState();
 
 export const slice = createSlice({
   name: 'game',
   initialState,
   reducers: {
     submit: state => {
-      // Redux Toolkit allows us to write "mutating" logic in reducers. It
-      // doesn't actually mutate the state because it uses the immer library,
-      // which detects changes to a "draft state" and produces a brand new
-      // immutable state based off those changes
-      state.value = state.value.submit();
+      state.game = state.game.submit(state.turn.cardsToSubmit);
+      state.turn = new Turn(state.game.topOfInPlayPile()?.faceValue);
     },
-    // decrement: state => {
-    //   state.value -= 1;
-    // },
-    // // Use the PayloadAction type to declare the contents of `action.payload`
-    // incrementByAmount: (state, action: PayloadAction<number>) => {
-    //   state.value += action.payload;
-    // },
+    selectCard: (state, card: PayloadAction<Card>) => {
+      state.turn = state.turn.selectCard(card.payload);
+    },
+    pickUp: state => {
+      state.game = state.game.pickUp();
+      state.turn = new Turn();
+    }
   },
 });
 
-export const { submit } = slice.actions;
+export const { submit, selectCard, pickUp } = slice.actions;
 
 
-
-// The function below is called a selector and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-export const selectGame = (state: RootState) => state.game.value;
+export const selectGame = (state: RootState) => state.game.game;
+export const selectTurn = (state: RootState) => state.game.turn;
 
 export default slice.reducer;
