@@ -1,21 +1,4 @@
-export class DeckBuilder {
-
-  buildDeck(): Array<CardModel> {
-    var cards: Array<CardModel> = [];
-
-    for (const suit in Suit) {
-      for (const faceValue in FaceValue) {
-        const myFaceValue: FaceValue = FaceValue[faceValue] as any as FaceValue;
-        if (typeof myFaceValue !== "number") continue
-        cards.push(new CardModel(suit as Suit, myFaceValue));
-      }
-    }
-
-    return cards;
-  }
-}
-
-export class CardModel {
+export class Card {
   suit: Suit;
   faceValue: FaceValue;
 

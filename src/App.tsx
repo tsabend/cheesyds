@@ -1,6 +1,6 @@
 import React from "react";
 import logo from "./logo.svg";
-import Deck from "./features/cards/deck";
+import GameView from "./features/cards/GameView";
 import {
   createMuiTheme,
   withStyles,
@@ -63,7 +63,7 @@ const App = ({ classes }: AppProps) => (
     <div className={classes.app}>
       <header className={classes.appHeader}>
         <p>Hello world</p>
-        <Deck />
+        <GameView />
       </header>
     </div>
   </MuiThemeProvider>

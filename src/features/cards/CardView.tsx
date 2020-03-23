@@ -6,7 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import {
   Suit,
   FaceValue
-} from "./deckBuilder";
+} from "../../app/card";
 import {
   withStyles,
   Theme,
@@ -19,7 +19,7 @@ import {
 const styles: (theme: Theme) => StyleRules<string> = theme =>
   createStyles({
     suit: {
-      fontSize: "78px",
+      fontSize: "12px",
       fontFamily: "'Courier New', Courier, monospace"
     },
     faceValue: {
@@ -49,18 +49,20 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
     },
   });
 
-type CardProps = {
+type CardViewProps = {
   suit: string;
   faceValue: number;
 } & WithStyles<typeof styles>;
 
-const Card = ({ suit, faceValue, classes }: CardProps) => {
+const CardView = ({ suit, faceValue, classes }: CardViewProps) => {
 
   return (
     <React.Fragment>
-    <p>{ FaceValue[faceValue] } of { suit }</p>
+    <Typography className={classes.suit} variant="body1">
+      { FaceValue[faceValue] } of { suit }
+    </Typography>
     </React.Fragment>
   );
 };
 
-export default withStyles(styles)(Card);
+export default withStyles(styles)(CardView);
