@@ -3,9 +3,12 @@ import { Turn } from "./turn"
 import {
   Suit,
   FaceValue,
-  Card
+  Card,
+  Rule,
+  getRule
 } from "./card"
-export class Game {
+
+export class GameSnapshot {
   players: Array<Player>
   deck: Deck
   currentPlayerIndex: number;
@@ -21,34 +24,29 @@ export class Game {
     this.currentPlayerIndex = currentPlayerIndex
   }
 
-  deal() {
-    this.players.forEach(player => {
-      player.deal(this.deck.deal(9));
-    });
-  }
-
-  submit(cards: Array<Card>): Game {
-    const newInPlayPile = this.inPlayPile.concat(cards);
-    const newDeck = this.deck.copy()
-    const newPlayer = this.currentPlayer().submit(cards, newDeck);
-    const newPlayers = Array.from(this.players);
-    newPlayers[this.currentPlayerIndex] = newPlayer;
-    return new Game(newPlayers, newDeck, newInPlayPile, this.nextPlayerIndex());
-  }
-
-  pickUp(): Game {
-    const newPlayer = this.currentPlayer().pickUp(this.inPlayPile);
-    const newPlayers = Array.from(this.players);
-    newPlayers[this.currentPlayerIndex] = newPlayer;
-    return new Game(newPlayers, this.deck, [], this.nextPlayerIndex());
+  copy(): GameSnapshot {
+    return new GameSnapshot(
+      Array.from(this.players),
+      this.deck.copy(),
+      Array.from(this.inPlayPile),
+      this.currentPlayerIndex
+    );
   }
 
   nextPlayerIndex(): number {
-    return (this.currentPlayerIndex + 1) % this.players.length;
+    return this.playerIndexSkipping(1);
+  }
+
+  playerIndexSkipping(n: number): number {
+    return (this.currentPlayerIndex + n) % this.players.length;
   }
 
   currentPlayer(): Player {
     return this.players[this.currentPlayerIndex];
+  }
+
+  nextPlayer(): Player {
+    return this.players[this.nextPlayerIndex()];
   }
 
   topOfInPlayPile(): Card | undefined {
@@ -63,17 +61,94 @@ export class Game {
   }
 }
 
+export class GameController {
+  deal(snapshot): GameSnapshot {
+    return this.mutate(snapshot => {
+      snapshot.players.forEach((player: Player) => {
+        player.deal(snapshot.deck.deal(9));
+      });
+    });
+  }
+
+  mutate(mutation: (snapshot: GameSnapshot) => void): GameSnapshot {
+    const copy = this.snapshot.copy()
+    mutation(copy);
+    return copy
+  }
+
+  submit(cards: Array<Card>, snapshot: GameSnapshot): Game {
+    switch (getRule(cards)) {
+      case Rule.Play:
+      return this.play(cards, snapshot);
+      case Rule.Clear:
+      return this.clear(cards, snapshot);
+      case Rule.ForcePickUp:
+      return this.forcePickUp(cards, snapshot);
+      // case Rule.ReverseForOneTurn:
+      // break;
+      // case Rule.SkipOne:
+      // break;
+      // case Rule.SkipTwo:
+      // break;
+      // case Rule.SkipThree:
+      // break;
+      default:
+      return this.play(cards, snapshot);
+    }
+  }
+
+  play(cards: Array<Card>): GameSnapshot {
+    return this.mutate(snapshot => {
+      const newInPlayPile = snapshot.inPlayPile.concat(cards);
+
+      const newPlayer = snapshot.currentPlayer().submit(cards, newDeck);
+      const newPlayers = snapshot.replacePlayer(newPlayer);
+      return new GameSnapshot(newPlayers, newDeck, newInPlayPile, this.nextPlayerIndex());
+    });
+  }
+
+  clear(cards: Array<Card>): GameSnapshot {
+    const newInPlayPile = snapshot.inPlayPile.concat(cards);
+    const newDeck = snapshot.deck.copy()
+    const newPlayer = snapshot.currentPlayer().submit(cards, newDeck);
+    const newPlayers = snapshot.replacePlayer(newPlayer)
+    return new Game(newPlayers, newDeck, [], this.nextPlayerIndex());
+  }
+
+  forcePickUp(cards: Array<Card>): GameSnapshot {
+    const newVictim = this.nextPlayer().pickUp(this.inPlayPile);
+    const newPlayers = this.replacePlayer(newVictim)
+    return new Game(newPlayers, this.deck, [], this.playerIndexSkipping(2));
+  }
+
+  skip(): GameSnapshot {
+
+  }
+
+  pickUp(): GameSnapshot {
+    const newPlayer = this.currentPlayer().pickUp(this.inPlayPile);
+    const newPlayers = this.replacePlayer(newPlayer)
+    return new Game(newPlayers, this.deck, [], this.nextPlayerIndex());
+  }
+
+  replacePlayer(relacement: Player): Array<Player> {
+    const newPlayers = Array.from(this.players);
+    const index = newPlayers.firstIndex(player => player.name === relacement.name)
+    newPlayers[index] = relacement;
+    return newPlayers;
+  }
+
+}
+
 export class GameBuilder {
-  makeFakeGame(): Game {
+  makeFakeGame(): GameSnapshot {
     const players = [
       new Player("Thomas"),
       new Player("Monica"),
       new Player("Jojo")
     ];
 
-    const game = new Game(players, new Deck(), [], 0);
-    game.deal();
-    return game
+    return new GameSnapshot(players, new Deck(), [], 0);
   }
 }
 

@@ -16,6 +16,11 @@ export class Player {
 
   submit(cards: Array<Card>, deck: Deck): Player {
     var newBoard = this.board.submit(cards);
+    return new Player(this.name, newBoard);
+  }
+
+  draw(deck: Deck): Player {
+    var newBoard = this.board.copy();
     // draw until you have at least 3 cards
     while (newBoard.hand.length < 3 && deck.isEmpty() === false) {
       newBoard.hand = newBoard.hand.concat(deck.deal(1));
@@ -37,6 +42,10 @@ export class PlayerBoard {
               piles?: Array<Array<Card>>) {
                 this.hand = hand || [];
                 this.piles = piles || [];
+  }
+
+  copy(): PlayerBoard {
+    return new PlayerBoard(this.hand, this.piles);
   }
 
   // deal out an array of 6 cards
