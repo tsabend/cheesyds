@@ -14,6 +14,10 @@ export class Player {
     return new Player(this.name, this.board.copy());
   }
 
+  isOut(): boolean {
+    return this.board.isOut();
+  }
+
   deal(cards: Array<Card>) {
     this.board.deal(cards);
   }
@@ -54,6 +58,10 @@ export class PlayerBoard {
     return new PlayerBoard(Array.from(this.hand), newPiles);
   }
 
+  isOut(): boolean {
+    return this.hand.length === 0 && this.piles.filter(pile => pile.length === 0).length === 3;
+  }
+
   // deal out an array of 6 cards
   deal(cards: Array<Card>) {
     const newHand = cards.splice(0, 3);
@@ -71,7 +79,9 @@ export class PlayerBoard {
 
   submit(cards: Array<Card>) {
     const newHand = this.hand.filter(_card => cards.indexOf(_card) === -1);
+    const newPiles = this.piles.map(pile => pile.filter(_card => cards.indexOf(_card) === -1));
     this.hand = newHand;
+    this.piles = newPiles;
   }
 
   pickUp(cards: Array<Card>) {

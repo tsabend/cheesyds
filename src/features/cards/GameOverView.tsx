@@ -3,8 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import Input from "@material-ui/core/Input";
 import Typography from "@material-ui/core/Typography";
-import PlayingGameView from "./PlayingGameView"
-import GameOverView from "./GameOverView"
+
 import {
   withStyles,
   Theme,
@@ -13,38 +12,48 @@ import {
   WithStyles,
   CircularProgress
 } from "@material-ui/core";
+import {
+  GameSnapshot
+} from "../../app/game"
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectGameSnapshot,
 } from "./gameSlice";
-import {
-  GameSnapshot
-} from "../../app/game"
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
   createStyles({
   });
 
-type GameViewProps = {
+type GameOverViewProps = {
 
 } & WithStyles<typeof styles>;
 
-const GameView = ({ classes }: GameViewProps) => {
-  const game: GameSnapshot = useSelector(selectGameSnapshot);
+const GameOverView = ({ classes }: GameOverViewProps) => {
 
-  const build = () => {
-    if (game.isOver()) {
-      return <GameOverView />
+  const game: GameSnapshot = useSelector(selectGameSnapshot);
+  const loserName = () => {
+    const loser = game.loser();
+    if (loser) {
+      return loser.name;
     }
-    else {
-      return <PlayingGameView />
-    }
+    return "No one?";
   }
+
+  const winnerName = () => {
+    const winner = game.winner;
+    if (winner) {
+      return winner.name;
+    }
+    return "No one?";
+  }
+
   return (
     <React.Fragment>
-    {build()}
+    <p>GAME OVER. </p>
+    <p>{loserName()} lost</p>
+    <p>{winnerName()} will decide your punishment</p>
     </React.Fragment>
   );
 };
 
-export default withStyles(styles)(GameView);
+export default withStyles(styles)(GameOverView);

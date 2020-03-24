@@ -37,8 +37,11 @@ const PilesView = ({ piles, isEnabled, classes }: PilesViewProps) => {
     <React.Fragment>
     {
       piles.map(pile => {
-        // deal with face up/face down cards here
-        const card = pile[1];
+        const length = pile.length;
+        if (length === 0) {
+          return "";
+        }
+        const card = length === 1 ? pile[0] : pile[1];
         return <Grid item>
         <CardView card={card} key={card.index()} isEnabled={isEnabled} />
         </Grid>

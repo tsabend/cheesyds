@@ -62,7 +62,7 @@ const App = ({ classes }: AppProps) => (
     <CssBaseline />
     <div className={classes.app}>
       <header className={classes.appHeader}>
-        <p>Hello world</p>
+        <p>CheesyD</p>
         <GameView />
       </header>
     </div>

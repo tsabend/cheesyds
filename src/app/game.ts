@@ -13,19 +13,22 @@ export class GameSnapshot {
   deck: Deck
   currentPlayerIndex: number;
   inPlayPile: Array<Card>;
-  isInReverse: boolean
+  isInReverse: boolean;
+  winner?: Player;
 
   constructor(players: Array<Player>,
               deck: Deck,
               inPlayPile: Array<Card>,
               currentPlayerIndex: number,
-              isInReverse: boolean
+              isInReverse: boolean,
+              winner?: Player
             ) {
     this.players = players;
     this.deck = deck;
     this.inPlayPile = inPlayPile;
     this.currentPlayerIndex = currentPlayerIndex;
     this.isInReverse = isInReverse;
+    this.winner = winner;
   }
 
   copy(): GameSnapshot {
@@ -34,24 +37,49 @@ export class GameSnapshot {
       this.deck.copy(),
       Array.from(this.inPlayPile),
       this.currentPlayerIndex,
-      this.isInReverse
+      this.isInReverse,
+      this.winner
     );
   }
 
+  isOver(): boolean {
+    return this.activePlayers().length === 1;
+  }
+
+  loser(): Player | undefined {
+    if (this.isOver()) {
+      return this.activePlayers()[0];
+    }
+    return undefined;
+  }
+
+  activePlayers(): Array<Player> {
+    return this.players.filter(player => !player.isOut());
+  }
+
   nextPlayerIndex(): number {
+    // a lazy hack...should fix this somehow
+    const cP = this.players[this.currentPlayerIndex]
+    if (cP) {
+      const isFirstOneOut = this.players.length - this.activePlayers().length === 1
+      if (isFirstOneOut) {
+        this.winner = cP;
+      }
+      return this.currentPlayerIndex;
+    }
     return this.playerIndexSkipping(1);
   }
 
   playerIndexSkipping(n: number): number {
-    return (this.currentPlayerIndex + n) % this.players.length;
+    return (this.currentPlayerIndex + n) % this.activePlayers().length;
   }
 
   currentPlayer(): Player {
-    return this.players[this.currentPlayerIndex];
+    return this.activePlayers()[this.currentPlayerIndex];
   }
 
   nextPlayer(): Player {
-    return this.players[this.nextPlayerIndex()];
+    return this.activePlayers()[this.nextPlayerIndex()];
   }
 
   topOfInPlayPile(): Card | undefined {
@@ -62,7 +90,7 @@ export class GameSnapshot {
   }
 
   isCurrentPlayer(player: Player): boolean {
-    return this.players[this.currentPlayerIndex] === player;
+    return this.activePlayers()[this.currentPlayerIndex] === player;
   }
 }
 
@@ -160,12 +188,28 @@ export class GameController {
 export class GameBuilder {
   makeFakeGame(): GameSnapshot {
     const players = [
-      new Player("Thomas"),
-      new Player("Monica"),
-      new Player("Jojo")
+      new Player("1. Thomas"),
+      new Player("2. Monica"),
+      new Player("3. Jojo")
     ];
 
     return new GameSnapshot(players, new Deck(), [], 0, false);
+  }
+
+  // Simulate end of game
+  makeAlmostFinshedGame(controller: GameController): GameSnapshot {
+    const snapshot = new GameBuilder().makeFakeGame();
+    const initial = controller.deal(snapshot);
+    initial.deck.cards = [];
+    initial.players[0].board.hand = [];
+    initial.players[0].board.piles[0] = [];
+    initial.players[0].board.piles[1] = [];
+    initial.players[0].board.piles[2].pop();
+    initial.players[1].board.hand = [];
+    initial.players[1].board.piles[0] = [];
+    initial.players[1].board.piles[1] = [];
+    initial.players[1].board.piles[2].pop();
+    return initial;
   }
 }
 

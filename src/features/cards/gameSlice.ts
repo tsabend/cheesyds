@@ -14,6 +14,7 @@ const makeInitialState = () => {
   const snapshot = new GameBuilder().makeFakeGame();
   const controller = new GameController();
   const initial = controller.deal(snapshot);
+
   return {
      controller: controller,
      snapshot: initial,
