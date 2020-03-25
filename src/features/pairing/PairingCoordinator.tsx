@@ -8,6 +8,7 @@ import Button from "@material-ui/core/Button";
 import Input from "@material-ui/core/Input";
 import Typography from "@material-ui/core/Typography";
 import LandingView from "./LandingView"
+import WaitingView from "./WaitingView"
 import {
   withStyles,
   Theme,
@@ -35,12 +36,16 @@ const PairingCoordinator = ({ classes }: PairingCoordinatorProps) => {
     switch (progress) {
       case PairingProgress.Landing:
         return <LandingView/>;
+      case PairingProgress.Waiting:
+        return <WaitingView isOwner={true} />
+      case PairingProgress.Joining:
+        return <WaitingView isOwner={false} />
     }
   }
 
   return (
     <React.Fragment>
-    {build()}  
+    {build()}
     </React.Fragment>
   );
 };
