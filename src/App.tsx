@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import logo from "./logo.svg";
 import GameView from "./features/cards/GameView";
+import PairingCoordinator from "./features/pairing/PairingCoordinator";
 import { fire } from './app/fire';
 import {
   createMuiTheme,
@@ -85,7 +86,7 @@ const App = ({ classes }: AppProps) => {
     <div className={classes.app}>
     <header className={classes.appHeader}>
     <p>CheesyD</p>
-    <GameView />
+    <PairingCoordinator />
     </header>
     </div>
     <React.Fragment>
