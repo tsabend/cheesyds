@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import {
-  PairingProgress,
-  selectPairingProgress
-} from "./pairingSlice"
+  selectAppProgress
+} from "../../app/appSlice"
+import {
+  AppProgress,
+} from "../../app/appState"
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import Input from "@material-ui/core/Input";
@@ -17,7 +19,7 @@ import {
   WithStyles,
   CircularProgress
 } from "@material-ui/core";
-
+import GameView from "../cards/GameView"
 import { useSelector, useDispatch } from "react-redux";
 
 
@@ -31,17 +33,19 @@ type PairingCoordinatorProps = {
 
 const PairingCoordinator = ({ classes }: PairingCoordinatorProps) => {
 
-  const progress: PairingProgress = useSelector(selectPairingProgress);
+  const progress: AppProgress = useSelector(selectAppProgress);
   const build = () => {
     switch (progress) {
-      case PairingProgress.Landing:
+      case AppProgress.Landing:
         return <LandingView/>;
-      case PairingProgress.Waiting:
+      case AppProgress.Waiting:
         return <WaitingView isOwner={true} />
-      case PairingProgress.Joining:
+      case AppProgress.Joining:
         return <WaitingView isOwner={false} />
-      case PairingProgress.Loading:
+      case AppProgress.Loading:
         return "Loading...";
+      case AppProgress.GameStarted:
+        return <GameView />
     }
   }
 

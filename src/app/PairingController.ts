@@ -1,15 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { useDispatch } from "react-redux";
 import { v4 as generateUUID } from "uuid";
-import { AppThunk, RootState } from '../../app/store';
-import { fire, FBApp } from '../../app/fire';
+import { AppThunk, RootState } from './store';
+import { fire, FBApp } from './fire';
 import { Result, ok, Ok, err, Err } from "neverthrow";
+import { GameSnapshot } from "./game"
+import { RemoteGameState } from "./appState"
 
-export interface PairingGame {
-  players: Array<string>
-  gameId: string,
-  fbGameId?: string
-}
 /// Token to dispose of observable
 interface DisposeToken {
   (): void
@@ -26,9 +23,10 @@ export class PairingController {
     return generateUUID().slice(0,4).toUpperCase();
   }
 
+  // Open a brand new game
   openNewSession(
     playerName: string,
-    observer: (result: Result<PairingGame, Error>) => void
+    observer: (result: Result<RemoteGameState, Error>) => void
   ) {
     const gameId = this.makeUUID();
     const args = {
@@ -42,10 +40,12 @@ export class PairingController {
     });
   };
 
+  // Join an existing game
+  // TODO: should only succeed if the existing game isn't yet started
   joinExistingSession(
     gameId: string,
     playerName: string,
-    observer: (result: Result<PairingGame, Error>) => void
+    observer: (result: Result<RemoteGameState, Error>) => void
   ) {
     this.getGame(gameId, (result) => {
       // todo handle error
@@ -61,6 +61,7 @@ export class PairingController {
     });
   }
 
+  // stop listening to updates from the game
   cancel() {
     const token = this.token as DisposeToken
     if (token) {
@@ -68,7 +69,7 @@ export class PairingController {
     }
   }
 
-  private createGame(action: PairingGame, observer: (result: Result<PairingGame, Error>) => void) {
+  private createGame(action: RemoteGameState, observer: (result: Result<RemoteGameState, Error>) => void) {
     fire.database().ref('games').push({
       gameId: action.gameId,
       players: action.players
@@ -77,20 +78,20 @@ export class PairingController {
     });
   }
 
-  private updateGame(newGame: PairingGame) {
+  private updateGame(newGame: RemoteGameState) {
     fire.database().ref('games/' + newGame.fbGameId).set({
       gameId: newGame.gameId,
       players: newGame.players
     })
   }
 
-  private getGame(gameId: string, completion: (result: Result<PairingGame, Error>) => void) {
+  private getGame(gameId: string, completion: (result: Result<RemoteGameState, Error>) => void) {
     console.log("Querying fire db for game with id", gameId);
     const ref = this.buildQuery(gameId)
     .once("value", snapshot => completion(this.unpackSnapshot(snapshot)));
   }
 
-  private subscribeToGame(gameId: string, observer: (result: Result<PairingGame, Error>) => void) {
+  private subscribeToGame(gameId: string, observer: (result: Result<RemoteGameState, Error>) => void) {
     console.log("Subscribing to fire db for game with id", gameId);
     const ref = this.buildQuery(gameId)
     .on("value", snapshot => observer(this.unpackSnapshot(snapshot)));
@@ -102,9 +103,9 @@ export class PairingController {
     }
   }
 
-  private unpackSnapshot(snapshot: firebase.database.DataSnapshot): Result<PairingGame, Error> {
+  private unpackSnapshot(snapshot: firebase.database.DataSnapshot): Result<RemoteGameState, Error> {
     if (snapshot.numChildren() > 1) return err(new Error("too many games. should be 1."));
-    var out: Result<PairingGame, Error> = err(new Error("never found child"))
+    var out: Result<RemoteGameState, Error> = err(new Error("never found child"))
     snapshot.forEach((child) => {
       const key = child.key as string;
       if (!key) out = err(new Error("failed to get key"));

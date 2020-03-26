@@ -6,7 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import {
   selectCard,
   selectTurn
-} from "./gameSlice"
+} from "../../app/appSlice";
 import {
   Suit,
   FaceValue,
@@ -63,7 +63,7 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
 
 type CardViewProps = {
   card: Card;
-  isEnabled: boolean
+  isEnabled: boolean;
 } & WithStyles<typeof styles>;
 
 const CardView = ({ card, isEnabled, classes }: CardViewProps) => {

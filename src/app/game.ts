@@ -43,43 +43,30 @@ export class GameSnapshot {
   }
 
   isOver(): boolean {
-    return this.activePlayers().length === 1;
+    return this.players.length === 1;
   }
 
   loser(): Player | undefined {
     if (this.isOver()) {
-      return this.activePlayers()[0];
+      return this.players[0];
     }
     return undefined;
   }
 
-  activePlayers(): Array<Player> {
-    return this.players.filter(player => !player.isOut());
-  }
-
   nextPlayerIndex(): number {
-    // a lazy hack...should fix this somehow
-    const cP = this.players[this.currentPlayerIndex]
-    if (cP) {
-      const isFirstOneOut = this.players.length - this.activePlayers().length === 1
-      if (isFirstOneOut) {
-        this.winner = cP;
-      }
-      return this.currentPlayerIndex;
-    }
     return this.playerIndexSkipping(1);
   }
 
   playerIndexSkipping(n: number): number {
-    return (this.currentPlayerIndex + n) % this.activePlayers().length;
+    return (this.currentPlayerIndex + n) % this.players.length;
   }
 
   currentPlayer(): Player {
-    return this.activePlayers()[this.currentPlayerIndex];
+    return this.players[this.currentPlayerIndex];
   }
 
   nextPlayer(): Player {
-    return this.activePlayers()[this.nextPlayerIndex()];
+    return this.players[this.nextPlayerIndex()];
   }
 
   topOfInPlayPile(): Card | undefined {
@@ -90,7 +77,21 @@ export class GameSnapshot {
   }
 
   isCurrentPlayer(player: Player): boolean {
-    return this.activePlayers()[this.currentPlayerIndex] === player;
+    return this.players[this.currentPlayerIndex] === player;
+  }
+
+  finishTurn(moveForwardsBy: number) {
+    debugger
+    const currentPlayer = this.currentPlayer()
+    if (currentPlayer.isOut()) {
+      this.players = this.players.filter(player => player !== currentPlayer);
+      if (!this.winner) {
+        this.winner = currentPlayer;
+      }
+    }
+    else {
+      this.currentPlayerIndex = this.playerIndexSkipping(moveForwardsBy);
+    }
   }
 }
 
@@ -194,6 +195,16 @@ export class GameBuilder {
     ];
 
     return new GameSnapshot(players, new Deck(), [], 0, false);
+  }
+
+  makeGame(players: Array<string>): GameSnapshot {
+    return new GameSnapshot(
+      players.map(name => new Player(name)),
+      new Deck(),
+      [],
+      0,
+      false
+    );
   }
 
   // Simulate end of game

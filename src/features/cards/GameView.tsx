@@ -16,7 +16,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectGameSnapshot,
-} from "./gameSlice";
+} from "../../app/appSlice";
 import {
   GameSnapshot
 } from "../../app/game"

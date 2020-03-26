@@ -27,7 +27,7 @@ import {
   submit,
   selectGameSnapshot,
   pickUp
-} from "./gameSlice";
+} from "../../app/appSlice";
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
   createStyles({
@@ -47,7 +47,9 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
     if (card) {
       return <div>
       <p>In Play Pile:</p>
-      <CardView card={card} isEnabled={false}/>
+      <CardView card={card}
+      isEnabled={false}
+      />
       </div>
     }
     else {

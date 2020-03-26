@@ -27,8 +27,8 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
   });
 
 type PilesViewProps = {
-  piles: Array<Array<Card>>
-  isEnabled: boolean
+  piles: Array<Array<Card>>;
+  isEnabled: boolean;
 } & WithStyles<typeof styles>;
 
 const PilesView = ({ piles, isEnabled, classes }: PilesViewProps) => {
@@ -43,7 +43,11 @@ const PilesView = ({ piles, isEnabled, classes }: PilesViewProps) => {
         }
         const card = length === 1 ? pile[0] : pile[1];
         return <Grid item>
-        <CardView card={card} key={card.index()} isEnabled={isEnabled} />
+        <CardView
+        card={card}
+         key={card.index()}
+         isEnabled={isEnabled}
+         />
         </Grid>
     })
     }

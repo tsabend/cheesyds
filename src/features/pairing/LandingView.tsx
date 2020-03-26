@@ -21,7 +21,7 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   startPairingAsync,
   joinGameAsync,
-} from "./pairingSlice"
+} from "../../app/appSlice";
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
   createStyles({
