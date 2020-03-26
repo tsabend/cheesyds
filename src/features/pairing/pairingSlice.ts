@@ -1,10 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { useDispatch } from "react-redux";
 import { v4 as generateUUID } from "uuid";
 import { AppThunk, RootState } from '../../app/store';
-// import { fire } from './app/fire';
+import { fire, FBApp } from '../../app/fire';
+import { Result, ok, Ok, err, Err } from "neverthrow";
+import { PairingController, PairingGame } from "./PairingController"
 
 export enum PairingProgress {
   Landing,
+  Loading,
   Waiting,
   Joining,
 }
@@ -12,7 +16,9 @@ export enum PairingProgress {
 export interface PairingState {
   progress: PairingProgress,
   players: Array<string>,
-  gameId: string,
+  gameId?: string,
+  fbGameId?: string,
+
 }
 
 // in case special construction logic is needed
@@ -20,25 +26,29 @@ const makeInitialState = () => {
   return {
     progress: PairingProgress.Landing,
     players: [],
-    gameId: generateUUID(),
+    gameId: undefined,
+    fbGameId: undefined,
   };
 }
 const initialState: PairingState = makeInitialState();
-
 export const slice = createSlice({
   name: 'pairing',
   initialState,
   reducers: {
-    startPairing: (state, playerName: PayloadAction<string>) => {
-      state.players.push(playerName.payload);
-      state.progress = PairingProgress.Waiting;
-      state.gameId = generateUUID().slice(0,4).toUpperCase();
+    startLoading: (state) => {
+      state.progress = PairingProgress.Loading;
     },
-    joinGame: (state: PairingState, action: PayloadAction<JoinAction>) => {
+    finishPairing: (state, action: PayloadAction<PairingGame>) => {
+      state.progress = PairingProgress.Waiting;
+      state.gameId = action.payload.gameId;
+      state.players = action.payload.players;
+      state.fbGameId = action.payload.fbGameId;
+    },
+    joinGame: (state: PairingState, action: PayloadAction<PairingGame>) => {
       state.progress = PairingProgress.Joining;
       state.gameId = action.payload.gameId;
-      // this will go away
-      state.players.push(action.payload.playerName);
+      state.players = action.payload.players;
+      state.fbGameId = action.payload.fbGameId;
     },
     startGame: state => {
       console.log("BUILD THE GAME NOW");
@@ -49,23 +59,27 @@ export const slice = createSlice({
   },
 });
 
+// functions exposed to react
 
-// // The function below is called a thunk and allows us to perform async logic. It
-// // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
-// // will call the thunk with the `dispatch` function as the first argument. Async
-// // code can then be executed and other actions can be dispatched
-export const joinGameAsync = (action: JoinAction): AppThunk => dispatch => {
-  setTimeout(() => {
-    dispatch(joinGame(action));
-  }, 1000);
+const controller = new PairingController(fire);
+
+export const joinGameAsync = (gameId: string, playerName: string): AppThunk => dispatch => {
+  dispatch(startLoading());
+  controller.joinExistingSession(gameId, playerName, result => {
+    if (result.isOk()) {
+      dispatch(joinGame(result._unsafeUnwrap()))
+    }
+  });
 };
 
-export interface JoinAction {
-  gameId: string,
-  playerName: string,
-}
+export const startPairingAsync = (playerName: string): AppThunk => dispatch => {
+  dispatch(startLoading());
+  controller.openNewSession(playerName, result => {
+    if (result.isOk()) dispatch(finishPairing(result._unsafeUnwrap()))
+  });
+};
 
-export const { startPairing, restart, startGame, joinGame } = slice.actions;
+export const { startLoading, finishPairing, restart, startGame, joinGame } = slice.actions;
 
 export const selectPairingProgress = (state: RootState) => state.pairing.progress;
 export const selectPairingPlayers = (state: RootState) => state.pairing.players;

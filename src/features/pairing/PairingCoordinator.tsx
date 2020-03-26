@@ -40,6 +40,8 @@ const PairingCoordinator = ({ classes }: PairingCoordinatorProps) => {
         return <WaitingView isOwner={true} />
       case PairingProgress.Joining:
         return <WaitingView isOwner={false} />
+      case PairingProgress.Loading:
+        return "Loading...";
     }
   }
 

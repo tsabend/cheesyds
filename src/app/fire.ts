@@ -10,4 +10,6 @@ const config = {
   appId: process.env.FB_APP_ID,
   measurementId: process.env.FB_MEASUREMENT_ID
 };
-export const fire = Firebase.initializeApp(config);
+
+export type FBApp = Firebase.app.App;
+export const fire: FBApp = Firebase.initializeApp(config);

@@ -19,10 +19,8 @@ import {
 
 import { useSelector, useDispatch } from "react-redux";
 import {
-  startPairing,
-  joinGame,
+  startPairingAsync,
   joinGameAsync,
-  JoinAction
 } from "./pairingSlice"
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
@@ -53,7 +51,7 @@ const LandingView = ({ classes }: LandingViewProps) => {
       {/* Start button */}
       <Grid item>
         <Typography>Get that D!</Typography>
-        <Button type="submit" onClick={() => dispatch(startPairing(getPlayerName()))}>
+        <Button type="submit" onClick={() => dispatch(startPairingAsync(getPlayerName()))}>
         Start New Game
         </Button>
       </Grid>
@@ -64,7 +62,7 @@ const LandingView = ({ classes }: LandingViewProps) => {
           <Input id="landing-code-input" aria-describedby="landing-code-helper-text" />
           <FormHelperText id="landing-code-helper-text">Enter code above</FormHelperText>
           <Button type="submit" onClick={ () => {
-            dispatch(joinGameAsync({ playerName: getPlayerName(), gameId: getGameCode()}))
+            dispatch(joinGameAsync(getGameCode(), getPlayerName()));
           }}>Join Existing Game</Button>
         </FormControl>
       </Grid>
