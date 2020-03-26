@@ -33,25 +33,27 @@ type LandingViewProps = {
 
 const LandingView = ({ classes }: LandingViewProps) => {
   const dispatch = useDispatch();
-  const getInputText = (id: string): string => {
-    return (document.getElementById(id) as HTMLInputElement)?.value || "";
-  }
-  const getPlayerName = (): string => { return getInputText("player-name") }
-  const getGameCode = (): string => { return getInputText("landing-code-input") }
+  const [playerName, setPlayerName] = useState("");
+  const [gameCode, setGameCode] = useState("");
   return (
     <Grid container alignItems="center" justify="center" spacing={4}>
       {/* Name input*/}
       <Grid item>
         <FormControl>
           <InputLabel htmlFor="player-name">Name</InputLabel>
-          <Input id="player-name" aria-describedby="player-name-helper-text" />
+          <Input id="player-name" aria-describedby="player-name-helper-text"
+          onChange={e => setPlayerName(e.target.value)}
+          />
           <FormHelperText id="player-name-helper-text">Enter your player name</FormHelperText>
         </FormControl>
       </Grid>
       {/* Start button */}
       <Grid item>
         <Typography>Get that D!</Typography>
-        <Button type="submit" onClick={() => dispatch(startPairingAsync(getPlayerName()))}>
+        <Button
+         type="submit"
+         disabled={playerName.length === 0}
+         onClick={() => dispatch(startPairingAsync(playerName))}>
         Start New Game
         </Button>
       </Grid>
@@ -59,11 +61,18 @@ const LandingView = ({ classes }: LandingViewProps) => {
       <Grid item>
         <FormControl>
           <InputLabel htmlFor="landing-code-input">Game Code</InputLabel>
-          <Input id="landing-code-input" aria-describedby="landing-code-helper-text" />
+          <Input id="landing-code-input" aria-describedby="landing-code-helper-text"
+          onChange={e => setGameCode(e.target.value)}
+          />
           <FormHelperText id="landing-code-helper-text">Enter code above</FormHelperText>
-          <Button type="submit" onClick={ () => {
-            dispatch(joinGameAsync(getGameCode(), getPlayerName()));
-          }}>Join Existing Game</Button>
+          <Button
+           type="submit"
+           disabled={playerName.length === 0 || gameCode.length === 0}
+           onClick={ () => {
+             dispatch(joinGameAsync(gameCode, playerName));
+           }}>
+            Join Existing Game
+            </Button>
         </FormControl>
       </Grid>
     </Grid>
