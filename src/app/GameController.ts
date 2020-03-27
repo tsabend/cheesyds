@@ -1,20 +1,20 @@
-import { Player } from "./player"
-import { Turn } from "./turn"
 import {
-  Suit,
-  FaceValue,
   Card,
+  FaceValue,
+  getRule,
   Rule,
-  getRule
-} from "./card"
+  Suit,
+} from "./card";
+import { Player } from "./player";
+import { Turn } from "./turn";
 
 import {
-  GameSnapshot
-} from "./game"
+  GameSnapshot,
+} from "./game";
 
 export class GameController {
   deal(snapshot: GameSnapshot): GameSnapshot {
-    return this.mutate(snapshot, snapshot => {
+    return this.mutate(snapshot, (snapshot) => {
       snapshot.players.forEach((player: Player) => {
         player.deal(snapshot.deck.deal(9));
       });
@@ -22,12 +22,12 @@ export class GameController {
   }
 
   mutate(snapshot: GameSnapshot, mutation: (snapshot: GameSnapshot) => void): GameSnapshot {
-    const copy = snapshot.copy()
+    const copy = snapshot.copy();
     mutation(copy);
-    return copy
+    return copy;
   }
 
-  submit(cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
+  submit(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
     switch (getRule(cards)) {
       case Rule.Play:
       return this.play(cards, snapshot);
@@ -36,7 +36,7 @@ export class GameController {
       case Rule.ForcePickUp:
       return this.forcePickUp(cards, snapshot);
       case Rule.ReverseForOneTurn:
-      return this.reverse(cards, snapshot)
+      return this.reverse(cards, snapshot);
       case Rule.SkipOne:
       return this.skip(1, cards, snapshot);
       case Rule.SkipTwo:
@@ -48,45 +48,45 @@ export class GameController {
     }
   }
 
-  play(cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
+  play(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
     return this._play(cards, false, snapshot);
   }
 
-  reverse(cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
+  reverse(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
     return this._play(cards, true, snapshot);
   }
 
-  _play(cards: Array<Card>, willReverse: boolean, snapshot: GameSnapshot): GameSnapshot {
-    return this.mutate(snapshot, snapshot => {
+  _play(cards: Card[], willReverse: boolean, snapshot: GameSnapshot): GameSnapshot {
+    return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().submit(cards);
       snapshot.currentPlayer().draw(snapshot.deck);
       snapshot.inPlayPile = snapshot.inPlayPile.concat(cards);
       snapshot.isInReverse = willReverse;
-      snapshot.finishTurn(1)
+      snapshot.finishTurn(1);
     });
   }
 
-  clear(cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
-    return this.mutate(snapshot, snapshot => {
+  clear(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
+    return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().submit(cards);
       snapshot.currentPlayer().draw(snapshot.deck);
       snapshot.inPlayPile = [];
-      snapshot.finishTurn(1)
+      snapshot.finishTurn(1);
     });
   }
 
-  forcePickUp(cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
-    return this.mutate(snapshot, snapshot => {
+  forcePickUp(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
+    return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().submit(cards);
       snapshot.currentPlayer().draw(snapshot.deck);
       snapshot.nextPlayer().pickUp(snapshot.inPlayPile);
       snapshot.inPlayPile = [];
-      snapshot.finishTurn(2)
+      snapshot.finishTurn(2);
     });
   }
 
-  skip(skipCount: number, cards: Array<Card>, snapshot: GameSnapshot): GameSnapshot {
-    return this.mutate(snapshot, snapshot => {
+  skip(skipCount: number, cards: Card[], snapshot: GameSnapshot): GameSnapshot {
+    return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().submit(cards);
       snapshot.currentPlayer().draw(snapshot.deck);
       snapshot.inPlayPile = snapshot.inPlayPile.concat(cards);
@@ -95,10 +95,10 @@ export class GameController {
   }
 
   pickUp(snapshot: GameSnapshot): GameSnapshot {
-    return this.mutate(snapshot, snapshot => {
+    return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().pickUp(snapshot.inPlayPile);
       snapshot.inPlayPile = [];
-      snapshot.finishTurn(1)
+      snapshot.finishTurn(1);
     });
   }
 }

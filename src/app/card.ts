@@ -3,7 +3,7 @@ export class Card {
   faceValue: FaceValue;
 
   static from(data: any): Card {
-    return new Card(data.suit, data.faceValue)
+    return new Card(data.suit, data.faceValue);
   }
 
   constructor(suit: Suit, faceValue: FaceValue) {
@@ -46,7 +46,7 @@ export enum Suit {
   Diamonds = "Diamonds",
   Clubs    = "Clubs",
   Hearts   = "Hearts",
-  Spades   = "Spades"
+  Spades   = "Spades",
 }
 
 export enum FaceValue {
@@ -72,11 +72,11 @@ export enum Rule {
   ReverseForOneTurn,
   SkipOne,
   SkipTwo,
-  SkipThree
+  SkipThree,
 }
 
 // assumes array is non-null and the cards are all the same faceValue
-export function getRule(cards: Array<Card>): Rule {
+export function getRule(cards: Card[]): Rule {
   const faceValue = cards[0].faceValue;
   const length = cards.length;
   if (length === 4 || faceValue === FaceValue.Ten) return Rule.Clear;
@@ -94,5 +94,5 @@ export function canPlayOn(faceValue: FaceValue, onFaceValue: FaceValue, isInReve
 }
 
 function isWild(faceValue: FaceValue): boolean {
-  return faceValue === FaceValue.Ten || faceValue === FaceValue.Two
+  return faceValue === FaceValue.Ten || faceValue === FaceValue.Two;
 }

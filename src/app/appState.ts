@@ -1,8 +1,8 @@
-import { GameSnapshot, GameBuilder } from "./game"
-import { PairingController } from "./PairingController"
-import { GameController } from "./GameController"
-import { fire, FBApp } from './fire';
-import { Turn } from "./turn"
+import { FBApp, fire } from "./fire";
+import { GameBuilder, GameSnapshot } from "./game";
+import { GameController } from "./GameController";
+import { PairingController } from "./PairingController";
+import { Turn } from "./turn";
 
 export enum AppProgress {
   Landing,
@@ -13,10 +13,10 @@ export enum AppProgress {
 }
 
 export interface RemoteGameState {
-  players: Array<string>
-  gameId: string,
-  fbGameId?: string
-  game?: GameSnapshot
+  players: string[];
+  gameId: string;
+  fbGameId?: string;
+  game?: GameSnapshot;
 }
 
 export const copyRemoteGameState = (state: RemoteGameState) => {
@@ -25,14 +25,14 @@ export const copyRemoteGameState = (state: RemoteGameState) => {
     gameId: state.gameId,
     fbGameId: state.fbGameId,
     game: state.game?.copy(),
-  }
-}
+  };
+};
 
 export interface AppState {
-  progress: AppProgress
-  game?: RemoteGameState
-  turn: Turn
-  me: string
+  progress: AppProgress;
+  game?: RemoteGameState;
+  turn: Turn;
+  me: string;
 }
 
 export const pairingController = new PairingController(fire);
@@ -66,4 +66,4 @@ export const makeInitialAppState = (): AppState => {
     turn: new Turn(),
     me: "",
   };
-}
+};

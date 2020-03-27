@@ -1,12 +1,12 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import appReducer from './appSlice';
-import thunkMiddleware from 'redux-thunk'
+import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
+import thunkMiddleware from "redux-thunk";
+import appReducer from "./appSlice";
 
 export const store = configureStore({
   reducer: {
     app: appReducer,
   },
-  middleware: [thunkMiddleware]
+  middleware: [thunkMiddleware],
 });
 
 export type RootState = ReturnType<typeof store.getState>;

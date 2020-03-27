@@ -1,15 +1,15 @@
 import {
+   canPlayOn,
    Card,
    FaceValue,
-   canPlayOn
-} from "./card"
+} from "./card";
 
 export class Turn {
   currentFaceValue: FaceValue;
-  cardsToSubmit: Array<Card> = [];
+  cardsToSubmit: Card[] = [];
   isInReverse: boolean;
   constructor(currentFaceValue?: FaceValue,
-              cardsToSubmit?: Array<Card>,
+              cardsToSubmit?: Card[],
               isInReverse?: boolean) {
                 this.currentFaceValue = currentFaceValue || FaceValue.Three;
                 this.cardsToSubmit = cardsToSubmit || [];
@@ -21,7 +21,7 @@ export class Turn {
     if (!this.isValidSelection(card)) return this;
     if (this.isSelected(card)) {
       // unselect
-      return new Turn(this.currentFaceValue, this.cardsToSubmit.filter(_card => card !== _card));
+      return new Turn(this.currentFaceValue, this.cardsToSubmit.filter((_card) => card !== _card));
     }
     else {
       // select
@@ -30,12 +30,12 @@ export class Turn {
   }
 
   isSelected(card: Card): boolean {
-    return this.cardsToSubmit.indexOf(card) !== -1
+    return this.cardsToSubmit.indexOf(card) !== -1;
   }
 
   isValidSelection(card: Card): boolean {
-    const faceValue = card.faceValue
-    const canPlayOnTop = canPlayOn(faceValue, this.currentFaceValue, this.isInReverse)
+    const faceValue = card.faceValue;
+    const canPlayOnTop = canPlayOn(faceValue, this.currentFaceValue, this.isInReverse);
     console.log("can", faceValue, "play on", this.currentFaceValue, "===", canPlayOnTop);
     if (!canPlayOnTop) return false;
     if (this.cardsToSubmit.length === 0) return true;

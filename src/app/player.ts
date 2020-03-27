@@ -1,12 +1,12 @@
-import { Card } from "./card"
-import { Deck } from "./game"
+import { Card } from "./card";
+import { Deck } from "./game";
 export class Player {
-  name: string
-  board: PlayerBoard
+  name: string;
+  board: PlayerBoard;
 
   static from(data: any): Player {
     const rawBoard = data.board;
-    var board
+    let board;
     if (rawBoard) {
       board = PlayerBoard.from(rawBoard);
     }
@@ -27,11 +27,11 @@ export class Player {
     return this.board.isOut();
   }
 
-  deal(cards: Array<Card>) {
+  deal(cards: Card[]) {
     this.board.deal(cards);
   }
 
-  submit(cards: Array<Card>) {
+  submit(cards: Card[]) {
     this.board.submit(cards);
   }
 
@@ -42,7 +42,7 @@ export class Player {
     }
   }
 
-  pickUp(cards: Array<Card>) {
+  pickUp(cards: Card[]) {
     this.board.pickUp(cards);
   }
 
@@ -53,39 +53,39 @@ export class Player {
 
 export class PlayerBoard {
 
-  hand: Array<Card>
-  piles: Array<Array<Card>>
+  hand: Card[];
+  piles: Card[][];
   static from(data: any): PlayerBoard {
     debugger;
     const rawHand = data.hand;
-    var hand
+    let hand;
     if (rawHand) {
-      hand = rawHand.map((card: any) => Card.from(card))
+      hand = rawHand.map((card: any) => Card.from(card));
     }
     const rawPiles = data.piles;
-    var piles
+    let piles;
     if (rawPiles) {
-      piles = rawPiles.map((pile: Array<any>) => pile.map(card => Card.from(card)))
+      piles = rawPiles.map((pile: any[]) => pile.map((card) => Card.from(card)));
     }
-    return new PlayerBoard(hand, piles  )
+    return new PlayerBoard(hand, piles  );
   }
-  constructor(hand?: Array<Card>,
-              piles?: Array<Array<Card>>) {
+  constructor(hand?: Card[],
+              piles?: Card[][]) {
                 this.hand = hand || [];
                 this.piles = piles || [];
   }
 
   copy(): PlayerBoard {
-    const newPiles = this.piles.map(pile => Array.from(pile))
+    const newPiles = this.piles.map((pile) => Array.from(pile));
     return new PlayerBoard(Array.from(this.hand), newPiles);
   }
 
   isOut(): boolean {
-    return this.hand.length === 0 && this.piles.filter(pile => pile.length === 0).length === 3;
+    return this.hand.length === 0 && this.piles.filter((pile) => pile.length === 0).length === 3;
   }
 
   // deal out an array of 6 cards
-  deal(cards: Array<Card>) {
+  deal(cards: Card[]) {
     const newHand = cards.splice(0, 3);
     const pile1 = cards.splice(0, 2);
     const pile2 = cards.splice(0, 2);
@@ -93,20 +93,20 @@ export class PlayerBoard {
     const newPiles = [
       pile1,
       pile2,
-      pile3
+      pile3,
     ];
     this.hand = newHand;
     this.piles = newPiles;
   }
 
-  submit(cards: Array<Card>) {
-    const newHand = this.hand.filter(_card => cards.indexOf(_card) === -1);
-    const newPiles = this.piles.map(pile => pile.filter(_card => cards.indexOf(_card) === -1));
+  submit(cards: Card[]) {
+    const newHand = this.hand.filter((_card) => cards.indexOf(_card) === -1);
+    const newPiles = this.piles.map((pile) => pile.filter((_card) => cards.indexOf(_card) === -1));
     this.hand = newHand;
     this.piles = newPiles;
   }
 
-  pickUp(cards: Array<Card>) {
+  pickUp(cards: Card[]) {
     const newHand = this.hand.concat(cards);
     this.hand = newHand;
   }
