@@ -6,6 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import CardView from "./CardView"
 import HandView from "./HandView"
 import PilesView from "./PilesView"
+import { Player } from "../../app/player"
 import {
   Suit,
   FaceValue,
@@ -25,6 +26,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import {
   submit,
+  selectMe,
   selectGameSnapshot,
   pickUp
 } from "../../app/appSlice";
@@ -40,7 +42,12 @@ type PlayingGameViewProps = {
 const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
   const dispatch = useDispatch();
   const game: GameSnapshot = useSelector(selectGameSnapshot);
+  const myName = useSelector(selectMe);
+  const me = game.players.find(player => player.name === myName);
   const player = game.currentPlayer();
+  const itIsMyTurn = () => {
+    return player === me;
+  }
 
   const inPlayPile = () => {
     const card = game.topOfInPlayPile()
@@ -53,38 +60,67 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
       </div>
     }
     else {
-      return <div></div>;
+      return <div><Typography>No cards in play</Typography></div>;
     }
+  }
+
+  const buildMyBoard = () => {
+    if (me) {
+      return <React.Fragment>
+      <Grid container alignItems="center" justify="center" spacing={3}>
+      <p>Hand:</p>
+      <HandView hand={me.board.hand} />
+      </Grid>
+      <Grid container alignItems="center" justify="center" spacing={3}>
+      <p>Board:</p>
+      <PilesView piles={me.board.piles} isEnabled={me.isEliminatingPiles()} />
+      </Grid>
+      {itIsMyTurn() &&
+        <React.Fragment>
+        <Button
+        className={classes.button}
+        aria-label="Submit turn"
+        onClick={() => dispatch(submit())}
+        >
+        SUBMIT
+        </Button>
+        <Button
+        className={classes.button}
+        aria-label="Forfeit turn"
+        onClick={() => dispatch(pickUp())}
+        >
+        PICK UP
+        </Button>
+        </React.Fragment>
+      }
+        </React.Fragment>
+    }
+    return <p>You're out</p>;
+  }
+
+  const buildUpNextView = () => {
+    const upcoming = game.upcomingPlayers().map(player => {
+      return <React.Fragment>
+      <Grid container alignItems="center" justify="center" spacing={3}>
+      <Typography>{player.name}</Typography>
+      <PilesView piles={player.board.piles} isEnabled={false} />
+      </Grid>
+      </React.Fragment>
+    });
+    return <React.Fragment>
+    <p>Playing Next</p>
+    {upcoming}
+    </React.Fragment>
   }
 
   return (
     <React.Fragment>
+    <p>{player.name}'s Turn</p>
     {inPlayPile()}
     <div>
-    <p>Player: {player.name}</p>
-    <Grid container alignItems="center" justify="center" spacing={3}>
-    <p>Hand:</p>
-    <HandView hand={player.board.hand} />
-    </Grid>
-    <Grid container alignItems="center" justify="center" spacing={3}>
-    <p>Board:</p>
-    <PilesView piles={player.board.piles} isEnabled={player.isEliminatingPiles()} />
-    </Grid>
-    <Button
-    className={classes.button}
-    aria-label="Submit turn"
-    onClick={() => dispatch(submit())}
-    >
-    SUBMIT
-    </Button>
-    <Button
-    className={classes.button}
-    aria-label="Forfeit turn"
-    onClick={() => dispatch(pickUp())}
-    >
-    PICK UP
-    </Button>
+    {buildMyBoard()}
     </div>
+    {buildUpNextView()}
     </React.Fragment>
   );
 };

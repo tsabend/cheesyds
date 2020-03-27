@@ -98,6 +98,7 @@ export const selectAppProgress = (state: RootState) => state.app.progress;
 export const selectPairingPlayers = (state: RootState) => state.app.game?.players || [];
 export const selectRemoteGameId = (state: RootState) => state.app.game?.gameId || "";
 export const selectGameSnapshot = (state: RootState) => state.app.game?.game || new GameBuilder().makeFakeGame(); // FIXME
+export const selectMe = (state: RootState) => state.app.me;
 export const selectTurn = (state: RootState) => state.app.turn;
 
 export default slice.reducer;

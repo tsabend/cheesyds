@@ -53,6 +53,15 @@ export class GameSnapshot {
     return undefined;
   }
 
+  upcomingPlayers(): Array<Player> {
+    var out: Array<Player> = [];
+    for (let i = 1; i < this.players.length; i++) {
+        const p = this.players[this.playerIndexSkipping(i)];
+        out.push(p);
+    }
+    return out;
+  }
+
   nextPlayerIndex(): number {
     return this.playerIndexSkipping(1);
   }

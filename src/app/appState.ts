@@ -23,6 +23,7 @@ export interface AppState {
   progress: AppProgress
   game?: RemoteGameState
   turn: Turn
+  me: string
 }
 
 export const pairingController = new PairingController(fire);
@@ -46,7 +47,8 @@ export const makeInitialAppState = (): AppState => {
       fbGameId: undefined,
       game: game
     },
-    turn: new Turn()
+    turn: new Turn(),
+    me: "thomas"
   }
   return startedGame;
   // return {
