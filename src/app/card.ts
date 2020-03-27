@@ -14,6 +14,32 @@ export class Card {
   index(): string {
     return this.suit + this.faceValue;
   }
+
+  className(): string {
+    return this.suitClassName() + "_" + this.faceClassName();
+  }
+
+  faceClassName(): string {
+    return this.suit.toLowerCase();
+  }
+
+  suitClassName(): string {
+    switch (this.faceValue) {
+      case FaceValue.Two: return "two";
+      case FaceValue.Three: return "three";
+      case FaceValue.Four: return "four";
+      case FaceValue.Five: return "five";
+      case FaceValue.Six: return "six";
+      case FaceValue.Seven: return "seven";
+      case FaceValue.Eight: return "eight";
+      case FaceValue.Nine: return "nine";
+      case FaceValue.Ten: return "ten";
+      case FaceValue.Jack: return "jack";
+      case FaceValue.Queen: return "queen";
+      case FaceValue.King: return "king";
+      case FaceValue.Ace: return "ace";
+    }
+  }
 }
 
 export enum Suit {
