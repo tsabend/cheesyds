@@ -25,10 +25,12 @@ import {
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  submit,
+  submitCards,
   selectMe,
+  selectRemoteGame,
+  selectTurn,
   selectGameSnapshot,
-  pickUp
+  pickUpCards
 } from "../../app/appSlice";
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
@@ -42,6 +44,8 @@ type PlayingGameViewProps = {
 const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
   const dispatch = useDispatch();
   const game: GameSnapshot = useSelector(selectGameSnapshot);
+  const remoteGame = useSelector(selectRemoteGame);
+  const turn = useSelector(selectTurn);
   const myName = useSelector(selectMe);
   const me = game.players.find(player => player.name === myName);
   const player = game.currentPlayer();
@@ -80,14 +84,14 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
         <Button
         className={classes.button}
         aria-label="Submit turn"
-        onClick={() => dispatch(submit())}
+        onClick={ () => remoteGame && dispatch(submitCards(turn.cardsToSubmit, remoteGame)) }
         >
         SUBMIT
         </Button>
         <Button
         className={classes.button}
         aria-label="Forfeit turn"
-        onClick={() => dispatch(pickUp())}
+        onClick={ () => remoteGame && dispatch(pickUpCards(remoteGame)) }
         >
         PICK UP
         </Button>

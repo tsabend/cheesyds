@@ -2,6 +2,10 @@ export class Card {
   suit: Suit;
   faceValue: FaceValue;
 
+  static from(data: any): Card {
+    return new Card(data.suit, data.faceValue)
+  }
+
   constructor(suit: Suit, faceValue: FaceValue) {
     this.suit = suit;
     this.faceValue = faceValue;

@@ -16,6 +16,25 @@ export class GameSnapshot {
   isInReverse: boolean;
   winner?: Player;
 
+  static from(data: any): GameSnapshot {
+    debugger;
+    const players = data.players.map((playerData: any) => Player.from(playerData))
+    const deck = Deck.from(data.deck)
+    const rawInPlayPile = data.inPlayPile;
+    const inPlayPile = rawInPlayPile ? rawInPlayPile.map((cardData: any) => Card.from(cardData)) : []
+    const currentPlayerIndex = data.currentPlayerIndex
+    const isInReverse = data.isInReverse
+    const winner = data.winner
+    return new GameSnapshot(
+      players,
+      deck,
+      inPlayPile,
+      currentPlayerIndex,
+      isInReverse,
+      winner,
+    )
+  }
+
   constructor(players: Array<Player>,
               deck: Deck,
               inPlayPile: Array<Card>,
@@ -235,6 +254,9 @@ export class GameBuilder {
 
 export class Deck {
   cards: Array<Card>
+  static from(data: any): Deck {
+    return new Deck(data.cards.map((cardData: any) => Card.from(cardData)));
+  }
   constructor(cards?: Array<Card>) {
     const deckBuilder = new DeckBuilder();
     this.cards = cards || deckBuilder.build();

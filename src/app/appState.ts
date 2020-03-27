@@ -19,6 +19,15 @@ export interface RemoteGameState {
   game?: GameSnapshot
 }
 
+export const copyRemoteGameState = (state: RemoteGameState) => {
+  return  {
+    players: Array.from(state.players),
+    gameId: state.gameId,
+    fbGameId: state.fbGameId,
+    game: state.game?.copy(),
+  }
+}
+
 export interface AppState {
   progress: AppProgress
   game?: RemoteGameState
@@ -31,28 +40,30 @@ export const gameController = new GameController();
 
 // in case special construction logic is needed
 export const makeInitialAppState = (): AppState => {
-  const players = [
-    "thomas",
-    "monic"
-  ]
-  const start = new GameBuilder().makeGame(players);
-  const game = gameController.deal(start);
-  // const start = new GameBuilder().makeAlmostFinshedGame(gameController);
-  // const game = start
-  const startedGame = {
-    progress: AppProgress.GameStarted,
-    game: {
-      gameId: "0247",
-      players: players,
-      fbGameId: undefined,
-      game: game
-    },
+  // const players = [
+  //   "thomas",
+  //   "monic"
+  // ]
+  // const start = new GameBuilder().makeGame(players);
+  // const game = gameController.deal(start);
+  // // const start = new GameBuilder().makeAlmostFinshedGame(gameController);
+  // // const game = start
+  // const startedGame = {
+  //   progress: AppProgress.GameStarted,
+  //   game: {
+  //     gameId: "0247",
+  //     players: players,
+  //     fbGameId: "-M3MS5UkhTtrhpUlhVli",
+  //     game: game
+  //   },
+  //   turn: new Turn(),
+  //   me: "thomas"
+  // }
+  // return startedGame;
+  return {
+    progress: AppProgress.Landing,
+    game: undefined,
     turn: new Turn(),
-    me: "thomas"
-  }
-  return startedGame;
-  // return {
-  //   progress: PairingProgress.Landing,
-  //   game: undefined,
-  // };
+    me: "",
+  };
 }

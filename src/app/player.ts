@@ -4,6 +4,15 @@ export class Player {
   name: string
   board: PlayerBoard
 
+  static from(data: any): Player {
+    const rawBoard = data.board;
+    var board
+    if (rawBoard) {
+      board = PlayerBoard.from(rawBoard);
+    }
+    return new Player(data.name, board);
+  }
+
   constructor(name: string,
               board?: PlayerBoard) {
     this.name = name;
@@ -46,7 +55,20 @@ export class PlayerBoard {
 
   hand: Array<Card>
   piles: Array<Array<Card>>
-
+  static from(data: any): PlayerBoard {
+    debugger;
+    const rawHand = data.hand;
+    var hand
+    if (rawHand) {
+      hand = rawHand.map((card: any) => Card.from(card))
+    }
+    const rawPiles = data.piles;
+    var piles
+    if (rawPiles) {
+      piles = rawPiles.map((pile: Array<any>) => pile.map(card => Card.from(card)))
+    }
+    return new PlayerBoard(hand, piles  )
+  }
   constructor(hand?: Array<Card>,
               piles?: Array<Array<Card>>) {
                 this.hand = hand || [];

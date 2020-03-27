@@ -61,6 +61,12 @@ export class PairingController {
     });
   }
 
+  writeGameState(
+    game: RemoteGameState
+  ) {
+    this.updateGame(game);
+  }
+
   // stop listening to updates from the game
   cancel() {
     const token = this.token as DisposeToken
@@ -79,10 +85,7 @@ export class PairingController {
   }
 
   private updateGame(newGame: RemoteGameState) {
-    fire.database().ref('games/' + newGame.fbGameId).set({
-      gameId: newGame.gameId,
-      players: newGame.players
-    })
+    fire.database().ref('games/' + newGame.fbGameId).set(replaceUndefined(newGame));
   }
 
   private getGame(gameId: string, completion: (result: Result<RemoteGameState, Error>) => void) {
@@ -109,12 +112,20 @@ export class PairingController {
     snapshot.forEach((child) => {
       const key = child.key as string;
       if (!key) out = err(new Error("failed to get key"));
+      const gameData = child.val().game
+      var game
+      if (gameData) {
+        game = GameSnapshot.from(gameData);
+      }
+      console.log("parsed", game, "from", gameData)
       out = ok({
         gameId: child.val().gameId,
         players: child.val().players,
+        game: game,
         fbGameId: key,
       })
     });
+    console.log("unpacking response", out);
     return out;
   }
 
@@ -128,4 +139,9 @@ export class PairingController {
       .equalTo(gameId)
       .limitToLast(1)
   }
+}
+
+const replaceUndefined = (item: any) => {
+   const str =  JSON.stringify(item, function (key, value) {return (value === undefined) ? null : value});
+   return JSON.parse(str);
 }
