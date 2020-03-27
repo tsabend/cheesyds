@@ -60,6 +60,13 @@ export const makeInitialAppState = (): AppState => {
   //   me: "thomas"
   // }
   // return startedGame;
+
+  // localStorage.setItem('reduxState', "")
+  const local = localStorage.getItem("reduxState")
+  if (local && local.length > 0) {
+    return JSON.parse(local)
+  }
+
   return {
     progress: AppProgress.Landing,
     game: undefined,

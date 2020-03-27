@@ -9,6 +9,12 @@ export const store = configureStore({
   middleware: [thunkMiddleware],
 });
 
+store.subscribe(()=> {
+  const stateString = JSON.stringify(store.getState().app)
+  console.log("SAVING STATE", store.getState(), stateString);
+  localStorage.setItem('reduxState', stateString);
+})
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
