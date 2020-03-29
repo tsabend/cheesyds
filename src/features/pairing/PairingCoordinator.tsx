@@ -25,6 +25,9 @@ import { useSelector, useDispatch } from "react-redux";
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
   createStyles({
+    pairingRoot: {
+      padding: theme.spacing(18, 2),
+    },
     center: {
       textAlign: "center",
     }
@@ -40,11 +43,11 @@ const PairingCoordinator = ({ classes }: PairingCoordinatorProps) => {
   const build = () => {
     switch (progress) {
       case AppProgress.Landing:
-        return <LandingView/>;
+        return <div className={classes.pairingRoot}><LandingView/></div>
       case AppProgress.Waiting:
-        return <WaitingView isOwner={true} />
+        return <div className={classes.pairingRoot}><WaitingView isOwner={true} /></div>
       case AppProgress.Joining:
-        return <WaitingView isOwner={false} />
+        return <div className={classes.pairingRoot}><WaitingView isOwner={false} /></div>
       case AppProgress.Loading:
         return <div style={{position: 'relative'}}>
         <CircularProgress className={classes.center} />

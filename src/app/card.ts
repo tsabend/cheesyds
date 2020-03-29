@@ -15,6 +15,10 @@ export class Card {
     return this.suit + this.faceValue;
   }
 
+  svgName(): string {
+    return this.shortFaceName() + this.shortSuitName()
+  }
+
   className(): string {
     return this.suitClassName() + "_" + this.faceClassName();
   }
@@ -38,6 +42,20 @@ export class Card {
       case FaceValue.Queen: return "queen";
       case FaceValue.King: return "king";
       case FaceValue.Ace: return "ace";
+    }
+  }
+
+  shortSuitName(): string {
+    return this.suit.charAt(0);
+  }
+
+  shortFaceName(): string {
+    switch (this.faceValue) {
+      case FaceValue.Jack: return "J";
+      case FaceValue.Queen: return "Q";
+      case FaceValue.King: return "K";
+      case FaceValue.Ace: return "A";
+      default: return this.faceValue + "";
     }
   }
 }

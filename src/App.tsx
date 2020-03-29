@@ -50,11 +50,9 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
 createStyles({
   root: {
     flexGrow: 1,
-    padding: theme.spacing(3, 2),
- height: 600,
- display: "flex",
- flexDirection: "column",
- justifyContent: "center"
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center"
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -149,7 +147,7 @@ const App = ({ classes }: AppProps) => {
     <PairingCoordinator />
     </div>
     </div>
-    
+
     </MuiThemeProvider>
   );
 }

@@ -19,11 +19,33 @@ import {
   StyleRules,
   createStyles,
   WithStyles,
-  CircularProgress
+  CircularProgress,
+  Box
 } from "@material-ui/core";
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
   createStyles({
+    faceDown: {
+      marginTop: "-8px",
+      marginLeft: "-8px",
+      position: 'absolute',
+    },
+    faceUp: {
+      position: 'absolute',
+    },
+    stackContainer: {
+      position: 'relative',
+      height: '100px',
+      width: '60px',
+      padding: '8px 44px',
+      display: 'table-cell',
+    },
+    container: {
+      width: '312px',
+      margin: '0 auto',
+      position: 'relative',
+    },
+
   });
 
 type PilesViewProps = {
@@ -34,27 +56,44 @@ type PilesViewProps = {
 const PilesView = ({ piles, isEnabled, classes }: PilesViewProps) => {
 
   return (
-    <Grid container alignItems="center" justify="center" spacing={1}>
-    <Grid item xs={12}>
-    <p>Piles:</p>
-    </Grid>
-    {
-      piles.map(pile => {
+    <Box className={classes.container}>
+    {piles.map(pile => {
+      const width = 60;
         const length = pile.length;
-        if (length === 0) {
+        switch (length) {
+        case 1:
+        return <CardView
+        card={pile[0]}
+        key={pile[0].index()}
+        isEnabled={isEnabled}
+        width={width}
+        />
+        case 2:
+        return <Box className={classes.stackContainer}>
+        <div className={classes.faceDown}>
+        <CardView
+        card={pile[0]}
+        key={pile[0].index()}
+        isEnabled={isEnabled}
+        width={width}
+        isFaceDown={true}
+        />
+        </div>
+        <div className={classes.faceUp}>
+        <CardView
+        card={pile[1]}
+        key={pile[1].index()}
+        isEnabled={isEnabled}
+        width={width}
+        />
+        </div>
+        </Box>
+        default:
           return "";
         }
-        const card = length === 1 ? pile[0] : pile[1];
-        return <Grid item>
-        <CardView
-        card={card}
-         key={card.index()}
-         isEnabled={isEnabled}
-         />
-        </Grid>
     })
     }
-    </Grid>
+    </Box>
   );
 };
 

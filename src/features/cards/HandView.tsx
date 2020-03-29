@@ -35,7 +35,6 @@ const HandView = ({ hand, classes }: HandViewProps) => {
   return (
     <Grid container alignItems="center" justify="center" spacing={1}>
     <Grid item xs={12}>
-    <Typography>Hand:</Typography>
     </Grid>
     {
       hand.map(card => {

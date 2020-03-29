@@ -25,7 +25,8 @@ import {
   List,
   ListItem,
   GridList,
-  GridListTile
+  GridListTile,
+  Box
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -39,16 +40,48 @@ import {
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
   createStyles({
+    root: {
+      backgroundColor: "green",
+      width: "100%",
+      color: "#fff"
+    },
+    button: {
+      margin: "16px",
+    },
     emptyPile: {
-        width: "73px",
-        height: "97px",
-        border: "2px black solid",
-        margin: "auto",
+      width: "100px",
+      height: "133px",
+      border: "2px black solid",
+      margin: "auto",
+    },
+    mainTitle: {
+      color: "#fff",
+    },
+    upNextListRoot: {
+      marginTop:"32px",
+      verticalAlign: "bottom",
+      overflowY: "hidden",
     },
     upNextList: {
+      color: "black",
+      overflowY: "hidden",
+      paddingBottom: "100px",
       flexWrap: 'nowrap',
       transform: 'translateZ(0)',
-    }
+    },
+    upNextListItem: {
+      margin: "0px 32px",
+      backgroundColor: "lightGray",
+      border: "1px black solid",
+    },
+    upNowListItem: {
+      margin: "0px 32px",
+      backgroundColor: "green",
+      border: "1px black solid",
+    },
+    gamePiles: {
+      margin: "0px 0px 64px 0px",
+    },
   });
 
 type PlayingGameViewProps = {
@@ -63,9 +96,7 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
   const myName = useSelector(selectMe);
   const me = game.players.find(player => player.name === myName);
   const player = game.currentPlayer();
-  const itIsMyTurn = () => {
-    return player === me;
-  }
+  const itIsMyTurn = player === me;
 
   const inPlayPile = () => {
     const card = game.topOfInPlayPile()
@@ -85,20 +116,53 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
       </Typography>
       </div>
       </div>
-
-
     }
+  }
+
+  const drawPile = () => {
+    const card = game.deck.cards[0];
+    if (card) {
+      return <div>
+      <CardView card={card}
+      isEnabled={false}
+      isFaceDown={true}
+      />
+      </div>
+    }
+    else {
+      return <div>
+      <div className={classes.emptyPile}>
+      <Typography>
+      No Cards Left
+      </Typography>
+      </div>
+      </div>
+    }
+  }
+
+  const gamePiles = () => {
+    return <Box className={classes.gamePiles}><Grid container alignItems="center" justify="center" spacing={0}>
+    <Grid item xs={1}>
+    {drawPile()}
+    </Grid>
+    <Grid item xs={1}>
+    {inPlayPile()}
+    </Grid>
+    </Grid>
+    </Box>
   }
 
   const buildMyBoard = () => {
     if (me) {
       return <React.Fragment>
-      <HandView hand={me.board.hand} />
       <PilesView piles={me.board.piles} isEnabled={me.isEliminatingPiles()} />
-      {itIsMyTurn() &&
+      <HandView hand={me.board.hand} />
+      {itIsMyTurn &&
         <React.Fragment>
         <Button
         className={classes.button}
+        color={'primary'}
+        variant={'contained'}
         aria-label="Submit turn"
         onClick={ () => remoteGame && dispatch(submitCards(turn.cardsToSubmit, remoteGame)) }
         >
@@ -106,6 +170,8 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
         </Button>
         <Button
         className={classes.button}
+        color={'primary'}
+        variant={'contained'}
         aria-label="Forfeit turn"
         onClick={ () => remoteGame && dispatch(pickUpCards(remoteGame)) }
         >
@@ -119,26 +185,35 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
   }
 
   const buildUpNextView = () => {
-    const upcoming = game.upcomingPlayers().map(player => {
-      return <GridListTile>
-      <Typography>{player.name} - {player.numberOfCards()} cards in hand</Typography>
-      <PilesView piles={player.board.piles} isEnabled={false} />
+    const cols = 4.7 // todo - make this dynamic on resize
+    return <div className={classes.upNextListRoot}>
+    <p><Typography className={classes.mainTitle} variant="h5">UP NEXT</Typography></p>
+    <GridList className={classes.upNextList} cellHeight={"auto"} cols={cols} spacing={0}>
+    {game.upcomingPlayers().map((player, index) => {
+      return <GridListTile className={classes.upNextListItem} cols={1}>
+      children={<div >
+      <Typography variant="h6">{player.name}</Typography>
+      <Typography>{player.numberOfCards()} cards in hand</Typography>
+      <Typography>piles:</Typography>
+      <PilesView piles={player.board.piles} isEnabled={false} /></div>
+    }
       </GridListTile>
-    });
-    return <GridList className={classes.upNextList} cols={6}>
-    {upcoming}
+    })}
     </GridList>
+    </div>
   }
 
   return (
-    <React.Fragment>
-    {buildUpNextView()}
-    <p>{player.name}'s Turn</p>
-    {inPlayPile()}
+    <Box className={classes.root}>
+    <p><Typography className={classes.mainTitle} variant="h5">
+    {itIsMyTurn ? "YOUR TURN" : "NOW PLAYING: " + player.name}
+    </Typography></p>
+    {gamePiles()}
     <div>
     {buildMyBoard()}
     </div>
-    </React.Fragment>
+    {buildUpNextView()}
+    </Box>
   );
 };
 
