@@ -34,7 +34,10 @@ type PilesViewProps = {
 const PilesView = ({ piles, isEnabled, classes }: PilesViewProps) => {
 
   return (
-    <React.Fragment>
+    <Grid container alignItems="center" justify="center" spacing={1}>
+    <Grid item xs={12}>
+    <p>Piles:</p>
+    </Grid>
     {
       piles.map(pile => {
         const length = pile.length;
@@ -51,7 +54,7 @@ const PilesView = ({ piles, isEnabled, classes }: PilesViewProps) => {
         </Grid>
     })
     }
-    </React.Fragment>
+    </Grid>
   );
 };
 

@@ -42,6 +42,7 @@ export const slice = createSlice({
       state.progress = AppProgress.GameStarted;
     },
     restart: (state) => {
+      console.log("restarting game")
       state.progress = AppProgress.Landing;
     },
     // Game play logic
@@ -78,6 +79,9 @@ export const joinGameAsync = (gameId: string, playerName: string): AppThunk => (
       }
       dispatch(updateGameState(game));
     }
+    else {
+      dispatch(restart());
+    }
   });
 };
 
@@ -91,6 +95,9 @@ export const startPairingAsync = (playerName: string): AppThunk => (dispatch) =>
         dispatch(finishPairing(playerName));
       }
       dispatch(updateGameState(result._unsafeUnwrap()));
+    }
+    else {
+      console.log("ERR", result._unsafeUnwrapErr());
     }
   });
 };

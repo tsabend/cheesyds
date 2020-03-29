@@ -25,8 +25,6 @@ import { useSelector, useDispatch } from "react-redux";
 const styles: (theme: Theme) => StyleRules<string> = theme =>
 createStyles({
     ace_clubs: {
-     width: "71px",
-     height: "97px",
      background: "url(http://dobsondev.com/wp-content/uploads/2015/04/windows-playing-cards.png) -2px -1px",
    },
     two_clubs: {
@@ -289,36 +287,20 @@ createStyles({
       fontFamily: "'Courier New', Courier, monospace"
     },
     button: {
-      border: "1px black solid"
+      padding: "0px",
+    },
+    card: {
+      width: "72px",
+      height: "97px",
+      border: "1px black solid",
+      boxShadow: "inset 0px 0px 0px 1px black",
+      boxSizing: "border-box",
     },
     selected: {
-      border: "1px red solid"
+      boxShadow: "inset 0px 0px 0px 1px red",
+      border: "2px red solid"
     },
-    faceValue: {
-      color: "rgb(112, 76, 182)",
-      appearance: "none",
-      background: "none",
-      fontSize: "calc(16px + 2vmin)",
-      paddingLeft: "12px",
-      paddingRight: "12px",
-      paddingBottom: "4px",
-      cursor: "pointer",
-      backgroundColor: "rgba(112, 76, 182, 0.1)",
-      borderRadius: "2px",
-      transition: "all 0.15s",
-      outline: "none",
-      border: "2px solid transparent",
-      textTransform: "none",
-      "&:hover": {
-        border: "2px solid rgba(112, 76, 182, 0.4)"
-      },
-      "&:focus": {
-        border: "2px solid rgba(112, 76, 182, 0.4)"
-      },
-      "&:active": {
-        backgroundColor: "rgba(112, 76, 182, 0.2)"
-      }
-    },
+
   });
 
 type CardViewProps = {
@@ -341,7 +323,7 @@ const CardView = ({ card, isEnabled, classes }: CardViewProps) => {
        }
      }
      >
-     <div className={classes[card.className()]}></div>
+     <div className={[classes.card, classes[card.className()]].join(" ")}></div>
     </Button>
     </React.Fragment>
   );

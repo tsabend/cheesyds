@@ -37,7 +37,7 @@ const LandingView = ({ classes }: LandingViewProps) => {
   const [gameCode, setGameCode] = useState("");
 
   const isJoining = gameCode.length > 0
-  const buttonText = isJoining ? "Join Game" : "Start Game"
+  const buttonText = isJoining ? "Join Game" : "Start a New Game"
   return (
     <Grid container alignItems="center" justify="center">
       {/* Name input*/}

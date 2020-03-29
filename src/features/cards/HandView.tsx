@@ -33,7 +33,10 @@ type HandViewProps = {
 const HandView = ({ hand, classes }: HandViewProps) => {
 
   return (
-    <React.Fragment>
+    <Grid container alignItems="center" justify="center" spacing={1}>
+    <Grid item xs={12}>
+    <Typography>Hand:</Typography>
+    </Grid>
     {
       hand.map(card => {
         return <Grid item>
@@ -45,7 +48,7 @@ const HandView = ({ hand, classes }: HandViewProps) => {
         </Grid>
       })
     }
-    </React.Fragment>
+    </Grid>
   );
 };
 

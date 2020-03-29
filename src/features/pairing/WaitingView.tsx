@@ -61,7 +61,13 @@ const WaitingView = ({ classes, isOwner }: WaitingViewProps) => {
 
   return (
     <Grid container alignItems="center" justify="center" spacing={4}>
-      <Grid item>
+      <Grid item xs={12}>
+      <FormControl>
+      <Typography>Invite Friends by Sharing This Code</Typography>
+      <Typography>{gameId}</Typography>
+      </FormControl>
+      </Grid>
+      <Grid item xs={12}>
         <FormControl>
           <Typography>Players In Game:</Typography>
           {playerList()}
@@ -72,12 +78,6 @@ const WaitingView = ({ classes, isOwner }: WaitingViewProps) => {
           }>
           Cancel
           </Button>
-        </FormControl>
-      </Grid>
-      <Grid item>
-        <FormControl>
-          <Typography>Invite Friends by Sharing This Code</Typography>
-          <Typography>{gameId}</Typography>
         </FormControl>
       </Grid>
     </Grid>

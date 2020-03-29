@@ -47,7 +47,11 @@ export class Player {
   }
 
   isEliminatingPiles(): boolean {
-    return this.board.hand.length === 0;
+    return this.numberOfCards() === 0;
+  }
+
+  numberOfCards(): number {
+    return this.board.hand.length;
   }
 }
 

@@ -21,7 +21,11 @@ import {
   StyleRules,
   createStyles,
   WithStyles,
-  CircularProgress
+  CircularProgress,
+  List,
+  ListItem,
+  GridList,
+  GridListTile
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -35,6 +39,16 @@ import {
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
   createStyles({
+    emptyPile: {
+        width: "73px",
+        height: "97px",
+        border: "2px black solid",
+        margin: "auto",
+    },
+    upNextList: {
+      flexWrap: 'nowrap',
+      transform: 'translateZ(0)',
+    }
   });
 
 type PlayingGameViewProps = {
@@ -64,21 +78,23 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
       </div>
     }
     else {
-      return <div><Typography>No cards in play</Typography></div>;
+      return <div>
+      <div className={classes.emptyPile}>
+      <Typography>
+      Cards in Play
+      </Typography>
+      </div>
+      </div>
+
+
     }
   }
 
   const buildMyBoard = () => {
     if (me) {
       return <React.Fragment>
-      <Grid container alignItems="center" justify="center" spacing={3}>
-      <p>Hand:</p>
       <HandView hand={me.board.hand} />
-      </Grid>
-      <Grid container alignItems="center" justify="center" spacing={3}>
-      <p>Board:</p>
       <PilesView piles={me.board.piles} isEnabled={me.isEliminatingPiles()} />
-      </Grid>
       {itIsMyTurn() &&
         <React.Fragment>
         <Button
@@ -104,27 +120,24 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
 
   const buildUpNextView = () => {
     const upcoming = game.upcomingPlayers().map(player => {
-      return <React.Fragment>
-      <Grid container alignItems="center" justify="center" spacing={3}>
-      <Typography>{player.name}</Typography>
+      return <GridListTile>
+      <Typography>{player.name} - {player.numberOfCards()} cards in hand</Typography>
       <PilesView piles={player.board.piles} isEnabled={false} />
-      </Grid>
-      </React.Fragment>
+      </GridListTile>
     });
-    return <React.Fragment>
-    <p>Playing Next</p>
+    return <GridList className={classes.upNextList} cols={6}>
     {upcoming}
-    </React.Fragment>
+    </GridList>
   }
 
   return (
     <React.Fragment>
+    {buildUpNextView()}
     <p>{player.name}'s Turn</p>
     {inPlayPile()}
     <div>
     {buildMyBoard()}
     </div>
-    {buildUpNextView()}
     </React.Fragment>
   );
 };

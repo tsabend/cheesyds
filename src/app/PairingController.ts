@@ -48,7 +48,10 @@ export class PairingController {
     observer: (result: Result<RemoteGameState, Error>) => void,
   ) {
     this.getGame(gameId, (result) => {
-      // todo handle error
+      if (result.isErr()) {
+        observer(result);
+        return;
+      }
       result.map((value) => {
         const newGame = {
           gameId,
