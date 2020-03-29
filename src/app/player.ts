@@ -1,8 +1,9 @@
 import { Card } from "./card";
-import { Deck } from "./game";
+import { Deck } from "./deck";
 export class Player {
   name: string;
   board: PlayerBoard;
+  isComputer = false
 
   static from(data: any): Player {
     const rawBoard = data.board;

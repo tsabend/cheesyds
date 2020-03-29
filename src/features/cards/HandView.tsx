@@ -9,10 +9,7 @@ import {
   FaceValue,
   Card
 } from "../../app/card"
-import {
-  GameSnapshot,
-  GameBuilder
-} from "../../app/game"
+
 import {
   withStyles,
   Theme,

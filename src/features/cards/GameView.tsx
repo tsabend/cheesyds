@@ -17,9 +17,7 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   selectGameSnapshot,
 } from "../../app/appSlice";
-import {
-  GameSnapshot
-} from "../../app/game"
+import GameSnapshot from "../../app/GameSnapshot"
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
   createStyles({

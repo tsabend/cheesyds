@@ -8,9 +8,7 @@ import {
 import { Player } from "./player";
 import { Turn } from "./turn";
 
-import {
-  GameSnapshot,
-} from "./game";
+import GameSnapshot from "./GameSnapshot"
 
 export class GameController {
   deal(snapshot: GameSnapshot): GameSnapshot {

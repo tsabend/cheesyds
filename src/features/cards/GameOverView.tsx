@@ -12,9 +12,7 @@ import {
   WithStyles,
   CircularProgress
 } from "@material-ui/core";
-import {
-  GameSnapshot
-} from "../../app/game"
+import GameSnapshot from "../../app/GameSnapshot"
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectGameSnapshot,

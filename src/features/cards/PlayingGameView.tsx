@@ -12,9 +12,7 @@ import {
   FaceValue,
   Card
 } from "../../app/card"
-import {
-  GameSnapshot
-} from "../../app/game"
+import GameSnapshot from "../../app/GameSnapshot"
 import {
   withStyles,
   Theme,
