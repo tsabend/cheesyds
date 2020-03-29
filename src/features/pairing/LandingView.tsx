@@ -35,45 +35,45 @@ const LandingView = ({ classes }: LandingViewProps) => {
   const dispatch = useDispatch();
   const [playerName, setPlayerName] = useState("");
   const [gameCode, setGameCode] = useState("");
+
+  const isJoining = gameCode.length > 0
+  const buttonText = isJoining ? "Join Game" : "Start Game"
   return (
-    <Grid container alignItems="center" justify="center" spacing={4}>
+    <Grid container alignItems="center" justify="center">
       {/* Name input*/}
-      <Grid item>
+      <Grid item xs={12}>
         <FormControl>
-          <InputLabel htmlFor="player-name">Name</InputLabel>
           <Input id="player-name" aria-describedby="player-name-helper-text"
           onChange={e => setPlayerName(e.target.value)}
           />
           <FormHelperText id="player-name-helper-text">Enter your player name</FormHelperText>
         </FormControl>
       </Grid>
+      {/* Join form */}
+      <Grid item xs={12}>
+      <FormControl>
+      <InputLabel htmlFor="landing-code-input">Optional</InputLabel>
+      <Input id="landing-code-input" aria-describedby="landing-code-helper-text"
+      onChange={e => setGameCode(e.target.value)}
+      />
+      <FormHelperText id="landing-code-helper-text">Enter code above</FormHelperText>
+      </FormControl>
+      </Grid>
       {/* Start button */}
-      <Grid item>
-        <Typography>Get that D!</Typography>
+      <Grid item xs={12}>
         <Button
          type="submit"
          disabled={playerName.length === 0}
-         onClick={() => dispatch(startPairingAsync(playerName))}>
-        Start New Game
-        </Button>
-      </Grid>
-      {/* Join form */}
-      <Grid item>
-        <FormControl>
-          <InputLabel htmlFor="landing-code-input">Game Code</InputLabel>
-          <Input id="landing-code-input" aria-describedby="landing-code-helper-text"
-          onChange={e => setGameCode(e.target.value)}
-          />
-          <FormHelperText id="landing-code-helper-text">Enter code above</FormHelperText>
-          <Button
-           type="submit"
-           disabled={playerName.length === 0 || gameCode.length === 0}
-           onClick={ () => {
+         onClick={() => {
+           if (isJoining) {
              dispatch(joinGameAsync(gameCode, playerName));
-           }}>
-            Join Existing Game
-            </Button>
-        </FormControl>
+           }
+           else {
+             dispatch(startPairingAsync(playerName))
+           }
+         }}>
+        {buttonText}
+        </Button>
       </Grid>
     </Grid>
   );

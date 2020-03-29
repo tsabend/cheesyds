@@ -25,6 +25,9 @@ import { useSelector, useDispatch } from "react-redux";
 
 const styles: (theme: Theme) => StyleRules<string> = theme =>
   createStyles({
+    center: {
+      textAlign: "center",
+    }
   });
 
 type PairingCoordinatorProps = {
@@ -43,7 +46,9 @@ const PairingCoordinator = ({ classes }: PairingCoordinatorProps) => {
       case AppProgress.Joining:
         return <WaitingView isOwner={false} />
       case AppProgress.Loading:
-        return "Loading...";
+        return <div style={{position: 'relative'}}>
+        <CircularProgress className={classes.center} />
+        </div>;
       case AppProgress.GameStarted:
         return <GameView />
     }
