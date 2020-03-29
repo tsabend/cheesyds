@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import clsx from 'clsx';
 import logo from "./logo.svg";
 import GameView from "./features/cards/GameView";
 import PairingCoordinator from "./features/pairing/PairingCoordinator";
 import { fire } from './app/fire';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import AssignmentIcon from '@material-ui/icons/Assignment';
+import Drawer from '@material-ui/core/Drawer';
+
 import {
   createMuiTheme,
   withStyles,
@@ -14,6 +25,12 @@ import {
 import {
   MuiThemeProvider,
   CssBaseline,
+  ListItem,
+  ListItemText,
+  List,
+  ListItemIcon,
+  Divider,
+
 } from "@material-ui/core";
 import purple from "@material-ui/core/colors/purple";
 
@@ -32,7 +49,18 @@ const theme = createMuiTheme({
 const styles: (theme: Theme) => StyleRules<string> = theme =>
 createStyles({
   root: {
-
+    flexGrow: 1,
+    padding: theme.spacing(3, 2),
+ height: 600,
+ display: "flex",
+ flexDirection: "column",
+ justifyContent: "center"
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
   },
   app: {
     textAlign: "center"
@@ -52,122 +80,78 @@ createStyles({
     justifyContent: "center",
     fontSize: "calc(10px + 2vmin)"
   },
+  toolbar: theme.mixins.toolbar,
   appLink: {
     color: "rgb(112, 76, 182)"
-  }
+  },
+  list: {
+    width: 250,
+  },
 });
 
 type AppProps = {} & WithStyles<typeof styles>;
 
 const App = ({ classes }: AppProps) => {
-  const [messages, setMessages] = useState(Array<any>())
+  const dispatch = useDispatch();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const toggleDrawer = (open: boolean) => (event: any) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    console.log("setting drawer open=", open);
+    setIsDrawerOpen(open);
+  };
 
-  useEffect(() => {
-    console.log("USE EFFECT CALLED")
-    /* Create reference to messages in Firebase Database */
-    let messagesRef = fire.database().ref('messages').orderByKey().limitToLast(100);
-    messagesRef.on('child_added', snapshot => {
-        /* Update React state when message is added at Firebase Database */
-        let message = { text: snapshot.val(), id: snapshot.key };
-        setMessages([message].concat(messages));
-      })
-    }, []);
-   const addMessage = (e: any) => {
-     e.preventDefault(); // <- prevent form submit from reloading the page
-     /* Send the message to Firebase */
-     const m = e.target.elements[0].value
-     fire.database().ref('messages').push( m );
-     e.target.elements[0].value = ''; // <- clear the input
-   }
+  const drawer = () => (
+      <div
+        className={classes.list}
+        role="presentation"
+        onClick={toggleDrawer(false)}
+        onKeyDown={toggleDrawer(false)}
+      >
+      <div className={classes.toolbar} />
+        <List>
+          <Divider />
+          {['Rules'].map((text, index) => (
+            <ListItem button key={text}>
+              <ListItemIcon>{<AssignmentIcon />}</ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItem>
+          ))}
+        </List>
+      </div>
+    );
+
 
   return (
     <MuiThemeProvider theme={theme}>
     <CssBaseline />
     <div className={classes.app}>
-    <header className={classes.appHeader}>
-    <p>CheesyD</p>
-    <PairingCoordinator />
-    </header>
-    </div>
-    <React.Fragment>
-    <form onSubmit={(e) => {
-        addMessage(e);
-      }
-    }>
+    <AppBar position="static">
+      <Drawer anchor={"left"} open={isDrawerOpen} onClose={toggleDrawer(false)}>
+        {drawer()}
+      </Drawer>
+      <Toolbar>
+        <IconButton
+          edge="start"
+          className={classes.menuButton}
+          color="inherit"
+          aria-label="menu"
+          onClick={() => { dispatch(toggleDrawer(true)); }}
+          >
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" className={classes.title}>CheesyD</Typography>
 
-    <input type="text" />
-    <input type="submit"/>
-    <ul>
-    { /* Render the list of messages */
-      messages.map( message => <li key={message.id}>{message.text}</li> )
-    }
-    </ul>
-    </form>
-    </React.Fragment>
+      </Toolbar>
+    </AppBar>
+    <div className={classes.root}>
+    <PairingCoordinator />
+    </div>
+    </div>
+    
     </MuiThemeProvider>
   );
 }
 
 export default withStyles(styles)(App);
-
-// const App = ({ classes }: AppProps) => (
-//   <MuiThemeProvider theme={theme}>
-//     <CssBaseline />
-//     <div className={classes.app}>
-//       <header className={classes.appHeader}>
-//         <img src={logo} className={classes.appLogo} alt="logo" />
-//         <Counter />
-//         <p>
-//           Edit <code>src/App.tsx</code> and save to reload.
-//         </p>
-//         <span>
-//           <span>Learn </span>
-//           <a
-//             className={classes.appLink}
-//             href="https://reactjs.org/"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             React
-//           </a>
-//           <span>, </span>
-//           <a
-//             className={classes.appLink}
-//             href="https://redux.js.org/"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             Redux
-//           </a>
-//           <span>, </span>
-//           <a
-//             className={classes.appLink}
-//             href="https://redux-toolkit.js.org/"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             Redux Toolkit
-//           </a>
-//           <span>, </span>
-//           <a
-//             className={classes.appLink}
-//             href="https://react-redux.js.org/"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             React Redux
-//           </a>
-//           <span>, and </span>
-//           <a
-//             className={classes.appLink}
-//             href="https://material-ui.com/"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             Material-UI
-//           </a>
-//         </span>
-//       </header>
-//     </div>
-//   </MuiThemeProvider>
-// );

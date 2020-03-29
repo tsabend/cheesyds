@@ -61,7 +61,7 @@ export const makeInitialAppState = (): AppState => {
   // }
   // return startedGame;
 
-  // localStorage.setItem('reduxState', "")
+  localStorage.setItem('reduxState', "")
   const local = localStorage.getItem("reduxState")
   if (local && local.length > 0) {
     return JSON.parse(local)
