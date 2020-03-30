@@ -1,4 +1,4 @@
-import { Card, Suit, FaceValue } from "./card"
+import { Card, FaceValue, Suit } from "./card";
 
 export class Deck {
   cards: Card[];

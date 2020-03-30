@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { v4 as generateUUID } from "uuid";
 import { RemoteGameState } from "./appState";
 import { FBApp, fire } from "./fire";
-import GameSnapshot from "./GameSnapshot"
+import GameSnapshot from "./GameSnapshot";
 import { AppThunk, RootState } from "./store";
 
 /// Token to dispose of observable

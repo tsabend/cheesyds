@@ -1,7 +1,7 @@
 import { FBApp, fire } from "./fire";
 import { GameBuilder } from "./game";
-import GameSnapshot from "./GameSnapshot"
 import { GameController } from "./GameController";
+import GameSnapshot from "./GameSnapshot";
 import { PairingController } from "./PairingController";
 import { Turn } from "./turn";
 
@@ -62,10 +62,10 @@ export const makeInitialAppState = (): AppState => {
   // }
   // return startedGame;
 
-  localStorage.setItem('reduxState', "")
-  const local = localStorage.getItem("reduxState")
+  localStorage.setItem("reduxState", "");
+  const local = localStorage.getItem("reduxState");
   if (local && local.length > 0) {
-    return JSON.parse(local)
+    return JSON.parse(local);
   }
 
   return {

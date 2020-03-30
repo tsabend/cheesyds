@@ -16,11 +16,11 @@ export class Card {
   }
 
   userFacingName(): string {
-    return "the " + this.faceName() + " of " + this.suit
+    return "the " + this.faceName() + " of " + this.suit;
   }
 
   svgName(): string {
-    return this.shortFaceName() + this.shortSuitName()
+    return this.shortFaceName() + this.shortSuitName();
   }
 
   faceName(): string {

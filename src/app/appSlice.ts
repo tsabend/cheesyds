@@ -12,8 +12,8 @@ import {
   RemoteGameState,
 } from "./appState";
 import { Card } from "./card";
-import GameSnapshot from "./GameSnapshot"
 import { GameBuilder } from "./game";
+import GameSnapshot from "./GameSnapshot";
 import { AppThunk, RootState } from "./store";
 import { Turn } from "./turn";
 
@@ -51,7 +51,7 @@ export const slice = createSlice({
       state.turn = new Turn();
     },
     restart: (state) => {
-      console.log("restarting game")
+      console.log("restarting game");
       state.progress = AppProgress.Landing;
     },
     // Game play logic
@@ -124,8 +124,8 @@ export const startGameAsync = (state: RemoteGameState): AppThunk => (dispatch) =
 
 export const startGameVsCPU = (state?: RemoteGameState): AppThunk => (dispatch) => {
   dispatch(startLoading());
-  const punishments = state?.game?.punishments || []
-  var newState: RemoteGameState = {
+  const punishments = state?.game?.punishments || [];
+  let newState: RemoteGameState = {
     players: ["Human"],
     gameId: "1234",
   };
@@ -138,7 +138,7 @@ export const startGameVsCPU = (state?: RemoteGameState): AppThunk => (dispatch) 
   dispatch(updateGameState(newState));
   // auto start game
   dispatch(pickUpCards(newState));
-}
+};
 
 export const cancelGame = (): AppThunk => (dispatch) => {
   pairingController.cancel();
@@ -147,7 +147,7 @@ export const cancelGame = (): AppThunk => (dispatch) => {
 
 export const submitCards = (cards: Card[], state: RemoteGameState): AppThunk => (dispatch) => {
   const game = state.game as GameSnapshot;
-  if (!game) return
+  if (!game) return;
   let newState = copyRemoteGameState(state);
   newState.game = gameController.submit(cards, game);
   console.log(newState.game.lastTurnSummary || "first turn");
@@ -156,7 +156,7 @@ export const submitCards = (cards: Card[], state: RemoteGameState): AppThunk => 
 
 export const pickUpCards = (state: RemoteGameState): AppThunk => (dispatch) => {
   const game = state.game as GameSnapshot;
-  if (!game) return
+  if (!game) return;
   let newState = copyRemoteGameState(state);
   newState.game = gameController.pickUp(game);
   dispatch(writeState(newState));
@@ -164,18 +164,18 @@ export const pickUpCards = (state: RemoteGameState): AppThunk => (dispatch) => {
 
 export const savePunishment = (punishment: string, state: RemoteGameState): AppThunk => (dispatch) => {
   const game = state.game as GameSnapshot;
-  if (!game) return
+  if (!game) return;
   let newState = copyRemoteGameState(state);
   const finalPunishment = "" + (game.winner?.name || "") + " has punished " + (game.loser()?.name || "") + ": " + punishment;
   newState.game?.punishments.push(finalPunishment);
   dispatch(writeState(newState));
-}
+};
 
 export const playAgain = (state: RemoteGameState): AppThunk => (dispatch) => {
   // TODO...
   dispatch(clearGameState());
   dispatch(startGameVsCPU(state));
-}
+};
 
 const writeState = (state: RemoteGameState): AppThunk => (dispatch) => {
   // it's a multiplayer game
@@ -186,7 +186,7 @@ const writeState = (state: RemoteGameState): AppThunk => (dispatch) => {
   else {
     dispatch(updateStateAndRunComputersTurn(state));
   }
-}
+};
 
 const updateStateAndRunComputersTurn  = (state: RemoteGameState): AppThunk => (dispatch) => {
   // update local state
@@ -206,7 +206,7 @@ const updateStateAndRunComputersTurn  = (state: RemoteGameState): AppThunk => (d
       doAsync(() => dispatch(pickUpCards(state)));
     }
   }
-}
+};
 
 const doAsync = (callback: () => void) => {
   setTimeout(() => {
@@ -214,7 +214,7 @@ const doAsync = (callback: () => void) => {
   },
   250);
   //0.000001);
-}
+};
 
 // Actions
 
@@ -238,7 +238,7 @@ export const selectRemoteGame = (state: RootState) => state.app.game;
 export const selectRemoteGameId = (state: RootState) => state.app.game?.gameId || "";
 export const selectGameSnapshot = (state: RootState) => state.app.game?.game || new GameBuilder().makeFakeGame(); // FIXME
 export const selectMe = (state: RootState) => state.app.me;
-export const selectMyPlayer = (state: RootState) => state.app.game?.game?.players?.find(player => player.name === state.app.me);
+export const selectMyPlayer = (state: RootState) => state.app.game?.game?.players?.find((player) => player.name === state.app.me);
 export const selectLastTurnSummary = (state: RootState) => state.app.game?.game?.lastTurnSummary;
 export const selectTurn = (state: RootState) => state.app.turn;
 

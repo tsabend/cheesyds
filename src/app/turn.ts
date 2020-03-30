@@ -3,7 +3,7 @@ import {
    Card,
    FaceValue,
 } from "./card";
-import { Player } from "./player"
+import { Player } from "./player";
 
 export class Turn {
   currentFaceValue: FaceValue;
@@ -21,26 +21,26 @@ export class Turn {
     if (player.board.hand.length === 0) {
       const topOfPile = player.board.piles
       .filter((pile) => pile.length === 2)
-      .map((pile) => pile[1])
-      const sampleTopOfPile = sample(topOfPile)
+      .map((pile) => pile[1]);
+      const sampleTopOfPile = sample(topOfPile);
       if (sampleTopOfPile) {
-        return topOfPile.filter(card => card.faceValue === sampleTopOfPile.faceValue);
+        return topOfPile.filter((card) => card.faceValue === sampleTopOfPile.faceValue);
       }
       else {
         const bottomOfPile = player.board.piles
         .filter((pile) => pile.length === 1)
-        .map((pile) => pile[0])
-        const sampleBottomOfPile = sample(bottomOfPile)
+        .map((pile) => pile[0]);
+        const sampleBottomOfPile = sample(bottomOfPile);
         if (sampleBottomOfPile) {
-          return bottomOfPile.filter(card => card.faceValue === sampleBottomOfPile.faceValue);
+          return bottomOfPile.filter((card) => card.faceValue === sampleBottomOfPile.faceValue);
         }
       }
       return [];
     }
-    const validCards = player.board.hand.filter(card => this.isValidSelection(card));
+    const validCards = player.board.hand.filter((card) => this.isValidSelection(card));
     const sampleCard = sample(validCards);
     if (!sampleCard) return [];
-    return validCards.filter(card => card.faceValue === sampleCard.faceValue);
+    return validCards.filter((card) => card.faceValue === sampleCard.faceValue);
   }
 
   selectCard(card: Card): Turn {
@@ -70,8 +70,8 @@ export class Turn {
 }
 
 const shuffle = function<T>(array: T[]): T[] {
-	var currentIndex = array.length;
-	var temporaryValue, randomIndex;
+	let currentIndex = array.length;
+	let temporaryValue, randomIndex;
 	// While there remain elements to shuffle...
 	while (0 !== currentIndex) {
 		// Pick a remaining element...
@@ -88,4 +88,4 @@ const shuffle = function<T>(array: T[]): T[] {
 
 const sample = function<T>(array: T[]): T | undefined {
   return shuffle(array)[0];
-}
+};

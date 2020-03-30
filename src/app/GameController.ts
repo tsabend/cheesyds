@@ -8,7 +8,7 @@ import {
 import { Player } from "./player";
 import { Turn } from "./turn";
 
-import GameSnapshot from "./GameSnapshot"
+import GameSnapshot from "./GameSnapshot";
 
 export class GameController {
   deal(snapshot: GameSnapshot): GameSnapshot {
@@ -63,10 +63,10 @@ export class GameController {
       snapshot.isInReverse = willReverse;
       snapshot.lastTurnSummary = snapshot.currentPlayer().name +
       " played "
-      + cards.map(card => card.userFacingName()).join(", ")
-      + "."
+      + cards.map((card) => card.userFacingName()).join(", ")
+      + ".";
       if (willReverse) {
-        snapshot.lastTurnSummary += ". Next Player must play a 7 or lower."
+        snapshot.lastTurnSummary += ". Next Player must play a 7 or lower.";
       }
       snapshot.finishTurn(1);
     });
@@ -80,8 +80,8 @@ export class GameController {
       snapshot.inPlayPile = [];
       snapshot.lastTurnSummary = snapshot.currentPlayer().name +
       " played "
-      + cards.map(card => card.userFacingName()).join(", ")
-      + " which cleared the board! Go again " + snapshot.currentPlayer().name + "."
+      + cards.map((card) => card.userFacingName()).join(", ")
+      + " which cleared the board! Go again " + snapshot.currentPlayer().name + ".";
       snapshot.finishTurn(0);
     });
   }
@@ -95,9 +95,9 @@ export class GameController {
       snapshot.inPlayPile = [];
       snapshot.lastTurnSummary = snapshot.currentPlayer().name +
       " played "
-      + cards.map(card => card.userFacingName()).join(", ")
+      + cards.map((card) => card.userFacingName()).join(", ")
       + " " + snapshot.players[snapshot.playerIndexSkipping(1)].name
-      + " picks up that devil's hand."
+      + " picks up that devil's hand.";
       snapshot.finishTurn(2);
     });
   }
@@ -109,9 +109,9 @@ export class GameController {
       snapshot.inPlayPile = snapshot.inPlayPile.concat(cards);
       snapshot.lastTurnSummary = snapshot.currentPlayer().name +
       " played "
-      + cards.map(card => card.userFacingName()).join(", ")
+      + cards.map((card) => card.userFacingName()).join(", ")
       + " skipping " + skipCount
-      + " players."
+      + " players.";
       snapshot.finishTurn(skipCount + 1);
     });
   }
@@ -122,7 +122,7 @@ export class GameController {
       snapshot.inPlayPile = [];
       snapshot.isInReverse = false;
       snapshot.lastTurnSummary = snapshot.currentPlayer().name +
-      " picked up. Sucks to be them."
+      " picked up. Sucks to be them.";
       snapshot.finishTurn(1);
     });
   }

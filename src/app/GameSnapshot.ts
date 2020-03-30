@@ -5,9 +5,9 @@ import {
   Rule,
   Suit,
 } from "./card";
+import { Deck } from "./deck";
 import { Player } from "./player";
 import { Turn } from "./turn";
-import { Deck } from "./deck"
 
 export default class GameSnapshot {
   players: Player[];
@@ -26,8 +26,8 @@ export default class GameSnapshot {
     const inPlayPile = rawInPlayPile ? rawInPlayPile.map((cardData: any) => Card.from(cardData)) : [];
     const currentPlayerIndex = data.currentPlayerIndex;
     const isInReverse = data.isInReverse;
-    const punishments = data.punishments || []
-    const lastTurnSummary = data.lastTurnSummary
+    const punishments = data.punishments || [];
+    const lastTurnSummary = data.lastTurnSummary;
     const winner = data.winner;
     return new GameSnapshot(
       players,
@@ -55,7 +55,7 @@ export default class GameSnapshot {
     this.inPlayPile = inPlayPile;
     this.currentPlayerIndex = currentPlayerIndex;
     this.isInReverse = isInReverse;
-    this.punishments = punishments
+    this.punishments = punishments;
     this.lastTurnSummary = lastTurnSummary;
     this.winner = winner;
   }

@@ -5,10 +5,10 @@ import {
   Rule,
   Suit,
 } from "./card";
+import { Deck } from "./deck";
+import GameSnapshot from "./GameSnapshot";
 import { Player } from "./player";
 import { Turn } from "./turn";
-import GameSnapshot from "./GameSnapshot"
-import { Deck } from "./deck";
 
 export class GameController {
   deal(snapshot: GameSnapshot): GameSnapshot {
@@ -119,13 +119,13 @@ export class GameBuilder {
       [],
       0,
       false,
-      []
+      [],
     );
   }
 
   makeSoloGame(players: string[], punishments: string[]): GameSnapshot {
-    console.log("MAKING SOLO GAME")
-    const human = new Player(players[0])
+    console.log("MAKING SOLO GAME");
+    const human = new Player(players[0]);
     const bots = [
       new Player("Burgie", undefined, true),
       new Player("Monica", undefined, true),

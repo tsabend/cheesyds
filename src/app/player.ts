@@ -3,7 +3,7 @@ import { Deck } from "./deck";
 export class Player {
   name: string;
   board: PlayerBoard;
-  isComputer: boolean
+  isComputer: boolean;
 
   static from(data: any): Player {
     const rawBoard = data.board;
@@ -41,7 +41,7 @@ export class Player {
   draw(deck: Deck) {
     // draw until you have at least 3 cards
     while (this.board.hand.length < 3 && deck.isEmpty() === false) {
-      const deal = deck.deal(1)
+      const deal = deck.deal(1);
       if (deal) {
         this.board.hand = this.board.hand.concat(deal);
       }
