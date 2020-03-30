@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import {
+  selectRemoteGameId
+} from "./app/appSlice";
+import { useSelector, useDispatch } from "react-redux";
 import PairingCoordinator from "./features/pairing/PairingCoordinator";
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -86,6 +90,7 @@ type AppProps = {} & WithStyles<typeof styles>;
 
 const App = ({ classes }: AppProps) => {
   const dispatch = useDispatch();
+  const gameId = useSelector(selectRemoteGameId);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const toggleDrawer = (open: boolean) => (event: any) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -135,7 +140,9 @@ const App = ({ classes }: AppProps) => {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" className={classes.title}>CheesyD</Typography>
-
+        {gameId &&
+          <Button variant="contained" color="default">{gameId}</Button> 
+        }
       </Toolbar>
     </AppBar>
     <div className={classes.root}>
