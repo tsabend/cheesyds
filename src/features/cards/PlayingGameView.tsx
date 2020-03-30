@@ -29,10 +29,11 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import {
   submitCards,
-  selectMe,
+  selectMyPlayer,
   selectRemoteGame,
   selectTurn,
   selectGameSnapshot,
+  selectLastTurnSummary,
   pickUpCards
 } from "../../app/appSlice";
 
@@ -90,9 +91,9 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
   const dispatch = useDispatch();
   const game: GameSnapshot = useSelector(selectGameSnapshot);
   const remoteGame = useSelector(selectRemoteGame);
+  const lastTurnSummary = useSelector(selectLastTurnSummary);
   const turn = useSelector(selectTurn);
-  const myName = useSelector(selectMe);
-  const me = game.players.find(player => player.name === myName);
+  const me = useSelector(selectMyPlayer);
   const player = game.currentPlayer();
   const itIsMyTurn = player === me;
 
@@ -100,20 +101,13 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
     const card = game.topOfInPlayPile()
     if (card) {
       return <div>
-      <p>In Play Pile:</p>
       <CardView card={card}
       isEnabled={false}
       />
       </div>
     }
     else {
-      return <div>
-      <div className={classes.emptyPile}>
-      <Typography>
-      Cards in Play
-      </Typography>
-      </div>
-      </div>
+      return <div className={classes.emptyPile}></div>
     }
   }
 
@@ -154,7 +148,7 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
     if (me) {
       return <React.Fragment>
       <PilesView piles={me.board.piles} isEnabled={me.isEliminatingPiles()} />
-      <HandView hand={me.board.hand} />
+      <HandView hand={me.board.sortedHand()} />
       {itIsMyTurn &&
         <React.Fragment>
         <Button
@@ -162,6 +156,7 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
         color={'primary'}
         variant={'contained'}
         aria-label="Submit turn"
+        disabled={turn.cardsToSubmit.length === 0}
         onClick={ () => remoteGame && dispatch(submitCards(turn.cardsToSubmit, remoteGame)) }
         >
         SUBMIT
@@ -185,7 +180,7 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
   const buildUpNextView = () => {
     const cols = 4.7 // todo - make this dynamic on resize
     return <div className={classes.upNextListRoot}>
-    <p><Typography className={classes.mainTitle} variant="h5">UP NEXT</Typography></p>
+    <p><Typography className={classes.mainTitle} >UP NEXT</Typography></p>
     <GridList className={classes.upNextList} cellHeight={"auto"} cols={cols} spacing={0}>
     {game.upcomingPlayers().map((player, index) => {
       return <GridListTile className={classes.upNextListItem} cols={1}>
@@ -201,16 +196,32 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
     </div>
   }
 
+  const punishmentList = () => {
+    if (game.punishments.length === 0) return "";
+    return <div>
+    <Typography variant={"h3"}>Punishments</Typography>
+    <ul>
+    {game.punishments.map(punishment => {
+      return <li>
+      <p>{punishment}</p>
+      </li>
+    })}
+    </ul>
+    </div>
+  }
+
   return (
     <Box className={classes.root}>
-    <p><Typography className={classes.mainTitle} variant="h5">
+    <p><Typography className={classes.mainTitle} >
     {itIsMyTurn ? "YOUR TURN" : "NOW PLAYING: " + player.name}
     </Typography></p>
     {gamePiles()}
     <div>
     {buildMyBoard()}
     </div>
+    <Typography>{lastTurnSummary || ""}</Typography>
     {buildUpNextView()}
+    {punishmentList()}
     </Box>
   );
 };

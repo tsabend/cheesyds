@@ -3,7 +3,7 @@ import { Deck } from "./deck";
 export class Player {
   name: string;
   board: PlayerBoard;
-  isComputer = false
+  isComputer: boolean
 
   static from(data: any): Player {
     const rawBoard = data.board;
@@ -11,17 +11,19 @@ export class Player {
     if (rawBoard) {
       board = PlayerBoard.from(rawBoard);
     }
-    return new Player(data.name, board);
+    return new Player(data.name, board, data.isComputer);
   }
 
   constructor(name: string,
-              board?: PlayerBoard) {
+              board?: PlayerBoard,
+              isComputer?: boolean) {
     this.name = name;
     this.board = board || new PlayerBoard();
+    this.isComputer = isComputer || false;
   }
 
   copy(): Player {
-    return new Player(this.name, this.board.copy());
+    return new Player(this.name, this.board.copy(), this.isComputer);
   }
 
   isOut(): boolean {
@@ -39,7 +41,10 @@ export class Player {
   draw(deck: Deck) {
     // draw until you have at least 3 cards
     while (this.board.hand.length < 3 && deck.isEmpty() === false) {
-      this.board.hand = this.board.hand.concat(deck.deal(1));
+      const deal = deck.deal(1)
+      if (deal) {
+        this.board.hand = this.board.hand.concat(deal);
+      }
     }
   }
 
@@ -61,7 +66,6 @@ export class PlayerBoard {
   hand: Card[];
   piles: Card[][];
   static from(data: any): PlayerBoard {
-    debugger;
     const rawHand = data.hand;
     let hand;
     if (rawHand) {
@@ -87,6 +91,10 @@ export class PlayerBoard {
 
   isOut(): boolean {
     return this.hand.length === 0 && this.piles.filter((pile) => pile.length === 0).length === 3;
+  }
+
+  sortedHand(): Card[] {
+    return this.hand.sort((a, b) => a.faceValue > b.faceValue ? -1 : 1);
   }
 
   // deal out an array of 6 cards

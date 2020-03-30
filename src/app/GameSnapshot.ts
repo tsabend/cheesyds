@@ -15,16 +15,19 @@ export default class GameSnapshot {
   currentPlayerIndex: number;
   inPlayPile: Card[];
   isInReverse: boolean;
+  punishments: string[];
+  lastTurnSummary?: string;
   winner?: Player;
 
   static from(data: any): GameSnapshot {
-    debugger;
     const players = data.players.map((playerData: any) => Player.from(playerData));
     const deck = Deck.from(data.deck);
     const rawInPlayPile = data.inPlayPile;
     const inPlayPile = rawInPlayPile ? rawInPlayPile.map((cardData: any) => Card.from(cardData)) : [];
     const currentPlayerIndex = data.currentPlayerIndex;
     const isInReverse = data.isInReverse;
+    const punishments = data.punishments || []
+    const lastTurnSummary = data.lastTurnSummary
     const winner = data.winner;
     return new GameSnapshot(
       players,
@@ -32,6 +35,8 @@ export default class GameSnapshot {
       inPlayPile,
       currentPlayerIndex,
       isInReverse,
+      punishments,
+      lastTurnSummary,
       winner,
     );
   }
@@ -41,6 +46,8 @@ export default class GameSnapshot {
               inPlayPile: Card[],
               currentPlayerIndex: number,
               isInReverse: boolean,
+              punishments: string[],
+              lastTurnSummary?: string,
               winner?: Player,
             ) {
     this.players = players;
@@ -48,6 +55,8 @@ export default class GameSnapshot {
     this.inPlayPile = inPlayPile;
     this.currentPlayerIndex = currentPlayerIndex;
     this.isInReverse = isInReverse;
+    this.punishments = punishments
+    this.lastTurnSummary = lastTurnSummary;
     this.winner = winner;
   }
 
@@ -58,6 +67,8 @@ export default class GameSnapshot {
       Array.from(this.inPlayPile),
       this.currentPlayerIndex,
       this.isInReverse,
+      this.punishments,
+      this.lastTurnSummary,
       this.winner,
     );
   }
@@ -110,16 +121,22 @@ export default class GameSnapshot {
   }
 
   finishTurn(moveForwardsBy: number) {
-    debugger;
     const currentPlayer = this.currentPlayer();
     if (currentPlayer.isOut()) {
       this.players = this.players.filter((player) => player !== currentPlayer);
       if (!this.winner) {
         this.winner = currentPlayer;
       }
+      // typically if we're out we don't increment currentPlayerIndex because
+      // the next player will be moved back an index position by the filter
+      // but we need to go back to 0 if the last player in the array goes out
+      if (this.currentPlayerIndex === this.players.length) this.currentPlayerIndex = 0;
     }
     else {
       this.currentPlayerIndex = this.playerIndexSkipping(moveForwardsBy);
+    }
+    if (this.currentPlayer() === undefined) {
+      debugger;
     }
   }
 }

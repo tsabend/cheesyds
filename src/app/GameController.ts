@@ -26,6 +26,7 @@ export class GameController {
   }
 
   submit(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
+    if (cards.length === 0) return snapshot;
     switch (getRule(cards)) {
       case Rule.Play:
       return this.play(cards, snapshot);
@@ -60,6 +61,12 @@ export class GameController {
       snapshot.currentPlayer().draw(snapshot.deck);
       snapshot.inPlayPile = snapshot.inPlayPile.concat(cards);
       snapshot.isInReverse = willReverse;
+      snapshot.lastTurnSummary = snapshot.currentPlayer().name +
+      " played "
+      + cards.map(card => card.userFacingName()).join(", ")
+      if (willReverse) {
+        snapshot.lastTurnSummary += ". Next Player must play a 7 or lower."
+      }
       snapshot.finishTurn(1);
     });
   }
@@ -68,8 +75,13 @@ export class GameController {
     return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().submit(cards);
       snapshot.currentPlayer().draw(snapshot.deck);
+      snapshot.isInReverse = false;
       snapshot.inPlayPile = [];
-      snapshot.finishTurn(1);
+      snapshot.lastTurnSummary = snapshot.currentPlayer().name +
+      " played "
+      + cards.map(card => card.userFacingName()).join(", ")
+      + " which cleared the board! Go again " + snapshot.currentPlayer().name + "."
+      snapshot.finishTurn(0);
     });
   }
 
@@ -78,7 +90,13 @@ export class GameController {
       snapshot.currentPlayer().submit(cards);
       snapshot.currentPlayer().draw(snapshot.deck);
       snapshot.nextPlayer().pickUp(snapshot.inPlayPile);
+      snapshot.isInReverse = false;
       snapshot.inPlayPile = [];
+      snapshot.lastTurnSummary = snapshot.currentPlayer().name +
+      " played "
+      + cards.map(card => card.userFacingName()).join(", ")
+      + " " + snapshot.players[snapshot.playerIndexSkipping(1)].name
+      + " picks up that devil's hand."
       snapshot.finishTurn(2);
     });
   }
@@ -88,6 +106,11 @@ export class GameController {
       snapshot.currentPlayer().submit(cards);
       snapshot.currentPlayer().draw(snapshot.deck);
       snapshot.inPlayPile = snapshot.inPlayPile.concat(cards);
+      snapshot.lastTurnSummary = snapshot.currentPlayer().name +
+      " played "
+      + cards.map(card => card.userFacingName()).join(", ")
+      + " skipping " + skipCount
+      + " players."
       snapshot.finishTurn(skipCount + 1);
     });
   }
@@ -96,6 +119,9 @@ export class GameController {
     return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().pickUp(snapshot.inPlayPile);
       snapshot.inPlayPile = [];
+      snapshot.isInReverse = false;
+      snapshot.lastTurnSummary = snapshot.currentPlayer().name +
+      " picked up. Sucks to be them."
       snapshot.finishTurn(1);
     });
   }

@@ -55,38 +55,40 @@ const PilesView = ({ piles, isEnabled, classes }: PilesViewProps) => {
     <Box className={classes.container}>
     {piles.map(pile => {
       const width = 60;
-        const length = pile.length;
-        switch (length) {
-        case 1:
-        return <CardView
-        card={pile[0]}
-        key={pile[0].index()}
-        isEnabled={isEnabled}
-        width={width}
-        />
-        case 2:
-        return <Box className={classes.stackContainer}>
-        <div className={classes.faceDown}>
-        <CardView
-        card={pile[0]}
-        key={pile[0].index()}
-        isEnabled={isEnabled}
-        width={width}
-        isFaceDown={true}
-        />
-        </div>
-        <div className={classes.faceUp}>
-        <CardView
-        card={pile[1]}
-        key={pile[1].index()}
-        isEnabled={isEnabled}
-        width={width}
-        />
-        </div>
-        </Box>
-        default:
-          return "";
+        if (pile.length === 1) {
+          return <Box className={classes.stackContainer}>
+          <div className={classes.faceUp}>
+          <CardView
+          card={pile[0]}
+          key={pile[0].index()}
+          isEnabled={isEnabled}
+          width={width}
+          />
+          </div>
+          </Box>
         }
+        if (pile.length === 2) {
+          return <Box className={classes.stackContainer}>
+          <div className={classes.faceDown}>
+          <CardView
+          card={pile[0]}
+          key={pile[0].index()}
+          isEnabled={isEnabled}
+          width={width}
+          isFaceDown={true}
+          />
+          </div>
+          <div className={classes.faceUp}>
+          <CardView
+          card={pile[1]}
+          key={pile[1].index()}
+          isEnabled={isEnabled}
+          width={width}
+          />
+          </div>
+          </Box>
+        }
+        return "";
     })
     }
     </Box>

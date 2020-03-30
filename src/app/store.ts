@@ -11,7 +11,6 @@ export const store = configureStore({
 
 store.subscribe(()=> {
   const stateString = JSON.stringify(store.getState().app)
-  console.log("SAVING STATE", store.getState(), stateString);
   localStorage.setItem('reduxState', stateString);
 })
 

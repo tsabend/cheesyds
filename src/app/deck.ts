@@ -22,7 +22,7 @@ export class Deck {
     let out: Card[] = [];
     for (let index = 0; index < numberOfCards; index++) {
       let last = this.cards.pop() as Card;
-      out.push(last);
+      if (last) out.push(last);
     }
     return out;
   }

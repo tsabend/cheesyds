@@ -20,6 +20,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import {
   startPairingAsync,
+  startGameVsCPU,
   joinGameAsync,
 } from "../../app/appSlice";
 
@@ -38,6 +39,16 @@ const LandingView = ({ classes }: LandingViewProps) => {
 
   const isJoining = gameCode.length > 0
   const buttonText = isJoining ? "Join Game" : "Start a New Game"
+
+  const playComputerButton = () => {
+    return <Button
+      type="submit"
+      onClick={ (e) => { dispatch(startGameVsCPU()) }}
+      >
+      {"Play Against the Computer"}
+    </Button>
+  }
+
   return (
     <Grid container alignItems="center" justify="center">
       {/* Name input*/}
@@ -74,6 +85,7 @@ const LandingView = ({ classes }: LandingViewProps) => {
          }}>
         {buttonText}
         </Button>
+        {playComputerButton()}
       </Grid>
     </Grid>
   );

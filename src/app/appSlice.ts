@@ -42,6 +42,14 @@ export const slice = createSlice({
       console.log("start game");
       state.progress = AppProgress.GameStarted;
     },
+    startGameVsComputer: (state, action: PayloadAction<string>) => {
+      console.log("start game");
+      state.me = action.payload;
+      state.progress = AppProgress.GameStarted;
+    },
+    clearGameState: (state) => {
+      state.turn = new Turn();
+    },
     restart: (state) => {
       console.log("restarting game")
       state.progress = AppProgress.Landing;
@@ -114,6 +122,24 @@ export const startGameAsync = (state: RemoteGameState): AppThunk => (dispatch) =
   dispatch(startGame());
 };
 
+export const startGameVsCPU = (state?: RemoteGameState): AppThunk => (dispatch) => {
+  dispatch(startLoading());
+  const punishments = state?.game?.punishments || []
+  var newState: RemoteGameState = {
+    players: ["Human"],
+    gameId: "1234",
+  };
+  
+  const start = new GameBuilder().makeSoloGame(newState.players, punishments);
+  const game = gameController.deal(start);
+  newState = copyRemoteGameState(newState);
+  newState.game = game;
+  dispatch(startGameVsComputer("Human"));
+  dispatch(updateGameState(newState));
+  // auto start game
+  dispatch(pickUpCards(newState));
+}
+
 export const cancelGame = (): AppThunk => (dispatch) => {
   pairingController.cancel();
   dispatch(restart());
@@ -121,21 +147,73 @@ export const cancelGame = (): AppThunk => (dispatch) => {
 
 export const submitCards = (cards: Card[], state: RemoteGameState): AppThunk => (dispatch) => {
   const game = state.game as GameSnapshot;
-  if (game) {
-    let newState = copyRemoteGameState(state);
-    newState.game = gameController.submit(cards, game);
-    pairingController.writeGameState(newState);
-  }
+  if (!game) return
+  let newState = copyRemoteGameState(state);
+  newState.game = gameController.submit(cards, game);
+  console.log(newState.game.lastTurnSummary || "first turn");
+  dispatch(writeState(newState));
 };
 
 export const pickUpCards = (state: RemoteGameState): AppThunk => (dispatch) => {
-    const game = state.game as GameSnapshot;
-    if (game) {
-      let newState = copyRemoteGameState(state);
-      newState.game = gameController.pickUp(game);
-      pairingController.writeGameState(newState);
-  }
+  const game = state.game as GameSnapshot;
+  if (!game) return
+  let newState = copyRemoteGameState(state);
+  newState.game = gameController.pickUp(game);
+  dispatch(writeState(newState));
 };
+
+export const savePunishment = (punishment: string, state: RemoteGameState): AppThunk => (dispatch) => {
+  const game = state.game as GameSnapshot;
+  if (!game) return
+  let newState = copyRemoteGameState(state);
+  const finalPunishment = "" + (game.winner?.name || "") + " has punished " + (game.loser()?.name || "") + ": " + punishment;
+  newState.game?.punishments.push(finalPunishment);
+  dispatch(writeState(newState));
+}
+
+export const playAgain = (state: RemoteGameState): AppThunk => (dispatch) => {
+  // TODO...
+  dispatch(clearGameState());
+  dispatch(startGameVsCPU(state));
+}
+
+const writeState = (state: RemoteGameState): AppThunk => (dispatch) => {
+  // it's a multiplayer game
+  if (state.fbGameId) {
+    pairingController.writeGameState(state);
+  }
+  // it's a local game
+  else {
+    dispatch(updateStateAndRunComputersTurn(state));
+  }
+}
+
+const updateStateAndRunComputersTurn  = (state: RemoteGameState): AppThunk => (dispatch) => {
+  // update local state
+  dispatch(updateGameState(state));
+  const newGame = state.game;
+  if (!newGame) return;
+  const newCurrentPlayer = newGame.currentPlayer();
+  const autoplay = true;
+  const keepPlaying = autoplay || newCurrentPlayer.isComputer;
+  if (keepPlaying && !newGame.isOver()) {
+    const turn = new Turn(newGame.topOfInPlayPile()?.faceValue, [], newGame.isInReverse);
+    const cards = turn.generateComputerSelection(newCurrentPlayer);
+    if (cards.length > 0) {
+      doAsync(() => dispatch(submitCards(cards, state)));
+    }
+    else {
+      doAsync(() => dispatch(pickUpCards(state)));
+    }
+  }
+}
+
+const doAsync = (callback: () => void) => {
+  setTimeout(() => {
+    callback();
+  }, 0.000001);
+}
+
 // Actions
 
 export const {
@@ -145,7 +223,10 @@ export const {
   startGame,
   joinGame,
   updateGameState,
-  selectCard } = slice.actions;
+  selectCard,
+  startGameVsComputer,
+  clearGameState,
+} = slice.actions;
 
 // Properties
 
@@ -155,6 +236,8 @@ export const selectRemoteGame = (state: RootState) => state.app.game;
 export const selectRemoteGameId = (state: RootState) => state.app.game?.gameId || "";
 export const selectGameSnapshot = (state: RootState) => state.app.game?.game || new GameBuilder().makeFakeGame(); // FIXME
 export const selectMe = (state: RootState) => state.app.me;
+export const selectMyPlayer = (state: RootState) => state.app.game?.game?.players?.find(player => player.name === state.app.me);
+export const selectLastTurnSummary = (state: RootState) => state.app.game?.game?.lastTurnSummary;
 export const selectTurn = (state: RootState) => state.app.turn;
 
 export default slice.reducer;

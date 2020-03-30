@@ -15,33 +15,29 @@ export class Card {
     return this.suit + this.faceValue;
   }
 
+  userFacingName(): string {
+    return "the " + this.faceName() + " of " + this.suit
+  }
+
   svgName(): string {
     return this.shortFaceName() + this.shortSuitName()
   }
 
-  className(): string {
-    return this.suitClassName() + "_" + this.faceClassName();
-  }
-
-  faceClassName(): string {
-    return this.suit.toLowerCase();
-  }
-
-  suitClassName(): string {
+  faceName(): string {
     switch (this.faceValue) {
-      case FaceValue.Two: return "two";
-      case FaceValue.Three: return "three";
-      case FaceValue.Four: return "four";
-      case FaceValue.Five: return "five";
-      case FaceValue.Six: return "six";
-      case FaceValue.Seven: return "seven";
-      case FaceValue.Eight: return "eight";
-      case FaceValue.Nine: return "nine";
-      case FaceValue.Ten: return "ten";
-      case FaceValue.Jack: return "jack";
-      case FaceValue.Queen: return "queen";
-      case FaceValue.King: return "king";
-      case FaceValue.Ace: return "ace";
+      case FaceValue.Two: return "Two";
+      case FaceValue.Three: return "Three";
+      case FaceValue.Four: return "Four";
+      case FaceValue.Five: return "Five";
+      case FaceValue.Six: return "Six";
+      case FaceValue.Seven: return "Seven";
+      case FaceValue.Eight: return "Eight";
+      case FaceValue.Nine: return "Nine";
+      case FaceValue.Ten: return "Ten";
+      case FaceValue.Jack: return "Jack";
+      case FaceValue.Queen: return "Queen";
+      case FaceValue.King: return "King";
+      case FaceValue.Ace: return "Ace";
     }
   }
 
