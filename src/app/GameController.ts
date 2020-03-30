@@ -64,6 +64,7 @@ export class GameController {
       snapshot.lastTurnSummary = snapshot.currentPlayer().name +
       " played "
       + cards.map(card => card.userFacingName()).join(", ")
+      + "."
       if (willReverse) {
         snapshot.lastTurnSummary += ". Next Player must play a 7 or lower."
       }

@@ -24,7 +24,9 @@ import {
   ListItem,
   GridList,
   GridListTile,
-  Box
+  Box,
+  useMediaQuery,
+  useTheme
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -42,7 +44,7 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
     root: {
       backgroundColor: "green",
       width: "100%",
-      color: "#fff"
+      color: "#fff",
     },
     button: {
       margin: "16px",
@@ -54,7 +56,12 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
       margin: "auto",
     },
     mainTitle: {
-      color: "#fff",
+      padding: "16px",
+    },
+    turnSummary: {
+      padding: "16px",
+      backgroundColor: "#fff",
+      color: "#000",
     },
     upNextListRoot: {
       marginTop:"32px",
@@ -79,8 +86,11 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
       border: "1px black solid",
     },
     gamePiles: {
-      margin: "0px 0px 64px 0px",
+      margin: "32px 0px 64px 0px",
     },
+    myTurnButtonsBox: {
+      margin: "8px",
+    }
   });
 
 type PlayingGameViewProps = {
@@ -96,6 +106,8 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
   const me = useSelector(selectMyPlayer);
   const player = game.currentPlayer();
   const itIsMyTurn = player === me;
+  const sm = useMediaQuery(useTheme().breakpoints.down('sm'));
+  const xs = useMediaQuery(useTheme().breakpoints.down('xs'));
 
   const inPlayPile = () => {
     const card = game.topOfInPlayPile()
@@ -122,22 +134,16 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
       </div>
     }
     else {
-      return <div>
-      <div className={classes.emptyPile}>
-      <Typography>
-      No Cards Left
-      </Typography>
-      </div>
-      </div>
+      return <div className={classes.emptyPile}></div>
     }
   }
 
   const gamePiles = () => {
-    return <Box className={classes.gamePiles}><Grid container alignItems="center" justify="center" spacing={0}>
-    <Grid item xs={1}>
+    return <Box className={classes.gamePiles}><Grid container alignItems="center" justify="center" spacing={4}>
+    <Grid item>
     {drawPile()}
     </Grid>
-    <Grid item xs={1}>
+    <Grid item>
     {inPlayPile()}
     </Grid>
     </Grid>
@@ -147,10 +153,14 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
   const buildMyBoard = () => {
     if (me) {
       return <React.Fragment>
-      <PilesView piles={me.board.piles} isEnabled={me.isEliminatingPiles()} />
+      <PilesView
+       piles={me.board.piles}
+       isEnabled={me.isEliminatingPiles()}
+       width={me.board.hand.length === 0 ? 80 : 60}
+       />
       <HandView hand={me.board.sortedHand()} />
       {itIsMyTurn &&
-        <React.Fragment>
+        <Box className={classes.myTurnButtonsBox}>
         <Button
         className={classes.button}
         color={'primary'}
@@ -170,7 +180,7 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
         >
         PICK UP
         </Button>
-        </React.Fragment>
+        </Box>
       }
         </React.Fragment>
     }
@@ -178,17 +188,35 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
   }
 
   const buildUpNextView = () => {
-    const cols = 4.7 // todo - make this dynamic on resize
+    var cols
+    if (xs) {
+      cols = 1.1
+    }
+    else if (sm) {
+      cols = 2.1
+    }
+    else {
+      cols = 3.1
+    }
     return <div className={classes.upNextListRoot}>
-    <p><Typography className={classes.mainTitle} >UP NEXT</Typography></p>
     <GridList className={classes.upNextList} cellHeight={"auto"} cols={cols} spacing={0}>
     {game.upcomingPlayers().map((player, index) => {
+      const makeHeader = (index: number) => {
+        switch (index) {
+          case 0:
+          return player.name + " - Up Next";
+          case 1:
+          return player.name + " - In the Hole";
+          default:
+          return player.name;
+        }
+      }
       return <GridListTile className={classes.upNextListItem} cols={1}>
       children={<div >
-      <Typography variant="h6">{player.name}</Typography>
+        <Typography variant="h6">{makeHeader(index)}</Typography>
       <Typography>{player.numberOfCards()} cards in hand</Typography>
       <Typography>piles:</Typography>
-      <PilesView piles={player.board.piles} isEnabled={false} /></div>
+      <PilesView piles={player.board.piles} isEnabled={false} width={50} /></div>
     }
       </GridListTile>
     })}
@@ -212,14 +240,13 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
 
   return (
     <Box className={classes.root}>
-    <p><Typography className={classes.mainTitle} >
-    {itIsMyTurn ? "YOUR TURN" : "NOW PLAYING: " + player.name}
-    </Typography></p>
+    <Typography className={classes.turnSummary}>
+    {lastTurnSummary || ""} {itIsMyTurn ? "Your move." : player.name + " is up now."}
+    </Typography>
     {gamePiles()}
     <div>
     {buildMyBoard()}
     </div>
-    <Typography>{lastTurnSummary || ""}</Typography>
     {buildUpNextView()}
     {punishmentList()}
     </Box>

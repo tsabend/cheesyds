@@ -129,7 +129,7 @@ export const startGameVsCPU = (state?: RemoteGameState): AppThunk => (dispatch) 
     players: ["Human"],
     gameId: "1234",
   };
-  
+
   const start = new GameBuilder().makeSoloGame(newState.players, punishments);
   const game = gameController.deal(start);
   newState = copyRemoteGameState(newState);
@@ -194,7 +194,7 @@ const updateStateAndRunComputersTurn  = (state: RemoteGameState): AppThunk => (d
   const newGame = state.game;
   if (!newGame) return;
   const newCurrentPlayer = newGame.currentPlayer();
-  const autoplay = true;
+  const autoplay = false;
   const keepPlaying = autoplay || newCurrentPlayer.isComputer;
   if (keepPlaying && !newGame.isOver()) {
     const turn = new Turn(newGame.topOfInPlayPile()?.faceValue, [], newGame.isInReverse);
@@ -211,7 +211,9 @@ const updateStateAndRunComputersTurn  = (state: RemoteGameState): AppThunk => (d
 const doAsync = (callback: () => void) => {
   setTimeout(() => {
     callback();
-  }, 0.000001);
+  },
+  250);
+  //0.000001);
 }
 
 // Actions

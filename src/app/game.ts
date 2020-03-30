@@ -128,14 +128,14 @@ export class GameBuilder {
     const human = new Player(players[0])
     const bots = [
       new Player("Burgie", undefined, true),
-      // new Player("Monica", undefined, true),
-      // new Player("Jojo", undefined, true),
-      // new Player("Sawyer", undefined, true),
-      // new Player("James", undefined, true),
-      // new Player("Liz", undefined, true),
+      new Player("Monica", undefined, true),
+      new Player("Jojo", undefined, true),
+      new Player("Sawyer", undefined, true),
+      new Player("James", undefined, true),
+      new Player("Liz", undefined, true),
     ];
     return new GameSnapshot(
-      bots.concat([human]),
+      [human].concat(bots),
       new Deck(),
       [],
       0,

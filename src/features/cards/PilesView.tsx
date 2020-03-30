@@ -47,14 +47,14 @@ const styles: (theme: Theme) => StyleRules<string> = theme =>
 type PilesViewProps = {
   piles: Array<Array<Card>>;
   isEnabled: boolean;
+  width: number;
 } & WithStyles<typeof styles>;
 
-const PilesView = ({ piles, isEnabled, classes }: PilesViewProps) => {
+const PilesView = ({ piles, width, isEnabled, classes }: PilesViewProps) => {
 
   return (
     <Box className={classes.container}>
     {piles.map(pile => {
-      const width = 60;
         if (pile.length === 1) {
           return <Box className={classes.stackContainer}>
           <div className={classes.faceUp}>
