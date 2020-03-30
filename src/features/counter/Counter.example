@@ -20,7 +20,7 @@ import {
   CircularProgress
 } from "@material-ui/core";
 
-const styles: (theme: Theme) => StyleRules<string> = theme =>
+const styles: (theme: Theme) => StyleRules<string> = _ =>
   createStyles({
     value: {
       fontSize: "78px",

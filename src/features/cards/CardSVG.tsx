@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import {
   withStyles,
@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 
 
-const styles: (theme: Theme) => StyleRules<string> = theme =>
+const styles: (theme: Theme) => StyleRules<string> = _ =>
 createStyles({
 
 });
@@ -20,7 +20,7 @@ type CardSVGProps = {
   name: string;
 } & WithStyles<typeof styles>;
 
-const CardSVG = ({ name, className, width, classes }: CardSVGProps) => {
+const CardSVG = ({ name, className, width }: CardSVGProps) => {
 
   const src = (): string => {
     return require("cardsJS/cards/" + name + ".svg");
@@ -30,6 +30,7 @@ const CardSVG = ({ name, className, width, classes }: CardSVGProps) => {
   const heightStyle = width * aspectRatio + 'px'
   return (
      <img className={className}
+     alt={name}
      style={{width: widthStyle, height: heightStyle}}
       src={src()}/>
   );

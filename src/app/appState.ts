@@ -1,5 +1,4 @@
-import { FBApp, fire } from "./fire";
-import { GameBuilder } from "./game";
+import { fire } from "./fire";
 import { GameController } from "./GameController";
 import GameSnapshot from "./GameSnapshot";
 import { PairingController } from "./PairingController";

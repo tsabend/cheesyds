@@ -1,14 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import Input from "@material-ui/core/Input";
-import Typography from "@material-ui/core/Typography";
 import CardView from "./CardView"
-import {
-  Suit,
-  FaceValue,
-  Card
-} from "../../app/card"
+import Card from "../../app/card"
 
 import {
   withStyles,
@@ -16,10 +9,9 @@ import {
   StyleRules,
   createStyles,
   WithStyles,
-  CircularProgress
 } from "@material-ui/core";
 
-const styles: (theme: Theme) => StyleRules<string> = theme =>
+const styles: (theme: Theme) => StyleRules<string> = _ =>
   createStyles({
   });
 
@@ -27,7 +19,7 @@ type HandViewProps = {
   hand: Array<Card>;
 } & WithStyles<typeof styles>;
 
-const HandView = ({ hand, classes }: HandViewProps) => {
+const HandView = ({ hand }: HandViewProps) => {
 
   return (
     <Grid container alignItems="center" justify="center" spacing={1}>

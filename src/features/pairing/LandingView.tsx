@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import Input from "@material-ui/core/Input";
-import Typography from "@material-ui/core/Typography";
-import FormGroup from "@material-ui/core/FormGroup";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -14,17 +12,16 @@ import {
   StyleRules,
   createStyles,
   WithStyles,
-  CircularProgress
 } from "@material-ui/core";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   startPairingAsync,
   startGameVsCPU,
   joinGameAsync,
 } from "../../app/appSlice";
 
-const styles: (theme: Theme) => StyleRules<string> = theme =>
+const styles: (theme: Theme) => StyleRules<string> = _ =>
   createStyles({
   });
 
@@ -32,7 +29,7 @@ type LandingViewProps = {
 
 } & WithStyles<typeof styles>;
 
-const LandingView = ({ classes }: LandingViewProps) => {
+const LandingView = (_: LandingViewProps) => {
   const dispatch = useDispatch();
   const [playerName, setPlayerName] = useState("");
   const [gameCode, setGameCode] = useState("");
@@ -45,7 +42,7 @@ const LandingView = ({ classes }: LandingViewProps) => {
     if (!isDebug) return ""
     return <Button
       type="submit"
-      onClick={ (e) => { dispatch(startGameVsCPU()) }}
+      onClick={ () => { dispatch(startGameVsCPU()) }}
       >
       {"Play Against the Computer"}
     </Button>

@@ -1,25 +1,16 @@
-import React, { useState } from "react";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import Input from "@material-ui/core/Input";
-import Typography from "@material-ui/core/Typography";
+import React from "react";
 import CardView from "./CardView"
-import {
-  Suit,
-  FaceValue,
-  Card
-} from "../../app/card"
+import Card from "../../app/card"
 import {
   withStyles,
   Theme,
   StyleRules,
   createStyles,
   WithStyles,
-  CircularProgress,
   Box
 } from "@material-ui/core";
 
-const styles: (theme: Theme) => StyleRules<string> = theme =>
+const styles: (theme: Theme) => StyleRules<string> = _ =>
   createStyles({
     faceDown: {
       marginTop: "-8px",

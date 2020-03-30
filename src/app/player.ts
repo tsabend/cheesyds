@@ -1,4 +1,4 @@
-import { Card } from "./card";
+import Card from "./card";
 import { Deck } from "./deck";
 export class Player {
   name: string;

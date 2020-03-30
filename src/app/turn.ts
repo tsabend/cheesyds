@@ -1,8 +1,6 @@
-import {
-   canPlayOn,
-   Card,
-   FaceValue,
-} from "./card";
+import { canPlayOn } from "./rule";
+import { FaceValue } from "./faceValue"
+import Card from "./card";
 import { Player } from "./player";
 
 export class Turn {

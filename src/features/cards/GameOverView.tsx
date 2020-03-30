@@ -10,7 +10,6 @@ import {
   StyleRules,
   createStyles,
   WithStyles,
-  CircularProgress,
   FormControl,
   FormHelperText
 } from "@material-ui/core";
@@ -24,7 +23,7 @@ import {
   selectRemoteGame,
 } from "../../app/appSlice";
 
-const styles: (theme: Theme) => StyleRules<string> = theme =>
+const styles: (theme: Theme) => StyleRules<string> = _ =>
   createStyles({
     root: {
       paddingTop: '64px',
@@ -45,7 +44,6 @@ const GameOverView = ({ classes }: GameOverViewProps) => {
   const dispatch = useDispatch();
   const remoteGame = useSelector(selectRemoteGame);
   const game: GameSnapshot = useSelector(selectGameSnapshot);
-  const player = game.currentPlayer();
   const myName = useSelector(selectMe);
   const iWon = game.winner?.name === myName;
   const [punishment, setPunishment] = useState("");

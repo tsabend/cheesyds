@@ -1,17 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import Input from "@material-ui/core/Input";
 import Typography from "@material-ui/core/Typography";
 import CardView from "./CardView"
 import HandView from "./HandView"
 import PilesView from "./PilesView"
-import { Player } from "../../app/player"
-import {
-  Suit,
-  FaceValue,
-  Card
-} from "../../app/card"
 import GameSnapshot from "../../app/GameSnapshot"
 import {
   withStyles,
@@ -19,9 +12,6 @@ import {
   StyleRules,
   createStyles,
   WithStyles,
-  CircularProgress,
-  List,
-  ListItem,
   GridList,
   GridListTile,
   Box,
@@ -39,7 +29,7 @@ import {
   pickUpCards
 } from "../../app/appSlice";
 
-const styles: (theme: Theme) => StyleRules<string> = theme =>
+const styles: (theme: Theme) => StyleRules<string> = _ =>
   createStyles({
     root: {
       backgroundColor: "green",

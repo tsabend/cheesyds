@@ -1,11 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { err, Err, ok, Ok, Result } from "neverthrow";
-import { useDispatch } from "react-redux";
+import { err, ok, Result } from "neverthrow";
 import { v4 as generateUUID } from "uuid";
 import { RemoteGameState } from "./appState";
 import { FBApp, fire } from "./fire";
 import GameSnapshot from "./GameSnapshot";
-import { AppThunk, RootState } from "./store";
 
 /// Token to dispose of observable
 interface DisposeToken {
@@ -93,7 +90,7 @@ export class PairingController {
 
   private getGame(gameId: string, completion: (result: Result<RemoteGameState, Error>) => void) {
     console.log("Querying fire db for game with id", gameId);
-    const ref = this.buildQuery(gameId)
+    this.buildQuery(gameId)
     .once("value", (snapshot) => completion(this.unpackSnapshot(snapshot)));
   }
 
@@ -145,6 +142,6 @@ export class PairingController {
 }
 
 const replaceUndefined = (item: any) => {
-   const str =  JSON.stringify(item, function (key, value) {return (value === undefined) ? null : value; });
+   const str =  JSON.stringify(item, function (_, value) {return (value === undefined) ? null : value; });
    return JSON.parse(str);
 };

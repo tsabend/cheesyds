@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import clsx from 'clsx';
-import logo from "./logo.svg";
-import GameView from "./features/cards/GameView";
 import PairingCoordinator from "./features/pairing/PairingCoordinator";
-import { fire } from './app/fire';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -46,7 +41,7 @@ const theme = createMuiTheme({
   }
 });
 
-const styles: (theme: Theme) => StyleRules<string> = theme =>
+const styles: (theme: Theme) => StyleRules<string> = _ =>
 createStyles({
   root: {
     flexGrow: 1,
@@ -110,7 +105,7 @@ const App = ({ classes }: AppProps) => {
       <div className={classes.toolbar} />
         <List>
           <Divider />
-          {['Rules'].map((text, index) => (
+          {['Rules'].map((text, _) => (
             <ListItem button key={text}>
               <ListItemIcon>{<AssignmentIcon />}</ListItemIcon>
               <ListItemText primary={text} />

@@ -1,30 +1,23 @@
-import React, { useState } from "react";
-import Grid from "@material-ui/core/Grid";
+import React from "react";
 import Button from "@material-ui/core/Button";
-import Input from "@material-ui/core/Input";
-import Typography from "@material-ui/core/Typography";
 
 import {
   selectCard,
   selectTurn
 } from "../../app/appSlice";
-import {
-  Suit,
-  FaceValue,
-  Card
-} from "../../app/card";
+import Card from "../../app/card";
 import {
   withStyles,
   Theme,
   StyleRules,
   createStyles,
   WithStyles,
-  CircularProgress
+
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import CardSVG from "./CardSVG";
 
-const styles: (theme: Theme) => StyleRules<string> = theme =>
+const styles: (theme: Theme) => StyleRules<string> = _ =>
 createStyles({
     suit: {
       fontSize: "12px",
@@ -60,7 +53,7 @@ const CardView = ({ card, isEnabled, isFaceDown, width, classes }: CardViewProps
     <Button
      className={classes.button}
      onClick={() => {
-         if (isEnabled) {
+         if (enabled) {
            dispatch(selectCard(card))
          }
        }

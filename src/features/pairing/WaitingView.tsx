@@ -1,12 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import Input from "@material-ui/core/Input";
 import Typography from "@material-ui/core/Typography";
-import FormGroup from "@material-ui/core/FormGroup";
 import FormControl from "@material-ui/core/FormControl";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import InputLabel from "@material-ui/core/InputLabel";
 
 import {
   withStyles,
@@ -14,7 +10,6 @@ import {
   StyleRules,
   createStyles,
   WithStyles,
-  CircularProgress
 } from "@material-ui/core";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -26,7 +21,7 @@ import {
   selectRemoteGame,
 } from "../../app/appSlice";
 
-const styles: (theme: Theme) => StyleRules<string> = theme =>
+const styles: (theme: Theme) => StyleRules<string> = _ =>
   createStyles({
   });
 
@@ -34,7 +29,7 @@ type WaitingViewProps = {
   isOwner: boolean,
 } & WithStyles<typeof styles>;
 
-const WaitingView = ({ classes, isOwner }: WaitingViewProps) => {
+const WaitingView = ({ isOwner }: WaitingViewProps) => {
   const dispatch = useDispatch();
   const players = useSelector(selectPairingPlayers);
   const gameId = useSelector(selectRemoteGameId);
@@ -51,7 +46,7 @@ const WaitingView = ({ classes, isOwner }: WaitingViewProps) => {
     return <Button
       type="submit"
       disabled={!canStartGame}
-      onClick={ (e) => { game && dispatch(startGameAsync(game)) }}
+      onClick={ () => { game && dispatch(startGameAsync(game)) }}
       >
       {canStartGame ? "Start Game" : "Waiting for at least 2 players"}
     </Button>
@@ -72,7 +67,7 @@ const WaitingView = ({ classes, isOwner }: WaitingViewProps) => {
           <Typography>Players In Game:</Typography>
           {playerList()}
           {startButton()}
-          <Button onClick={(e) => {
+          <Button onClick={() => {
             dispatch(cancelGame())
             }
           }>
