@@ -41,6 +41,8 @@ const LandingView = ({ classes }: LandingViewProps) => {
   const buttonText = isJoining ? "Join Game" : "Start a New Game"
 
   const playComputerButton = () => {
+    const isDebug = false;
+    if (!isDebug) return ""
     return <Button
       type="submit"
       onClick={ (e) => { dispatch(startGameVsCPU()) }}
