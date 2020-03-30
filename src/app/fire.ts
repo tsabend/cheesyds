@@ -1,4 +1,5 @@
-import * as Firebase from 'firebase/app';
+import * as FirebaseApp from 'firebase/app';
+import 'firebase/database';
 import * as functions from "firebase-functions";
 require("dotenv").config();
 
@@ -18,5 +19,5 @@ const config = {
   measurementId,
 };
 
-export type FBApp = Firebase.app.App;
-export const fire: FBApp = Firebase.initializeApp(config);
+export type FBApp = FirebaseApp.app.App;
+export const fire: FBApp = FirebaseApp.initializeApp(config);

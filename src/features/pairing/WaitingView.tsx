@@ -37,7 +37,7 @@ const WaitingView = ({ isOwner }: WaitingViewProps) => {
 
   const playerList = () => {
     return players.map(player => {
-      return <Typography>{player}</Typography>;
+      return <Typography key={player}>{player}</Typography>;
     });
   }
 
