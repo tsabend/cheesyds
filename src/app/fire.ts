@@ -1,12 +1,11 @@
 import * as FirebaseApp from 'firebase/app';
 import 'firebase/database';
-import * as functions from "firebase-functions";
 require("dotenv").config();
 
-const appKey = process.env.FB_API_KEY || functions.config().fb?.api_key;
-const senderId = process.env.FB_MESSAGE_SENDER_ID || functions.config().fb?.message_sender_id;
-const appId = process.env.FB_APP_ID || functions.config().fb?.app_id;
-const measurementId = process.env.FB_MEASUREMENT_ID || functions.config().fb?.measurement_id;
+const appKey = process.env.FB_API_KEY;
+const senderId = process.env.FB_MESSAGE_SENDER_ID;
+const appId = process.env.FB_APP_ID;
+const measurementId = process.env.FB_MEASUREMENT_ID;
 
 const config = {
   apiKey: appKey,

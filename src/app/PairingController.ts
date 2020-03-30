@@ -57,6 +57,7 @@ export class PairingController {
         };
         this.updateGame(newGame);
         this.subscribeToGame(gameId, observer);
+        return value;
       });
     });
   }
