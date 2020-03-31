@@ -12,7 +12,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import Drawer from '@material-ui/core/Drawer';
-
+import RulesModal from './RulesModal'
 import {
   createMuiTheme,
   withStyles,
@@ -92,6 +92,7 @@ const App = ({ classes }: AppProps) => {
   const dispatch = useDispatch();
   const gameId = useSelector(selectRemoteGameId);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isRulesModalOpen, setIsRulesModalOpen] = useState(true);
   const toggleDrawer = (open: boolean) => (event: any) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -111,7 +112,11 @@ const App = ({ classes }: AppProps) => {
         <List>
           <Divider />
           {['Rules'].map((text, _) => (
-            <ListItem button key={text}>
+            <ListItem
+            button
+            key={text}
+            onClick={() => setIsRulesModalOpen(true)}
+            >
               <ListItemIcon>{<AssignmentIcon />}</ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
@@ -125,6 +130,7 @@ const App = ({ classes }: AppProps) => {
     <MuiThemeProvider theme={theme}>
     <CssBaseline />
     <div className={classes.app}>
+    <RulesModal open={isRulesModalOpen} onClose={() => setIsRulesModalOpen(false)}/>
     <AppBar position="static">
       <Drawer anchor={"left"} open={isDrawerOpen} onClose={toggleDrawer(false)}>
         {drawer()}
