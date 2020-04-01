@@ -24,7 +24,7 @@ export class GameController {
 
   submit(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
     if (cards.length === 0) return snapshot;
-    switch (getRule(cards)) {
+    switch (getRule(cards, snapshot.inPlayPile)) {
       case Rule.Play:
       return this.play(cards, snapshot);
       case Rule.Clear:
