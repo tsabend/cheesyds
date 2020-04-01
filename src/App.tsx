@@ -145,9 +145,9 @@ const App = ({ classes }: AppProps) => {
           >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" className={classes.title}>CheesyD</Typography>
+        <Typography variant="h6" className={classes.title}>CheezyD</Typography>
         {gameId &&
-          <Button variant="contained" color="default">{gameId}</Button> 
+          <Button variant="contained" color="default">{gameId}</Button>
         }
       </Toolbar>
     </AppBar>
