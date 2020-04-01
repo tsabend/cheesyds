@@ -4,13 +4,13 @@ import Card from "./card";
 import { Player } from "./player";
 
 export class Turn {
-  currentFaceValue: FaceValue;
+  currentFaceValue?: FaceValue;
   cardsToSubmit: Card[] = [];
   isInReverse: boolean;
   constructor(currentFaceValue?: FaceValue,
               cardsToSubmit?: Card[],
               isInReverse?: boolean) {
-                this.currentFaceValue = currentFaceValue || FaceValue.Three;
+                this.currentFaceValue = currentFaceValue;
                 this.cardsToSubmit = cardsToSubmit || [];
                 this.isInReverse = isInReverse || false;
   }
@@ -60,7 +60,8 @@ export class Turn {
 
   isValidSelection(card: Card): boolean {
     const faceValue = card.faceValue;
-    const canPlayOnTop = canPlayOn(faceValue, this.currentFaceValue, this.isInReverse);
+    const topFaceValue = this.currentFaceValue || FaceValue.Three
+    const canPlayOnTop = canPlayOn(faceValue, topFaceValue, this.isInReverse);
     if (!canPlayOnTop) return false;
     if (this.cardsToSubmit.length === 0) return true;
     return this.cardsToSubmit[0].faceValue === faceValue;

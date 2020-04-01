@@ -164,6 +164,7 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
         <Button
         className={classes.button}
         color={'primary'}
+        disabled={turn.currentFaceValue === undefined}
         variant={'contained'}
         aria-label="Forfeit turn"
         onClick={ () => remoteGame && dispatch(pickUpCards(remoteGame)) }
