@@ -92,7 +92,7 @@ const App = ({ classes }: AppProps) => {
   const dispatch = useDispatch();
   const gameId = useSelector(selectRemoteGameId);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isRulesModalOpen, setIsRulesModalOpen] = useState(true);
+  const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
   const toggleDrawer = (open: boolean) => (event: any) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
