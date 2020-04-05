@@ -4,6 +4,17 @@ import Card from "./card";
 import { Player } from "./player";
 
 export class Turn {
+
+  static from(data: any): Turn {
+    const currentFaceValue = data.currentFaceValue;
+    var cardsToSubmit = data.cardsToSubmit;
+    if (cardsToSubmit) {
+      cardsToSubmit = cardsToSubmit.map((cardData: any) => Card.from(cardData));
+    }
+    const isInReverse = data.isInReverse;
+
+    return new Turn(currentFaceValue, cardsToSubmit, isInReverse);
+  }
   currentFaceValue?: FaceValue;
   cardsToSubmit: Card[] = [];
   isInReverse: boolean;

@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  selectRemoteGameId
+  selectAppState,
+  joinGameAsync,
 } from "./app/appSlice";
+import { AppProgress } from "./app/appState";
 import { useSelector, useDispatch } from "react-redux";
 import PairingCoordinator from "./features/pairing/PairingCoordinator";
 import AppBar from '@material-ui/core/AppBar';
@@ -89,8 +91,17 @@ createStyles({
 type AppProps = {} & WithStyles<typeof styles>;
 
 const App = ({ classes }: AppProps) => {
+  useEffect(() => {
+    debugger
+    const game = appState.game;
+    if (appState.progress === AppProgress.Rejoining && game) {
+      dispatch(joinGameAsync(game.gameId, appState.me));
+    }
+  })
+
   const dispatch = useDispatch();
-  const gameId = useSelector(selectRemoteGameId);
+  const appState = useSelector(selectAppState);
+  const gameId = appState.game?.gameId;
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
   const toggleDrawer = (open: boolean) => (event: any) => {

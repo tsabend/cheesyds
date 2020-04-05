@@ -10,6 +10,7 @@ export enum AppProgress {
   Waiting,
   Joining,
   GameStarted,
+  Rejoining,
 }
 
 export interface RemoteGameState {
@@ -33,6 +34,21 @@ export interface AppState {
   game?: RemoteGameState;
   turn: Turn;
   me: string;
+}
+
+const appStateFromJSON = (json: any): AppState | undefined => {
+  const progress = json.progress;
+  const turn = json.turn;
+  const game = json.game;
+  const me = json.me;
+  if (!progress || !turn || !game || !me) return undefined;
+  game.game = GameSnapshot.from(game.game);
+  return {
+    progress: progress,
+    game: game,
+    turn: Turn.from(turn),
+    me: me
+  }
 }
 
 export const pairingController = new PairingController(fire);
@@ -61,10 +77,18 @@ export const makeInitialAppState = (): AppState => {
   // }
   // return startedGame;
 
-  localStorage.setItem("reduxState", "");
+  const isDebug = false;
+  if (isDebug) {
+    localStorage.setItem("reduxState", "");
+  }
   const local = localStorage.getItem("reduxState");
   if (local && local.length > 0) {
-    return JSON.parse(local);
+    const rawRecoveredState = JSON.parse(local);
+    const recoveredState = appStateFromJSON(rawRecoveredState);
+    if (recoveredState) {
+      recoveredState.progress = AppProgress.Rejoining;
+      return recoveredState
+    }
   }
 
   return {

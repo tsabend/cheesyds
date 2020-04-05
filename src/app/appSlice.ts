@@ -238,5 +238,6 @@ export const selectMe = (state: RootState) => state.app.me;
 export const selectMyPlayer = (state: RootState) => state.app.game?.game?.players?.find((player) => player.name === state.app.me);
 export const selectLastTurnSummary = (state: RootState) => state.app.game?.game?.lastTurnSummary;
 export const selectTurn = (state: RootState) => state.app.turn;
+export const selectAppState = (state: RootState) => state.app;
 
 export default slice.reducer;

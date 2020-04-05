@@ -48,6 +48,8 @@ const PairingCoordinator = ({ classes }: PairingCoordinatorProps) => {
         return <div className={classes.pairingRoot}><WaitingView isOwner={false} /></div>
       case AppProgress.Loading:
         return <LoadingView />;
+      case AppProgress.Rejoining:
+        return <LoadingView />;
       case AppProgress.GameStarted:
         return <GameView />
     }
