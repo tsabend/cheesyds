@@ -50,6 +50,17 @@ export class PairingController {
         return;
       }
       result.map((value) => {
+        if (value.game) {
+          // if your joining a game you were already in, just listen to changes and return
+          if (value.players.find(name => name === playerName)) {
+            this.subscribeToGame(gameId, observer)
+            return value;
+          }
+          else {
+            observer(err(new Error("Attempting to join a started game you were never in.")))
+          }
+        }
+        // add yourself to the game.
         const newGame = {
           gameId,
           fbGameId: value.fbGameId,
