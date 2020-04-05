@@ -14,11 +14,12 @@ import {
 
 import { useSelector, useDispatch } from "react-redux";
 import {
-  cancelGame,
+  quitGame,
   startGameAsync,
   selectPairingPlayers,
   selectRemoteGameId,
   selectRemoteGame,
+  selectAppState,
 } from "../../app/appSlice";
 
 const styles: (theme: Theme) => StyleRules<string> = _ =>
@@ -34,6 +35,7 @@ const WaitingView = ({ isOwner }: WaitingViewProps) => {
   const players = useSelector(selectPairingPlayers);
   const gameId = useSelector(selectRemoteGameId);
   const game = useSelector(selectRemoteGame);
+  const appState = useSelector(selectAppState);
 
   const playerList = () => {
     return players.map(player => {
@@ -68,7 +70,7 @@ const WaitingView = ({ isOwner }: WaitingViewProps) => {
           {playerList()}
           {startButton()}
           <Button onClick={() => {
-            dispatch(cancelGame())
+            dispatch(quitGame(appState))
             }
           }>
           Cancel

@@ -1,8 +1,3 @@
-import Card from "./card"
-import {
-  getRule,
-  Rule,
-} from "./rule";
 import { Deck } from "./deck";
 import GameSnapshot from "./GameSnapshot";
 import { GameController } from "./GameController";

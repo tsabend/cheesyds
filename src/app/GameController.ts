@@ -4,7 +4,7 @@ import {
   Rule,
 } from "./rule";
 import { Player } from "./player";
-
+import { Turn } from "./turn";
 import GameSnapshot from "./GameSnapshot";
 
 export class GameController {
@@ -13,13 +13,13 @@ export class GameController {
       snapshot.players.forEach((player: Player) => {
         player.deal(snapshot.deck.deal(9));
       });
+      return snapshot;
     });
   }
 
-  mutate(snapshot: GameSnapshot, mutation: (snapshot: GameSnapshot) => void): GameSnapshot {
+  mutate(snapshot: GameSnapshot, mutation: (snapshot: GameSnapshot) => GameSnapshot): GameSnapshot {
     const copy = snapshot.copy();
-    mutation(copy);
-    return copy;
+    return mutation(copy);
   }
 
   submit(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
@@ -65,7 +65,7 @@ export class GameController {
       if (willReverse) {
         snapshot.lastTurnSummary += ". Next Player must play a 7 or lower.";
       }
-      snapshot.finishTurn(1);
+      return this.finishTurn(1, snapshot);
     });
   }
 
@@ -79,7 +79,7 @@ export class GameController {
       " played "
       + cards.map((card) => card.userFacingName()).join(", ")
       + " which cleared the board! Go again " + snapshot.currentPlayer().name + ".";
-      snapshot.finishTurn(0);
+      return this.finishTurn(0, snapshot);
     });
   }
 
@@ -95,7 +95,7 @@ export class GameController {
       + cards.map((card) => card.userFacingName()).join(", ")
       + " " + snapshot.players[snapshot.playerIndexSkipping(1)].name
       + " picks up that devil's hand.";
-      snapshot.finishTurn(2);
+      return this.finishTurn(2, snapshot);
     });
   }
 
@@ -109,7 +109,7 @@ export class GameController {
       + cards.map((card) => card.userFacingName()).join(", ")
       + " skipping " + skipCount
       + " players.";
-      snapshot.finishTurn(skipCount + 1);
+      return this.finishTurn(skipCount + 1, snapshot);
     });
   }
 
@@ -120,7 +120,25 @@ export class GameController {
       snapshot.isInReverse = false;
       snapshot.lastTurnSummary = snapshot.currentPlayer().name +
       " picked up. Sucks to be them.";
-      snapshot.finishTurn(1);
+      return this.finishTurn(1, snapshot);
     });
+  }
+
+  finishTurn(moveForwardsBy: number, snapshot: GameSnapshot): GameSnapshot {
+    snapshot.finishTurn(moveForwardsBy);
+    // run logic for computer's turns
+    // TODO: save up computer turn lastTurnSummarys
+    while (snapshot.currentPlayer().isComputer && snapshot.isOver() === false) {
+      const turn = new Turn(snapshot.topOfInPlayPile()?.faceValue, [], snapshot.isInReverse);
+      const cards = turn.generateComputerSelection(snapshot.currentPlayer());
+      if (cards.length > 0) {
+        return this.submit(cards, snapshot);
+      }
+      else {
+        return this.pickUp(snapshot);
+      }
+    }
+    console.log("ran computer's turn.", snapshot.lastTurnSummary, snapshot.currentPlayerIndex);
+    return snapshot;
   }
 }

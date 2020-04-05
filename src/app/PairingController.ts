@@ -3,7 +3,7 @@ import { v4 as generateUUID } from "uuid";
 import { RemoteGameState } from "./appState";
 import { FBApp, fire } from "./fire";
 import GameSnapshot from "./GameSnapshot";
-
+import { Player } from "./player";
 /// Token to dispose of observable
 interface DisposeToken {
   (): void;
@@ -51,8 +51,14 @@ export class PairingController {
       }
       result.map((value) => {
         if (value.game) {
-          // if your joining a game you were already in, just listen to changes and return
-          if (value.players.find(name => name === playerName)) {
+          // if your joining a game you were already in,
+          // make yourself human and then listen to changes
+          const match = value.players.find(name => name === playerName)
+          if (match) {
+            const playingMatch = value.game.players.find(player => player.name === playerName)
+            if (playingMatch?.isComputer) {
+              this.markPlayerAsHuman(playerName, value);
+            }
             this.subscribeToGame(gameId, observer)
             return value;
           }
@@ -79,12 +85,55 @@ export class PairingController {
     this.updateGame(game);
   }
 
+  quit(playerName: string, game?: RemoteGameState) {
+    this.cancel()
+    if (game) {
+      this.markPlayerAsComputer(playerName, game);
+    }
+  }
+
   // stop listening to updates from the game
   cancel() {
     const token = this.token as DisposeToken;
     if (token) {
       token();
     }
+  }
+
+  private markPlayerAsHuman(playerName: string, game: RemoteGameState) {
+    const newPlayers = game.game?.players.map(player => {
+      if (player.name === playerName) {
+        return new Player(player.name, player.board, false);
+      }
+      else {
+        return player.copy();
+      }
+    })
+    fire.database()
+    .ref("games/" + game.fbGameId + "/game/players")
+    .set(replaceUndefined(newPlayers)).then(() => {
+      fire.database()
+      .ref("games/" + game.fbGameId + "/game/lastTurnSummary")
+      .set(playerName + " rejoined the game. Welcome home " + playerName + ".");
+    });
+  }
+
+  private markPlayerAsComputer(playerName: string, game: RemoteGameState) {
+    const newPlayers = game.game?.players.map(player => {
+      if (player.name === playerName) {
+        return new Player(player.name, player.board, true);
+      }
+      else {
+        return player.copy();
+      }
+    })
+    fire.database()
+    .ref("games/" + game.fbGameId + "/game/players")
+    .set(replaceUndefined(newPlayers)).then(() => {
+      fire.database()
+      .ref("games/" + game.fbGameId + "/game/lastTurnSummary")
+      .set(playerName + " left the game. They will be replaced by a computer until they rejoin.")
+    });
   }
 
   private createGame(action: RemoteGameState, observer: (result: Result<RemoteGameState, Error>) => void) {

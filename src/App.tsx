@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   selectAppState,
   joinGameAsync,
-  cancelGame,
+  quitGame,
 } from "./app/appSlice";
 import { AppProgress } from "./app/appState";
 import { useSelector, useDispatch } from "react-redux";
@@ -181,7 +181,7 @@ const App = ({ classes }: AppProps) => {
           className={classes.quitButton}
           variant="contained"
           color="inherit"
-          onClick={ () => dispatch(cancelGame()) }
+          onClick={ () => dispatch(quitGame(appState)) }
           >
           QUIT
           </Button>

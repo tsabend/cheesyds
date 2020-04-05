@@ -13,6 +13,7 @@ import GameBuilder from "./GameBuilder";
 import GameSnapshot from "./GameSnapshot";
 import { AppThunk, RootState } from "./store";
 import { Turn } from "./turn";
+import { AppState } from "./appState";
 
 const initialState = makeInitialAppState();
 
@@ -140,8 +141,8 @@ export const startGameVsCPU = (state?: RemoteGameState): AppThunk => (dispatch) 
   dispatch(pickUpCards(newState));
 };
 
-export const cancelGame = (): AppThunk => (dispatch) => {
-  pairingController.cancel();
+export const quitGame = (state: AppState): AppThunk => (dispatch) => {
+  pairingController.quit(state.me, state.game);
   dispatch(restart());
 };
 

@@ -1,7 +1,6 @@
 import React from "react";
 
 import {
-  createMuiTheme,
   withStyles,
   createStyles,
   Theme,
@@ -15,7 +14,6 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Slide from "@material-ui/core/Slide";
 import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import CancelIcon from '@material-ui/icons/Cancel';

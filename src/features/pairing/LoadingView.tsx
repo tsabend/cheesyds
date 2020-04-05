@@ -8,10 +8,9 @@ import {
   CircularProgress,
   Box,
 } from "@material-ui/core";
-import { useSelector } from "react-redux";
 
 
-const styles: (theme: Theme) => StyleRules<string> = theme =>
+const styles: (theme: Theme) => StyleRules<string> = _ =>
   createStyles({
     loadingView: {
        height: '24rem',

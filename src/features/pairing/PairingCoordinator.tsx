@@ -15,7 +15,6 @@ import {
   StyleRules,
   createStyles,
   WithStyles,
-  CircularProgress
 } from "@material-ui/core";
 import GameView from "../cards/GameView"
 import { useSelector } from "react-redux";
