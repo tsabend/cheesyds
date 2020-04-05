@@ -7,6 +7,7 @@ import {
 } from "../../app/appState"
 
 import LandingView from "./LandingView"
+import LoadingView from "./LoadingView"
 import WaitingView from "./WaitingView"
 import {
   withStyles,
@@ -46,9 +47,7 @@ const PairingCoordinator = ({ classes }: PairingCoordinatorProps) => {
       case AppProgress.Joining:
         return <div className={classes.pairingRoot}><WaitingView isOwner={false} /></div>
       case AppProgress.Loading:
-        return <div style={{position: 'relative'}}>
-        <CircularProgress className={classes.center} />
-        </div>;
+        return <LoadingView />;
       case AppProgress.GameStarted:
         return <GameView />
     }
