@@ -22,7 +22,7 @@ export default class GameBuilder {
   makeGame(players: string[]): GameSnapshot {
     return new GameSnapshot(
       players.map((name) => new Player(name)),
-      new Deck(),
+      Deck.makeDeck(players.length),
       [],
       0,
       false,
@@ -41,9 +41,10 @@ export default class GameBuilder {
       new Player("James", undefined, true),
       new Player("Liz", undefined, true),
     ];
+    const gamePlayers = [human].concat(bots);
     return new GameSnapshot(
-      [human].concat(bots),
-      new Deck(),
+      gamePlayers,
+      Deck.makeDeck(gamePlayers.length),
       [],
       0,
       false,

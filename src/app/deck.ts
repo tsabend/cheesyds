@@ -7,6 +7,17 @@ export class Deck {
   static from(data: any): Deck {
     return new Deck(data.cards.map((cardData: any) => Card.from(cardData)));
   }
+
+  static makeDeck(playerCount: number): Deck {
+    const numberOfDecks = playerCount > 4 ? 2 : 1
+    const deckBuilder = new DeckBuilder();
+    var cards: Card[] = []
+    for (let i = 0; i < numberOfDecks; i++) {
+      cards = cards.concat(deckBuilder.build())
+    }
+    return new Deck(cards);
+  }
+
   constructor(cards?: Card[]) {
     const deckBuilder = new DeckBuilder();
     this.cards = cards || deckBuilder.build();
