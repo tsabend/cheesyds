@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   selectAppState,
   joinGameAsync,
+  cancelGame,
 } from "./app/appSlice";
 import { AppProgress } from "./app/appState";
 import { useSelector, useDispatch } from "react-redux";
@@ -34,6 +35,7 @@ import {
 
 } from "@material-ui/core";
 import purple from "@material-ui/core/colors/purple";
+import red from "@material-ui/core/colors/red";
 
 const theme = createMuiTheme({
   palette: {
@@ -41,6 +43,7 @@ const theme = createMuiTheme({
     secondary: {
       main: "#fff"
     },
+    warning: red,
     background: {
       default: "#fff"
     }
@@ -60,6 +63,12 @@ createStyles({
   },
   title: {
     flexGrow: 1,
+  },
+  navButton: {
+    margin: '0px 0.25rem',
+  },
+  quitButton: {
+    backgroundColor: theme.palette.warning.main,
   },
   app: {
     textAlign: "center"
@@ -92,7 +101,6 @@ type AppProps = {} & WithStyles<typeof styles>;
 
 const App = ({ classes }: AppProps) => {
   useEffect(() => {
-    debugger
     const game = appState.game;
     if (appState.progress === AppProgress.Rejoining && game) {
       dispatch(joinGameAsync(game.gameId, appState.me));
@@ -158,7 +166,25 @@ const App = ({ classes }: AppProps) => {
         </IconButton>
         <Typography variant="h6" className={classes.title}>CheezyD</Typography>
         {gameId &&
-          <Button variant="contained" color="default">{gameId}</Button>
+          <Button
+          className={classes.navButton}
+          variant="contained"
+          color="default"
+          disableRipple={true}
+          disableElevation={true}
+          >
+          {gameId}
+          </Button>
+        }
+        {gameId &&
+          <Button
+          className={classes.quitButton}
+          variant="contained"
+          color="inherit"
+          onClick={ () => dispatch(cancelGame()) }
+          >
+          QUIT
+          </Button>
         }
       </Toolbar>
     </AppBar>

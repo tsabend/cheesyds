@@ -49,7 +49,10 @@ export const slice = createSlice({
     },
     restart: (state) => {
       console.log("restarting game");
+      state.game = undefined;
+      state.turn = new Turn();
       state.progress = AppProgress.Landing;
+      state.me = "";
     },
     // Game play logic
     updateGameState: (state, action: PayloadAction<RemoteGameState>) => {
