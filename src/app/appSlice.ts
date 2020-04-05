@@ -9,7 +9,7 @@ import {
   RemoteGameState,
 } from "./appState";
 import Card from "./card";
-import { GameBuilder } from "./game";
+import GameBuilder from "./GameBuilder";
 import GameSnapshot from "./GameSnapshot";
 import { AppThunk, RootState } from "./store";
 import { Turn } from "./turn";

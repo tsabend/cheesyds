@@ -8,7 +8,7 @@ import GameSnapshot from "./GameSnapshot";
 import { GameController } from "./GameController";
 import { Player } from "./player";
 
-export class GameBuilder {
+export default class GameBuilder {
   makeFakeGame(): GameSnapshot {
     const players = [
       new Player("1. Thomas"),
