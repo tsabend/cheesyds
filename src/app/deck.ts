@@ -5,7 +5,10 @@ import { Suit } from "./suit";
 export class Deck {
   cards: Card[];
   static from(data: any): Deck {
-    return new Deck(data.cards.map((cardData: any) => Card.from(cardData)));
+    if (data) {
+      return new Deck(data.cards.map((cardData: any) => Card.from(cardData)));
+    }
+    return new Deck([]);
   }
 
   static makeDeck(playerCount: number): Deck {
