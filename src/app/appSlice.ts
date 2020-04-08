@@ -12,7 +12,6 @@ import Card from "./card";
 import GameBuilder from "./GameBuilder";
 import GameSnapshot from "./GameSnapshot";
 import { AppThunk, RootState } from "./store";
-import { Turn } from "./turn";
 import { AppState } from "./appState";
 
 const initialState = makeInitialAppState();
@@ -45,13 +44,9 @@ export const slice = createSlice({
       state.me = action.payload;
       state.progress = AppProgress.GameStarted;
     },
-    clearGameState: (state) => {
-      state.turn = new Turn();
-    },
     restart: (state) => {
       console.log("restarting game");
       state.game = undefined;
-      state.turn = new Turn();
       state.progress = AppProgress.Landing;
       state.me = "";
     },
@@ -59,13 +54,6 @@ export const slice = createSlice({
     updateGameState: (state, action: PayloadAction<RemoteGameState>) => {
       console.log("UPDATING GAME STATE TO:", action.payload);
       state.game = action.payload;
-      const game = state.game?.game;
-      if (game) {
-        state.turn = new Turn(game.topOfInPlayPile()?.faceValue, []);
-      }
-    },
-    selectCard: (state, card: PayloadAction<Card>) => {
-      state.turn = state.turn.selectCard(card.payload);
     },
   },
 });
@@ -174,7 +162,6 @@ export const savePunishment = (punishment: string, state: RemoteGameState): AppT
 
 export const playAgain = (state: RemoteGameState): AppThunk => (dispatch) => {
   // TODO...
-  dispatch(clearGameState());
   dispatch(startGameVsCPU(state));
 };
 
@@ -198,8 +185,7 @@ const updateStateAndRunComputersTurn  = (state: RemoteGameState): AppThunk => (d
   const autoplay = false;
   const keepPlaying = autoplay || newCurrentPlayer.isComputer;
   if (keepPlaying && !newGame.isOver()) {
-    const turn = new Turn(newGame.topOfInPlayPile()?.faceValue, []);
-    const cards = turn.generateComputerSelection(newCurrentPlayer);
+    const cards = newCurrentPlayer.generateComputerSelection(newGame.topOfInPlayPile());
     if (cards.length > 0) {
       doAsync(() => dispatch(submitCards(cards, state)));
     }
@@ -226,9 +212,7 @@ export const {
   startGame,
   joinGame,
   updateGameState,
-  selectCard,
   startGameVsComputer,
-  clearGameState,
 } = slice.actions;
 
 // Properties
@@ -241,7 +225,6 @@ export const selectGameSnapshot = (state: RootState) => state.app.game?.game || 
 export const selectMe = (state: RootState) => state.app.me;
 export const selectMyPlayer = (state: RootState) => state.app.game?.game?.players?.find((player) => player.name === state.app.me);
 export const selectLastTurnSummary = (state: RootState) => state.app.game?.game?.lastTurnSummary;
-export const selectTurn = (state: RootState) => state.app.turn;
 export const selectAppState = (state: RootState) => state.app;
 
 export default slice.reducer;

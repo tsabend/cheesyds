@@ -35,7 +35,8 @@ function topNMatch(n: number, faceValue: FaceValue, inPlayPile: Card[]): boolean
   return true;
 }
 
-export function canPlayOn(faceValue: FaceValue, onFaceValue: FaceValue): boolean {
+export function canPlay(faceValue: FaceValue, onFaceValue?: FaceValue): boolean {
+  if (!onFaceValue) return true;
   const isInReverse = onFaceValue === FaceValue.Seven;
   if (isWild(faceValue)) return true;
   return isInReverse ? faceValue <= onFaceValue : faceValue >= onFaceValue;

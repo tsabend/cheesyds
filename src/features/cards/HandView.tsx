@@ -17,9 +17,11 @@ const styles: (theme: Theme) => StyleRules<string> = _ =>
 
 type HandViewProps = {
   hand: Array<Card>;
+  isSelected: (card: Card) => boolean;
+  cardWasTapped: (card: Card) => void;
 } & WithStyles<typeof styles>;
 
-const HandView = ({ hand }: HandViewProps) => {
+const HandView = ({ isSelected, cardWasTapped, hand }: HandViewProps) => {
 
   return (
     <Grid container alignItems="center" justify="center" spacing={1}>
@@ -30,6 +32,8 @@ const HandView = ({ hand }: HandViewProps) => {
         return <Grid item>
           <CardView
           card={card}
+          cardWasTapped={cardWasTapped}
+          isSelected={isSelected(card)}
           key={card.index()}
           isEnabled={true}
           />

@@ -38,10 +38,12 @@ const styles: (theme: Theme) => StyleRules<string> = _ =>
 type PilesViewProps = {
   piles: Array<Array<Card>>;
   isEnabled: boolean;
+  cardWasTapped: (card: Card) => void;
+  isSelected: (card: Card) => boolean;
   width: number;
 } & WithStyles<typeof styles>;
 
-const PilesView = ({ piles, width, isEnabled, classes }: PilesViewProps) => {
+const PilesView = ({ cardWasTapped, isSelected, piles, width, isEnabled, classes }: PilesViewProps) => {
 
   return (
     <Box className={classes.container}>
@@ -52,6 +54,8 @@ const PilesView = ({ piles, width, isEnabled, classes }: PilesViewProps) => {
           <CardView
           card={pile[0]}
           key={pile[0].index()}
+          cardWasTapped={cardWasTapped}
+          isSelected={isSelected(pile[0])}
           isEnabled={isEnabled}
           width={width}
           />
@@ -64,6 +68,8 @@ const PilesView = ({ piles, width, isEnabled, classes }: PilesViewProps) => {
           <CardView
           card={pile[0]}
           key={pile[0].index()}
+          cardWasTapped={cardWasTapped}
+          isSelected={isSelected(pile[0])}
           isEnabled={isEnabled}
           width={width}
           isFaceDown={true}
@@ -73,6 +79,8 @@ const PilesView = ({ piles, width, isEnabled, classes }: PilesViewProps) => {
           <CardView
           card={pile[1]}
           key={pile[1].index()}
+          cardWasTapped={cardWasTapped}
+          isSelected={isSelected(pile[1])}
           isEnabled={isEnabled}
           width={width}
           />

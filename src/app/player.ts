@@ -1,5 +1,8 @@
 import Card from "./card";
 import { Deck } from "./deck";
+import { sample } from "./utility";
+import { canPlay } from "./rule";
+
 export class Player {
   name: string;
   board: PlayerBoard;
@@ -58,6 +61,23 @@ export class Player {
 
   numberOfCards(): number {
     return this.board.hand.length;
+  }
+
+  // computer AI
+  generateComputerSelection(topOfInPlayPile?: Card): Card[] {
+    if (this.board.hand.length > 0) {
+      return this.pickCardsToPlayFromPile(this.board.hand, topOfInPlayPile);
+    }
+    else {
+      return this.pickCardsToPlayFromPile(this.board.playablePileCards(), topOfInPlayPile);
+    }
+  }
+
+  pickCardsToPlayFromPile(pile: Card[], topOfInPlayPile?: Card): Card[] {
+    const validCards = pile.filter((card) => canPlay(card.faceValue, topOfInPlayPile?.faceValue));
+    const sampleCard = sample(validCards);
+    if (!sampleCard) return [];
+    return validCards.filter((card) => card.faceValue === sampleCard.faceValue);
   }
 }
 
@@ -122,5 +142,12 @@ export class PlayerBoard {
   pickUp(cards: Card[]) {
     const newHand = this.hand.concat(cards);
     this.hand = newHand;
+  }
+
+  playablePileCards(): Card[] {
+    if (this.hand.length > 0) return [];
+    const faceUpPileCards = this.piles.filter((pile) => pile.length === 2).map((pile) => pile[1])
+    if (faceUpPileCards.length > 0) return faceUpPileCards;
+    return this.piles.filter((pile) => pile.length === 1).map((pile) => pile[0]);
   }
 }

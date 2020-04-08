@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
@@ -23,11 +23,12 @@ import {
   submitCards,
   selectMyPlayer,
   selectRemoteGame,
-  selectTurn,
   selectGameSnapshot,
   selectLastTurnSummary,
   pickUpCards
 } from "../../app/appSlice";
+import Card from "../../app/card";
+import { canPlay } from "../../app/rule";
 
 const styles: (theme: Theme) => StyleRules<string> = _ =>
   createStyles({
@@ -92,18 +93,43 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
   const game: GameSnapshot = useSelector(selectGameSnapshot);
   const remoteGame = useSelector(selectRemoteGame);
   const lastTurnSummary = useSelector(selectLastTurnSummary);
-  const turn = useSelector(selectTurn);
   const me = useSelector(selectMyPlayer);
   const player = game.currentPlayer();
   const itIsMyTurn = player === me;
   const sm = useMediaQuery(useTheme().breakpoints.down('sm'));
   const xs = useMediaQuery(useTheme().breakpoints.down('xs'));
 
+  const [selectedCards, setSelectedCards] = useState<Card[]>([]);
+  const topOfInPlayPile = game.topOfInPlayPile();
+  const cardWasTapped = (card: Card) => {
+    const isSameType = selectedCards[0]?.faceValue === card.faceValue;
+    const canPlayOnTop = canPlay(card.faceValue, topOfInPlayPile?.faceValue);
+
+    if (isSelected(card)) {
+      setSelectedCards(selectedCards.filter((_card) => card !== _card));
+    }
+    else if (!canPlayOnTop) {
+      setSelectedCards([]);
+    }
+    else if (!isSameType) {
+      setSelectedCards([card]);
+    }
+    else {
+      setSelectedCards(selectedCards.concat([card]));
+    }
+  }
+
+  const isSelected = (card: Card): boolean => {
+    return selectedCards.includes(card);
+  }
+
   const inPlayPile = () => {
     const card = game.topOfInPlayPile()
     if (card) {
       return <div>
       <CardView card={card}
+      cardWasTapped={cardWasTapped}
+      isSelected={false}
       isEnabled={false}
       />
       </div>
@@ -118,6 +144,8 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
     if (card) {
       return <div>
       <CardView card={card}
+      cardWasTapped={cardWasTapped}
+      isSelected={isSelected(card)}
       isEnabled={false}
       isFaceDown={true}
       />
@@ -145,10 +173,16 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
       return <React.Fragment>
       <PilesView
        piles={me.board.piles}
+       cardWasTapped={cardWasTapped}
+       isSelected={isSelected}
        isEnabled={me.isEliminatingPiles()}
        width={me.board.hand.length === 0 ? 80 : 60}
        />
-      <HandView hand={me.board.sortedHand()} />
+      <HandView
+      hand={me.board.sortedHand()}
+      cardWasTapped={cardWasTapped}
+      isSelected={isSelected}
+      />
       {itIsMyTurn &&
         <Box className={classes.myTurnButtonsBox}>
         <Button
@@ -156,15 +190,20 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
         color={'primary'}
         variant={'contained'}
         aria-label="Submit turn"
-        disabled={turn.cardsToSubmit.length === 0}
-        onClick={ () => remoteGame && dispatch(submitCards(turn.cardsToSubmit, remoteGame)) }
+        disabled={selectedCards.length === 0}
+        onClick={ () => {
+          if (remoteGame) {
+            dispatch(submitCards(selectedCards, remoteGame)) }
+            setSelectedCards([]);
+          }
+        }
         >
         SUBMIT
         </Button>
         <Button
         className={classes.button}
         color={'primary'}
-        disabled={turn.currentFaceValue === undefined}
+        disabled={topOfInPlayPile === undefined}
         variant={'contained'}
         aria-label="Forfeit turn"
         onClick={ () => remoteGame && dispatch(pickUpCards(remoteGame)) }
@@ -207,7 +246,13 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
         <Typography variant="h6">{makeHeader(index)}</Typography>
       <Typography>{player.numberOfCards()} cards in hand</Typography>
       <Typography>piles:</Typography>
-      <PilesView piles={player.board.piles} isEnabled={false} width={50} /></div>
+      <PilesView
+        piles={player.board.piles}
+        cardWasTapped={cardWasTapped}
+        isSelected={isSelected}
+        isEnabled={false} width={50}
+      />
+      </div>
     }
       </GridListTile>
     })}

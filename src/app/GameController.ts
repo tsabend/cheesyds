@@ -4,7 +4,6 @@ import {
   Rule,
 } from "./rule";
 import { Player } from "./player";
-import { Turn } from "./turn";
 import GameSnapshot from "./GameSnapshot";
 import { FaceValue } from "./faceValue";
 
@@ -119,8 +118,7 @@ export class GameController {
     // run logic for computer's turns
     // TODO: save up computer turn lastTurnSummarys
     while (snapshot.currentPlayer().isComputer && snapshot.isOver() === false) {
-      const turn = new Turn(snapshot.topOfInPlayPile()?.faceValue, []);
-      const cards = turn.generateComputerSelection(snapshot.currentPlayer());
+      const cards = snapshot.currentPlayer().generateComputerSelection(snapshot.topOfInPlayPile());
       if (cards.length > 0) {
         return this.submit(cards, snapshot);
       }

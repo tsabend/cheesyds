@@ -2,7 +2,6 @@ import { fire } from "./fire";
 import { GameController } from "./GameController";
 import GameSnapshot from "./GameSnapshot";
 import { PairingController } from "./PairingController";
-import { Turn } from "./turn";
 
 export enum AppProgress {
   Landing,
@@ -32,21 +31,18 @@ export const copyRemoteGameState = (state: RemoteGameState) => {
 export interface AppState {
   progress: AppProgress;
   game?: RemoteGameState;
-  turn: Turn;
   me: string;
 }
 
 const appStateFromJSON = (json: any): AppState | undefined => {
   const progress = json.progress;
-  const turn = json.turn;
   const game = json.game;
   const me = json.me;
-  if (!progress || !turn || !game || !me) return undefined;
+  if (!progress || !game || !me) return undefined;
   game.game = GameSnapshot.from(game.game);
   return {
     progress: progress,
     game: game,
-    turn: Turn.from(turn),
     me: me
   }
 }
@@ -72,7 +68,6 @@ export const makeInitialAppState = (): AppState => {
   //     fbGameId: "-M3MS5UkhTtrhpUlhVli",
   //     game: game
   //   },
-  //   turn: new Turn(game.topOfInPlayPile()?.faceValue, []),
   //   me: "thomas"
   // }
   // return startedGame;
@@ -94,7 +89,6 @@ export const makeInitialAppState = (): AppState => {
   return {
     progress: AppProgress.Landing,
     game: undefined,
-    turn: new Turn(),
     me: "",
   };
 };

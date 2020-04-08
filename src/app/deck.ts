@@ -1,6 +1,7 @@
 import Card from "./card";
 import { FaceValue } from "./faceValue";
 import { Suit } from "./suit";
+import { shuffle } from "./utility";
 
 export class Deck {
   cards: Card[];
@@ -56,15 +57,9 @@ export class DeckBuilder {
       }
     }
     // mutating shuffle
-    this.shuffle(cards);
+    shuffle(cards);
 
     return cards;
   }
 
-  shuffle(array: Card[]) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-  }
 }

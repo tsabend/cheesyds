@@ -1,10 +1,6 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 
-import {
-  selectCard,
-  selectTurn
-} from "../../app/appSlice";
 import Card from "../../app/card";
 import {
   withStyles,
@@ -14,7 +10,6 @@ import {
   WithStyles,
 
 } from "@material-ui/core";
-import { useSelector, useDispatch } from "react-redux";
 import CardSVG from "./CardSVG";
 
 const styles: (theme: Theme) => StyleRules<string> = _ =>
@@ -36,14 +31,14 @@ createStyles({
 
 type CardViewProps = {
   card: Card;
+  cardWasTapped: (card: Card) => void;
+  isSelected: boolean;
   isEnabled: boolean;
   isFaceDown?: boolean;
   width?: number;
 } & WithStyles<typeof styles>;
 
-const CardView = ({ card, isEnabled, isFaceDown, width, classes }: CardViewProps) => {
-  const dispatch = useDispatch();
-  const turn = useSelector(selectTurn);
+const CardView = ({ card, cardWasTapped, isSelected, isEnabled, isFaceDown, width, classes }: CardViewProps) => {
   const faceDown = isFaceDown || false;
   const enabled = faceDown ? false : isEnabled
   const cardName = faceDown ? "Red_Back" : card.svgName();
@@ -54,13 +49,13 @@ const CardView = ({ card, isEnabled, isFaceDown, width, classes }: CardViewProps
      className={classes.button}
      onClick={() => {
          if (enabled) {
-           dispatch(selectCard(card))
+           cardWasTapped(card);
          }
        }
      }
      >
      <CardSVG
-     className={[classes.card, turn.isSelected(card) ? classes.selected : ""].join(" ")}
+     className={[classes.card, isSelected ? classes.selected : ""].join(" ")}
      width={w}
      name={cardName} />
     </Button>
