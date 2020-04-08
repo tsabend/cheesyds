@@ -11,19 +11,15 @@ export class Turn {
     if (cardsToSubmit) {
       cardsToSubmit = cardsToSubmit.map((cardData: any) => Card.from(cardData));
     }
-    const isInReverse = data.isInReverse;
 
-    return new Turn(currentFaceValue, cardsToSubmit, isInReverse);
+    return new Turn(currentFaceValue, cardsToSubmit);
   }
   currentFaceValue?: FaceValue;
   cardsToSubmit: Card[] = [];
-  isInReverse: boolean;
   constructor(currentFaceValue?: FaceValue,
-              cardsToSubmit?: Card[],
-              isInReverse?: boolean) {
+              cardsToSubmit?: Card[]) {
                 this.currentFaceValue = currentFaceValue;
                 this.cardsToSubmit = cardsToSubmit || [];
-                this.isInReverse = isInReverse || false;
   }
 
   generateComputerSelection(player: Player): Card[] {
@@ -72,7 +68,7 @@ export class Turn {
   isValidSelection(card: Card): boolean {
     const faceValue = card.faceValue;
     const topFaceValue = this.currentFaceValue || FaceValue.Three
-    const canPlayOnTop = canPlayOn(faceValue, topFaceValue, this.isInReverse);
+    const canPlayOnTop = canPlayOn(faceValue, topFaceValue);
     if (!canPlayOnTop) return false;
     if (this.cardsToSubmit.length === 0) return true;
     return this.cardsToSubmit[0].faceValue === faceValue;

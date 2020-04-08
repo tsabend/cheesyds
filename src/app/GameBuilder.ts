@@ -11,7 +11,7 @@ export default class GameBuilder {
       new Player("3. Jojo"),
     ];
 
-    return new GameSnapshot(players, new Deck(), [], 0, false, ["Jojo cannot use proper nouns"]);
+    return new GameSnapshot(players, new Deck(), [], 0, ["Jojo cannot use proper nouns"]);
   }
 
   makeGame(players: string[]): GameSnapshot {
@@ -20,7 +20,6 @@ export default class GameBuilder {
       Deck.makeDeck(players.length),
       [],
       0,
-      false,
       [],
     );
   }
@@ -42,7 +41,6 @@ export default class GameBuilder {
       Deck.makeDeck(gamePlayers.length),
       [],
       0,
-      false,
       punishments,
     );
   }

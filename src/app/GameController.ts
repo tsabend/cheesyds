@@ -6,6 +6,7 @@ import {
 import { Player } from "./player";
 import { Turn } from "./turn";
 import GameSnapshot from "./GameSnapshot";
+import { FaceValue } from "./faceValue";
 
 export class GameController {
   deal(snapshot: GameSnapshot): GameSnapshot {
@@ -32,7 +33,7 @@ export class GameController {
       case Rule.ForcePickUp:
       return this.forcePickUp(cards, snapshot);
       case Rule.ReverseForOneTurn:
-      return this.reverse(cards, snapshot);
+      return this.play(cards, snapshot);
       case Rule.SkipOne:
       return this.skip(1, cards, snapshot);
       case Rule.SkipTwo:
@@ -44,25 +45,17 @@ export class GameController {
     }
   }
 
+
   play(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
-    return this._play(cards, false, snapshot);
-  }
-
-  reverse(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
-    return this._play(cards, true, snapshot);
-  }
-
-  _play(cards: Card[], willReverse: boolean, snapshot: GameSnapshot): GameSnapshot {
     return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().submit(cards);
       snapshot.currentPlayer().draw(snapshot.deck);
       snapshot.inPlayPile = snapshot.inPlayPile.concat(cards);
-      snapshot.isInReverse = willReverse;
       snapshot.lastTurnSummary = snapshot.currentPlayer().name +
       " played "
       + cards.map((card) => card.userFacingName()).join(", ")
       + ".";
-      if (willReverse) {
+      if (cards[0] && cards[0].faceValue === FaceValue.Seven) {
         snapshot.lastTurnSummary += ". Next Player must play a 7 or lower.";
       }
       return this.finishTurn(1, snapshot);
@@ -73,7 +66,6 @@ export class GameController {
     return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().submit(cards);
       snapshot.currentPlayer().draw(snapshot.deck);
-      snapshot.isInReverse = false;
       snapshot.inPlayPile = [];
       snapshot.lastTurnSummary = snapshot.currentPlayer().name +
       " played "
@@ -88,7 +80,6 @@ export class GameController {
       snapshot.currentPlayer().submit(cards);
       snapshot.currentPlayer().draw(snapshot.deck);
       snapshot.nextPlayer().pickUp(snapshot.inPlayPile);
-      snapshot.isInReverse = false;
       snapshot.inPlayPile = [];
       snapshot.lastTurnSummary = snapshot.currentPlayer().name +
       " played "
@@ -117,7 +108,6 @@ export class GameController {
     return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().pickUp(snapshot.inPlayPile);
       snapshot.inPlayPile = [];
-      snapshot.isInReverse = false;
       snapshot.lastTurnSummary = snapshot.currentPlayer().name +
       " picked up. Sucks to be them.";
       return this.finishTurn(1, snapshot);
@@ -129,7 +119,7 @@ export class GameController {
     // run logic for computer's turns
     // TODO: save up computer turn lastTurnSummarys
     while (snapshot.currentPlayer().isComputer && snapshot.isOver() === false) {
-      const turn = new Turn(snapshot.topOfInPlayPile()?.faceValue, [], snapshot.isInReverse);
+      const turn = new Turn(snapshot.topOfInPlayPile()?.faceValue, []);
       const cards = turn.generateComputerSelection(snapshot.currentPlayer());
       if (cards.length > 0) {
         return this.submit(cards, snapshot);

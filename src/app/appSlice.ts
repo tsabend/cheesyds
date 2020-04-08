@@ -61,7 +61,7 @@ export const slice = createSlice({
       state.game = action.payload;
       const game = state.game?.game;
       if (game) {
-        state.turn = new Turn(game.topOfInPlayPile()?.faceValue, [], game.isInReverse);
+        state.turn = new Turn(game.topOfInPlayPile()?.faceValue, []);
       }
     },
     selectCard: (state, card: PayloadAction<Card>) => {
@@ -198,7 +198,7 @@ const updateStateAndRunComputersTurn  = (state: RemoteGameState): AppThunk => (d
   const autoplay = false;
   const keepPlaying = autoplay || newCurrentPlayer.isComputer;
   if (keepPlaying && !newGame.isOver()) {
-    const turn = new Turn(newGame.topOfInPlayPile()?.faceValue, [], newGame.isInReverse);
+    const turn = new Turn(newGame.topOfInPlayPile()?.faceValue, []);
     const cards = turn.generateComputerSelection(newCurrentPlayer);
     if (cards.length > 0) {
       doAsync(() => dispatch(submitCards(cards, state)));

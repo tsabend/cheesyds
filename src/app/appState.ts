@@ -72,7 +72,7 @@ export const makeInitialAppState = (): AppState => {
   //     fbGameId: "-M3MS5UkhTtrhpUlhVli",
   //     game: game
   //   },
-  //   turn: new Turn(game.topOfInPlayPile()?.faceValue, [], game.isInReverse),
+  //   turn: new Turn(game.topOfInPlayPile()?.faceValue, []),
   //   me: "thomas"
   // }
   // return startedGame;

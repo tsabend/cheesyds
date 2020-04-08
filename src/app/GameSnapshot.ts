@@ -7,7 +7,6 @@ export default class GameSnapshot {
   deck: Deck;
   currentPlayerIndex: number;
   inPlayPile: Card[];
-  isInReverse: boolean;
   punishments: string[];
   lastTurnSummary?: string;
   winner?: Player;
@@ -18,7 +17,6 @@ export default class GameSnapshot {
     const rawInPlayPile = data.inPlayPile;
     const inPlayPile = rawInPlayPile ? rawInPlayPile.map((cardData: any) => Card.from(cardData)) : [];
     const currentPlayerIndex = data.currentPlayerIndex;
-    const isInReverse = data.isInReverse;
     const punishments = data.punishments || [];
     const lastTurnSummary = data.lastTurnSummary;
     const winner = data.winner;
@@ -27,7 +25,6 @@ export default class GameSnapshot {
       deck,
       inPlayPile,
       currentPlayerIndex,
-      isInReverse,
       punishments,
       lastTurnSummary,
       winner,
@@ -38,7 +35,6 @@ export default class GameSnapshot {
               deck: Deck,
               inPlayPile: Card[],
               currentPlayerIndex: number,
-              isInReverse: boolean,
               punishments: string[],
               lastTurnSummary?: string,
               winner?: Player,
@@ -47,7 +43,6 @@ export default class GameSnapshot {
     this.deck = deck;
     this.inPlayPile = inPlayPile;
     this.currentPlayerIndex = currentPlayerIndex;
-    this.isInReverse = isInReverse;
     this.punishments = punishments;
     this.lastTurnSummary = lastTurnSummary;
     this.winner = winner;
@@ -59,7 +54,6 @@ export default class GameSnapshot {
       this.deck.copy(),
       Array.from(this.inPlayPile),
       this.currentPlayerIndex,
-      this.isInReverse,
       this.punishments,
       this.lastTurnSummary,
       this.winner,
