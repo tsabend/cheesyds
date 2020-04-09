@@ -5,13 +5,10 @@ import {
 } from "./rule";
 import { Player } from "./player";
 import GameSnapshot from "./GameSnapshot";
-import { FaceValue } from "./faceValue";
 import {
   generatePlayHint,
   generateClearHint,
   generateDevilsHandHint,
-  generateReverseHint,
-  generateSkipHint,
   generatePickUpHint,
  } from "./hintHelper";
 

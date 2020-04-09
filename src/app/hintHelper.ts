@@ -1,4 +1,3 @@
-import { Rule } from "./rule";
 import Card from "./card";
 import { sample } from "./utility";
 import { FaceValue } from "./faceValue";
