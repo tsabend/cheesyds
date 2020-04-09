@@ -64,7 +64,7 @@ export const joinGameAsync = (gameId: string, playerName: string): AppThunk => (
   dispatch(startLoading());
   let hasJoined = false;
   let gameStarted = false;
-  pairingController.joinExistingSession(gameId, playerName, (result) => {
+  pairingController.joinExistingSession(gameId.toUpperCase(), playerName, (result) => {
     if (result.isOk()) {
       if (!hasJoined) {
         hasJoined = true;
