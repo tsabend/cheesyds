@@ -9,6 +9,7 @@ export enum Rule {
   SkipOne,
   SkipTwo,
   SkipThree,
+  PickUp,
 }
 
 // assumes array is non-null and the cards are all the same faceValue

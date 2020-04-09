@@ -39,7 +39,9 @@ const appStateFromJSON = (json: any): AppState | undefined => {
   const game = json.game;
   const me = json.me;
   if (!progress || !game || !me) return undefined;
-  game.game = GameSnapshot.from(game.game);
+  if (game.game) {
+    game.game = GameSnapshot.from(game.game);
+  }
   return {
     progress: progress,
     game: game,
