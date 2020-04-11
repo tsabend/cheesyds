@@ -78,7 +78,7 @@ const UpNextView = ({ classes, upcomingPlayers }: UpNextViewProps) => {
       <Typography>{player.numberOfCards()} cards in hand</Typography>
       <Typography>piles:</Typography>
       <VaultView
-        vault={player.board.vault}
+        board={player.board}
         cardWasTapped={() => {}}
         isSelected={() => { return false }}
         isEnabled={false}

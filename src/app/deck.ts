@@ -17,14 +17,14 @@ export class Deck {
     const deckBuilder = new DeckBuilder();
     var cards: Card[] = []
     for (let i = 0; i < numberOfDecks; i++) {
-      cards = cards.concat(deckBuilder.build())
+      cards = cards.concat(deckBuilder.build(i + 1));
     }
     return new Deck(cards);
   }
 
   constructor(cards?: Card[]) {
     const deckBuilder = new DeckBuilder();
-    this.cards = cards || deckBuilder.build();
+    this.cards = cards || deckBuilder.build(1);
   }
 
   copy(): Deck {
@@ -46,14 +46,16 @@ export class Deck {
 }
 
 export class DeckBuilder {
-  build(): Card[] {
+  build(idSeed: number): Card[] {
     let cards: Card[] = [];
 
+    var idx = 0;
     for (const suit in Suit) {
       for (const faceValue in FaceValue) {
         const myFaceValue: FaceValue = FaceValue[faceValue] as any as FaceValue;
         if (typeof myFaceValue !== "number") continue;
-        cards.push(new Card(suit as Suit, myFaceValue));
+        cards.push(new Card(suit as Suit, myFaceValue, idx * idSeed));
+        idx++;
       }
     }
     // mutating shuffle

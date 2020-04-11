@@ -4,18 +4,27 @@ import { Suit } from "./suit";
 export default class Card {
   suit: Suit;
   faceValue: FaceValue;
+  id: number;
 
-  static from(data: any): Card {
-    return new Card(data.suit, data.faceValue);
+  static arrayFrom(data: any): Card[] {
+    if (data) {
+      return data.map((card: any) => Card.from(card));
+    }
+    return [];
   }
 
-  constructor(suit: Suit, faceValue: FaceValue) {
+  static from(data: any): Card {
+    return new Card(data.suit, data.faceValue, data.id);
+  }
+
+  constructor(suit: Suit, faceValue: FaceValue, id: number) {
     this.suit = suit;
     this.faceValue = faceValue;
+    this.id = id;
   }
 
   index(): string {
-    return this.suit + this.faceValue;
+    return this.id.toString();
   }
 
   userFacingName(): string {

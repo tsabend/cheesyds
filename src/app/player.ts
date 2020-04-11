@@ -1,12 +1,13 @@
 import Card from "./card";
 import { Deck } from "./deck";
-import { sample } from "./utility";
+import { sample, zip } from "./utility";
 import { canPlay } from "./rule";
 
 export class Player {
   name: string;
   board: PlayerBoard;
   isComputer: boolean;
+  needsSwapping: boolean;
 
   static from(data: any): Player {
     const rawBoard = data.board;
@@ -14,19 +15,21 @@ export class Player {
     if (rawBoard) {
       board = PlayerBoard.from(rawBoard);
     }
-    return new Player(data.name, board, data.isComputer);
+    return new Player(data.name, board, data.isComputer, data.needsSwapping);
   }
 
   constructor(name: string,
               board?: PlayerBoard,
-              isComputer?: boolean) {
+              isComputer?: boolean,
+              needsSwapping?: boolean) {
     this.name = name;
     this.board = board || new PlayerBoard();
     this.isComputer = isComputer || false;
+    this.needsSwapping = needsSwapping || false;
   }
 
   copy(): Player {
-    return new Player(this.name, this.board.copy(), this.isComputer);
+    return new Player(this.name, this.board.copy(), this.isComputer, this.needsSwapping);
   }
 
   isOut(): boolean {
@@ -49,6 +52,10 @@ export class Player {
         this.board.hand = this.board.hand.concat(deal);
       }
     }
+  }
+
+  swap(handCard: Card, vaultCard: Card) {
+    this.board.swap(handCard, vaultCard)
   }
 
   pickUp(cards: Card[]) {
@@ -84,38 +91,33 @@ export class Player {
 export class PlayerBoard {
 
   hand: Card[];
-  vault: Card[][];
+  faceDownVault: Card[];
+  faceUpVault: Card[];
   static from(data: any): PlayerBoard {
-    const rawHand = data.hand;
-    let hand;
-    if (rawHand) {
-      hand = rawHand.map((card: any) => Card.from(card));
-    }
-    const rawPiles = data.vault;
-    let vault;
-    if (rawPiles && rawPiles.map) {
-      try {
-        vault = rawPiles.map((pile: any[]) => pile.map((card) => Card.from(card)));
-      }
-      catch {
-        vault = rawPiles["2"]
-      }
-    }
-    return new PlayerBoard(hand, vault  );
+    let hand = Card.arrayFrom(data.hand);
+    let faceDownVault = Card.arrayFrom(data.faceDownVault);
+    let faceUpVault = Card.arrayFrom(data.faceUpVault);
+
+    return new PlayerBoard(hand, faceDownVault, faceUpVault);
   }
   constructor(hand?: Card[],
-              vault?: Card[][]) {
+              faceDownVault?: Card[],
+              faceUpVault?: Card[]) {
                 this.hand = hand || [];
-                this.vault = vault || [];
+                this.faceDownVault = faceDownVault || [];
+                this.faceUpVault = faceUpVault || [];
   }
 
   copy(): PlayerBoard {
-    const newPiles = this.vault.map((pile) => Array.from(pile));
-    return new PlayerBoard(Array.from(this.hand), newPiles);
+    return new PlayerBoard(
+      Array.from(this.hand),
+      Array.from(this.faceDownVault),
+      Array.from(this.faceUpVault),
+    );
   }
 
   isOut(): boolean {
-    return this.hand.length === 0 && this.vault.filter((pile) => pile.length > 0).length === 0;
+    return this.hand.length === 0 && this.faceDownVault.length === 0 && this.faceUpVault.length === 0;
   }
 
   sortedHand(): Card[] {
@@ -125,23 +127,21 @@ export class PlayerBoard {
   // deal out an array of 6 cards
   deal(cards: Card[]) {
     const newHand = cards.splice(0, 3);
-    const pile1 = cards.splice(0, 2);
-    const pile2 = cards.splice(0, 2);
-    const pile3 = cards.splice(0, 2);
-    const newPiles = [
-      pile1,
-      pile2,
-      pile3,
-    ];
+    const faceDownVault = cards.splice(0, 3);
+    const faceUpVault = cards.splice(0, 3);
+
     this.hand = newHand;
-    this.vault = newPiles;
+    this.faceDownVault = faceDownVault;
+    this.faceUpVault = faceUpVault;
   }
 
   submit(cards: Card[]) {
     const newHand = this.hand.filter((_card) => cards.indexOf(_card) === -1);
-    const newPiles = this.vault.map((pile) => pile.filter((_card) => cards.indexOf(_card) === -1));
+    const newFaceUpVault = this.faceUpVault.filter((_card) => cards.indexOf(_card) === -1);
+    const newFaceDownVault = this.faceDownVault.filter((_card) => cards.indexOf(_card) === -1);
     this.hand = newHand;
-    this.vault = newPiles;
+    this.faceUpVault = newFaceUpVault;
+    this.faceDownVault = newFaceDownVault;
   }
 
   pickUp(cards: Card[]) {
@@ -149,10 +149,20 @@ export class PlayerBoard {
     this.hand = newHand;
   }
 
+  swap(handCard: Card, vaultCard: Card) {
+    this.hand = this.hand.filter((_card) => _card === handCard);
+    this.hand.push(vaultCard);
+    this.faceUpVault.filter((_card) => _card === vaultCard);
+    this.hand.push(handCard);
+  }
+
   playablePileCards(): Card[] {
     if (this.hand.length > 0) return [];
-    const faceUpPileCards = this.vault.filter((pile) => pile.length === 2).map((pile) => pile[1])
-    if (faceUpPileCards.length > 0) return faceUpPileCards;
-    return this.vault.filter((pile) => pile.length === 1).map((pile) => pile[0]);
+    if (this.faceUpVault.length > 0) return this.faceUpVault;
+    return this.faceDownVault;
+  }
+
+  vault(): Card[][] {
+    return zip(this.faceDownVault, this.faceUpVault);
   }
 }

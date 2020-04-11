@@ -40,7 +40,6 @@ type CardViewProps = {
 
 const CardView = ({ card, cardWasTapped, isSelected, isEnabled, isFaceDown, width, classes }: CardViewProps) => {
   const faceDown = isFaceDown || false;
-  const enabled = faceDown ? false : isEnabled
   const cardName = faceDown ? "Red_Back" : card.svgName();
   const w = width || 100;
   return (
@@ -48,7 +47,7 @@ const CardView = ({ card, cardWasTapped, isSelected, isEnabled, isFaceDown, widt
     <Button
      className={classes.button}
      onClick={() => {
-         if (enabled) {
+         if (isEnabled) {
            cardWasTapped(card);
          }
        }

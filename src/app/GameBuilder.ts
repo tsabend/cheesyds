@@ -1,6 +1,5 @@
 import { Deck } from "./deck";
 import GameSnapshot from "./GameSnapshot";
-import { GameController } from "./GameController";
 import { Player } from "./player";
 
 export default class GameBuilder {
@@ -43,21 +42,5 @@ export default class GameBuilder {
       0,
       punishments,
     );
-  }
-
-  // Simulate end of game
-  makeAlmostFinshedGame(controller: GameController): GameSnapshot {
-    const snapshot = new GameBuilder().makeFakeGame();
-    const initial = controller.deal(snapshot);
-    initial.deck.cards = [];
-    initial.players[0].board.hand = [];
-    initial.players[0].board.vault[0] = [];
-    initial.players[0].board.vault[1] = [];
-    initial.players[0].board.vault[2].pop();
-    initial.players[1].board.hand = [];
-    initial.players[1].board.vault[0] = [];
-    initial.players[1].board.vault[1] = [];
-    initial.players[1].board.vault[2].pop();
-    return initial;
   }
 }

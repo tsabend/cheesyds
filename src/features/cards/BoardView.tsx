@@ -59,6 +59,13 @@ const BoardView = ({ classes }: BoardViewProps) => {
   const [selectedCards, setSelectedCards] = useState<Card[]>([]);
   const topOfInPlayPile = game.topOfInPlayPile();
   const cardWasTapped = (card: Card) => {
+    if (!itIsMyTurn) return;
+    const isFaceDownVault = player.board.faceDownVault.includes(card);
+    debugger
+    if (isFaceDownVault) {
+      setSelectedCards([card]);
+      return
+    }
     const isSameType = selectedCards[0]?.faceValue === card.faceValue;
     const canPlayOnTop = canPlay(card.faceValue, topOfInPlayPile?.faceValue);
 
@@ -83,7 +90,7 @@ const BoardView = ({ classes }: BoardViewProps) => {
     if (me) {
       return <React.Fragment>
       <VaultView
-       vault={me.board.vault}
+       board={me.board}
        cardWasTapped={cardWasTapped}
        isSelected={isSelected}
        isEnabled={me.isEliminatingPiles()}

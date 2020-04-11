@@ -1,6 +1,7 @@
 import Card from "./card";
 import {
   getRule,
+  canPlay,
   Rule,
 } from "./rule";
 import { Player } from "./player";
@@ -29,6 +30,9 @@ export class GameController {
 
   submit(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
     if (cards.length === 0) return snapshot;
+    if (!canPlay(cards[0].faceValue, snapshot.topOfInPlayPile()?.faceValue)) {
+      return this.pickUp(snapshot, cards)
+    }
     const rule = getRule(cards, snapshot.inPlayPile);
     switch (rule) {
       case Rule.Play:
@@ -50,6 +54,19 @@ export class GameController {
     }
   }
 
+  swap(handCard: Card, vaultCard: Card, snapshot: GameSnapshot) {
+    return this.mutate(snapshot, (snapshot) => {
+      snapshot.currentPlayer().swap(handCard, vaultCard);
+      return snapshot;
+    });
+  }
+
+  finishSwapping() {
+    return this.mutate(snapshot, (snapshot) => {
+      snapshot.currentPlayer().swap(handCard, vaultCard);
+      return snapshot;
+    });
+  }
 
   play(cards: Card[], skipCount: number, snapshot: GameSnapshot): GameSnapshot {
     return this.mutate(snapshot, (snapshot) => {
@@ -79,8 +96,11 @@ export class GameController {
     });
   }
 
-  pickUp(snapshot: GameSnapshot): GameSnapshot {
+  pickUp(snapshot: GameSnapshot, cards?: Card[]): GameSnapshot {
     return this.mutate(snapshot, (snapshot) => {
+      if (cards) {
+        snapshot.currentPlayer().submit(cards);
+      }
       snapshot.currentPlayer().pickUp(snapshot.inPlayPile);
       snapshot.inPlayPile = [];
       snapshot.lastTurnSummary = generatePickUpHint(snapshot.currentPlayer().name);

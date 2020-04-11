@@ -10,3 +10,7 @@ export const shuffle = function<T>(array: T[]): T[] {
 export const sample = function<T>(array: T[]): T | undefined {
   return shuffle(array)[0];
 };
+
+export const zip = function<T>(arr1: T[], arr2: T[]): T[][] {
+  return arr1.map((k, i) => [k, arr2[i]]);
+} 

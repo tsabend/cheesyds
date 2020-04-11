@@ -9,6 +9,7 @@ import {
   WithStyles,
   Box
 } from "@material-ui/core";
+import { PlayerBoard } from "../../app/player";
 
 const styles: (theme: Theme) => StyleRules<string> = _ =>
   createStyles({
@@ -36,41 +37,28 @@ const styles: (theme: Theme) => StyleRules<string> = _ =>
   });
 
 type VaultViewProps = {
-  vault: Array<Array<Card>>;
+  board: PlayerBoard;
   isEnabled: boolean;
   cardWasTapped: (card: Card) => void;
   isSelected: (card: Card) => boolean;
   width: number;
 } & WithStyles<typeof styles>;
 
-const VaultView = ({ cardWasTapped, isSelected, vault, width, isEnabled, classes }: VaultViewProps) => {
-
+const VaultView = ({ cardWasTapped, isSelected, board, width, isEnabled, classes }: VaultViewProps) => {
+  const canPlayFaceDown = isEnabled && board.faceUpVault.length === 0;
   return (
     <Box className={classes.container}>
-    {vault.map(pile => {
-        if (pile.length === 1) {
-          return <Box className={classes.stackContainer}>
-          <div className={classes.faceUp}>
-          <CardView
-          card={pile[0]}
-          key={pile[0].index()}
-          cardWasTapped={cardWasTapped}
-          isSelected={isSelected(pile[0])}
-          isEnabled={isEnabled}
-          width={width}
-          />
-          </div>
-          </Box>
-        }
-        if (pile.length === 2) {
+    {board.vault().map(pile => {
+
+        if (pile[1]) {
           return <Box className={classes.stackContainer}>
           <div className={classes.faceDown}>
           <CardView
           card={pile[0]}
           key={pile[0].index()}
-          cardWasTapped={cardWasTapped}
+          cardWasTapped={() => {}}
           isSelected={isSelected(pile[0])}
-          isEnabled={isEnabled}
+          isEnabled={canPlayFaceDown}
           width={width}
           isFaceDown={true}
           />
@@ -83,6 +71,21 @@ const VaultView = ({ cardWasTapped, isSelected, vault, width, isEnabled, classes
           isSelected={isSelected(pile[1])}
           isEnabled={isEnabled}
           width={width}
+          />
+          </div>
+          </Box>
+        }
+        if (pile[0]) {
+          return <Box className={classes.stackContainer}>
+          <div className={classes.faceUp}>
+          <CardView
+          card={pile[0]}
+          key={pile[0].index()}
+          cardWasTapped={cardWasTapped}
+          isSelected={isSelected(pile[0])}
+          isEnabled={canPlayFaceDown}
+          width={width}
+          isFaceDown={true}
           />
           </div>
           </Box>
