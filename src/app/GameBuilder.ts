@@ -51,13 +51,13 @@ export default class GameBuilder {
     const initial = controller.deal(snapshot);
     initial.deck.cards = [];
     initial.players[0].board.hand = [];
-    initial.players[0].board.piles[0] = [];
-    initial.players[0].board.piles[1] = [];
-    initial.players[0].board.piles[2].pop();
+    initial.players[0].board.vault[0] = [];
+    initial.players[0].board.vault[1] = [];
+    initial.players[0].board.vault[2].pop();
     initial.players[1].board.hand = [];
-    initial.players[1].board.piles[0] = [];
-    initial.players[1].board.piles[1] = [];
-    initial.players[1].board.piles[2].pop();
+    initial.players[1].board.vault[0] = [];
+    initial.players[1].board.vault[1] = [];
+    initial.players[1].board.vault[2].pop();
     return initial;
   }
 }

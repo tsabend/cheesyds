@@ -84,38 +84,38 @@ export class Player {
 export class PlayerBoard {
 
   hand: Card[];
-  piles: Card[][];
+  vault: Card[][];
   static from(data: any): PlayerBoard {
     const rawHand = data.hand;
     let hand;
     if (rawHand) {
       hand = rawHand.map((card: any) => Card.from(card));
     }
-    const rawPiles = data.piles;
-    let piles;
+    const rawPiles = data.vault;
+    let vault;
     if (rawPiles && rawPiles.map) {
       try {
-        piles = rawPiles.map((pile: any[]) => pile.map((card) => Card.from(card)));
+        vault = rawPiles.map((pile: any[]) => pile.map((card) => Card.from(card)));
       }
       catch {
-        piles = rawPiles["2"]
+        vault = rawPiles["2"]
       }
     }
-    return new PlayerBoard(hand, piles  );
+    return new PlayerBoard(hand, vault  );
   }
   constructor(hand?: Card[],
-              piles?: Card[][]) {
+              vault?: Card[][]) {
                 this.hand = hand || [];
-                this.piles = piles || [];
+                this.vault = vault || [];
   }
 
   copy(): PlayerBoard {
-    const newPiles = this.piles.map((pile) => Array.from(pile));
+    const newPiles = this.vault.map((pile) => Array.from(pile));
     return new PlayerBoard(Array.from(this.hand), newPiles);
   }
 
   isOut(): boolean {
-    return this.hand.length === 0 && this.piles.filter((pile) => pile.length > 0).length === 0;
+    return this.hand.length === 0 && this.vault.filter((pile) => pile.length > 0).length === 0;
   }
 
   sortedHand(): Card[] {
@@ -134,14 +134,14 @@ export class PlayerBoard {
       pile3,
     ];
     this.hand = newHand;
-    this.piles = newPiles;
+    this.vault = newPiles;
   }
 
   submit(cards: Card[]) {
     const newHand = this.hand.filter((_card) => cards.indexOf(_card) === -1);
-    const newPiles = this.piles.map((pile) => pile.filter((_card) => cards.indexOf(_card) === -1));
+    const newPiles = this.vault.map((pile) => pile.filter((_card) => cards.indexOf(_card) === -1));
     this.hand = newHand;
-    this.piles = newPiles;
+    this.vault = newPiles;
   }
 
   pickUp(cards: Card[]) {
@@ -151,8 +151,8 @@ export class PlayerBoard {
 
   playablePileCards(): Card[] {
     if (this.hand.length > 0) return [];
-    const faceUpPileCards = this.piles.filter((pile) => pile.length === 2).map((pile) => pile[1])
+    const faceUpPileCards = this.vault.filter((pile) => pile.length === 2).map((pile) => pile[1])
     if (faceUpPileCards.length > 0) return faceUpPileCards;
-    return this.piles.filter((pile) => pile.length === 1).map((pile) => pile[0]);
+    return this.vault.filter((pile) => pile.length === 1).map((pile) => pile[0]);
   }
 }

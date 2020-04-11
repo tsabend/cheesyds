@@ -1,6 +1,6 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import PilesView from "./PilesView"
+import VaultView from "./VaultView"
 import {
   withStyles,
   Theme,
@@ -77,8 +77,8 @@ const UpNextView = ({ classes, upcomingPlayers }: UpNextViewProps) => {
         <Typography variant="h6">{makeHeader(index)}</Typography>
       <Typography>{player.numberOfCards()} cards in hand</Typography>
       <Typography>piles:</Typography>
-      <PilesView
-        piles={player.board.piles}
+      <VaultView
+        vault={player.board.vault}
         cardWasTapped={() => {}}
         isSelected={() => { return false }}
         isEnabled={false}

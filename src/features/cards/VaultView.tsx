@@ -35,19 +35,19 @@ const styles: (theme: Theme) => StyleRules<string> = _ =>
 
   });
 
-type PilesViewProps = {
-  piles: Array<Array<Card>>;
+type VaultViewProps = {
+  vault: Array<Array<Card>>;
   isEnabled: boolean;
   cardWasTapped: (card: Card) => void;
   isSelected: (card: Card) => boolean;
   width: number;
 } & WithStyles<typeof styles>;
 
-const PilesView = ({ cardWasTapped, isSelected, piles, width, isEnabled, classes }: PilesViewProps) => {
+const VaultView = ({ cardWasTapped, isSelected, vault, width, isEnabled, classes }: VaultViewProps) => {
 
   return (
     <Box className={classes.container}>
-    {piles.map(pile => {
+    {vault.map(pile => {
         if (pile.length === 1) {
           return <Box className={classes.stackContainer}>
           <div className={classes.faceUp}>
@@ -94,4 +94,4 @@ const PilesView = ({ cardWasTapped, isSelected, piles, width, isEnabled, classes
   );
 };
 
-export default withStyles(styles)(PilesView);
+export default withStyles(styles)(VaultView);

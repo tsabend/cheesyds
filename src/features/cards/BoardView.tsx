@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import HandView from "./HandView"
-import PilesView from "./PilesView"
+import VaultView from "./VaultView"
 import GameSnapshot from "../../app/GameSnapshot"
 import {
   withStyles,
@@ -82,8 +82,8 @@ const BoardView = ({ classes }: BoardViewProps) => {
   const buildMyBoard = () => {
     if (me) {
       return <React.Fragment>
-      <PilesView
-       piles={me.board.piles}
+      <VaultView
+       vault={me.board.vault}
        cardWasTapped={cardWasTapped}
        isSelected={isSelected}
        isEnabled={me.isEliminatingPiles()}
