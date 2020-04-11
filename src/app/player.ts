@@ -93,8 +93,13 @@ export class PlayerBoard {
     }
     const rawPiles = data.piles;
     let piles;
-    if (rawPiles) {
-      piles = rawPiles.map((pile: any[]) => pile.map((card) => Card.from(card)));
+    if (rawPiles && rawPiles.map) {
+      try {
+        piles = rawPiles.map((pile: any[]) => pile.map((card) => Card.from(card)));
+      }
+      catch {
+        piles = rawPiles["2"]
+      }
     }
     return new PlayerBoard(hand, piles  );
   }
@@ -110,7 +115,7 @@ export class PlayerBoard {
   }
 
   isOut(): boolean {
-    return this.hand.length === 0 && this.piles.filter((pile) => pile.length === 0).length === 3;
+    return this.hand.length === 0 && this.piles.filter((pile) => pile.length > 0).length === 0;
   }
 
   sortedHand(): Card[] {

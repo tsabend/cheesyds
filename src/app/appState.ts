@@ -79,15 +79,17 @@ export const makeInitialAppState = (): AppState => {
     localStorage.setItem("reduxState", "");
   }
   const local = localStorage.getItem("reduxState");
+  try {
   if (local && local.length > 0) {
     const rawRecoveredState = JSON.parse(local);
     const recoveredState = appStateFromJSON(rawRecoveredState);
     if (recoveredState) {
-      recoveredState.progress = AppProgress.Rejoining;
-      return recoveredState
+        recoveredState.progress = AppProgress.Rejoining;
+        return recoveredState;
+      }
     }
   }
-
+  catch {}
   return {
     progress: AppProgress.Landing,
     game: undefined,
