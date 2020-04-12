@@ -12,12 +12,14 @@ import {
   StyleRules,
   createStyles,
   WithStyles,
+  Box,
 } from "@material-ui/core";
 
 import { useDispatch } from "react-redux";
 import {
   startPairingAsync,
   startGameVsCPU,
+  startOpenHandedGame,
   joinGameAsync,
 } from "../../app/appSlice";
 
@@ -40,12 +42,20 @@ const LandingView = (_: LandingViewProps) => {
   const playComputerButton = () => {
     const isDebug = false;
     if (!isDebug) return ""
-    return <Button
+    return <Box>
+    <Button
+      type="submit"
+      onClick={ () => { dispatch(startOpenHandedGame()) }}
+      >
+      {"Play Open Handed"}
+    </Button>
+    <Button
       type="submit"
       onClick={ () => { dispatch(startGameVsCPU()) }}
       >
       {"Play Against the Computer"}
     </Button>
+    </Box>
   }
 
   return (

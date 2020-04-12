@@ -43,4 +43,26 @@ export default class GameBuilder {
       punishments,
     );
   }
+
+  makeOpenHandedGame(players: string[], punishments: string[]): GameSnapshot {
+    console.log("MAKING OPEN HANDED GAME");
+    const human = new Player(players[0], undefined, false, true);
+    const bots = [
+      new Player("Burgie", undefined, false, true),
+      // new Player("Monica", undefined, false, true),
+      // new Player("Jojo", undefined, false, true),
+      // new Player("Sawyer", undefined, false, true),
+      // new Player("James", undefined, false, true),
+      // new Player("Liz", undefined, false, true),
+    ];
+    const gamePlayers = [human].concat(bots);
+    const deck = Deck.makeDeck(gamePlayers.length);
+    return new GameSnapshot(
+      gamePlayers,
+      deck,
+      [],
+      0,
+      punishments,
+    );
+  }
 }

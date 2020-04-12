@@ -54,6 +54,10 @@ export const slice = createSlice({
     updateGameState: (state, action: PayloadAction<RemoteGameState>) => {
       console.log("UPDATING GAME STATE TO:", action.payload);
       state.game = action.payload;
+      const isOpenHanded = false;
+      if (isOpenHanded) {
+        state.me = state.game.game?.currentPlayer().name || "";
+      }
     },
   },
 });
@@ -127,6 +131,22 @@ export const startGameVsCPU = (state?: RemoteGameState): AppThunk => (dispatch) 
   dispatch(updateGameState(newState));
   // auto start game
   dispatch(pickUpCards(newState));
+};
+
+export const startOpenHandedGame = (state?: RemoteGameState): AppThunk => (dispatch) => {
+  dispatch(startLoading());
+  const punishments = state?.game?.punishments || [];
+  let newState: RemoteGameState = {
+    players: ["Human"],
+    gameId: "1234",
+  };
+
+  const start = new GameBuilder().makeOpenHandedGame(newState.players, punishments);
+  const game = gameController.deal(start);
+  newState = copyRemoteGameState(newState);
+  newState.game = game;
+  dispatch(startGameVsComputer("Human"));
+  dispatch(updateGameState(newState));
 };
 
 export const quitGame = (state: AppState): AppThunk => (dispatch) => {
