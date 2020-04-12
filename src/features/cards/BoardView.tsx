@@ -215,7 +215,13 @@ const BoardView = ({ classes }: BoardViewProps) => {
     color={'primary'}
     variant={'contained'}
     aria-label="Finish Swapping"
-    onClick={ () => remoteGame && dispatch(finishSwapping(remoteGame)) }
+    onClick={ () => {
+      if (remoteGame) {
+        dispatch(finishSwapping(remoteGame))
+        setSelectedCards([]);
+      }
+    }
+    }
     >
     FINISH SWAPPING
     </Button>
