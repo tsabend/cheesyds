@@ -72,10 +72,22 @@ export const generateDevilsHandHint = (playerName: string, nextPlayerName: strin
     wordForPlayed() +
     formattedCards(cards) +
     nextPlayerName +
-    + " picks up that devil's hand.";
+    " picks up that devil's hand.";
 }
 
 export const generatePickUpHint = (playerName: string): string => {
   return playerName +
   " picked up. Sucks to be them.";
+}
+
+export const generateSwapHint = (playerName: string, cards: Card[]): string => {
+  return playerName +
+  " swapped " +
+  cards.map(card => card.userFacingName()).join(" and ") +
+  ".";
+
+}
+
+export const generateFinishedSwappingHint = (playerName: string): string => {
+  return playerName + " finished swapping."
 }

@@ -20,6 +20,7 @@ export default class GameBuilder {
       [],
       0,
       [],
+      this.makeGameStartHint(),
     );
   }
 
@@ -41,6 +42,7 @@ export default class GameBuilder {
       [],
       0,
       punishments,
+      this.makeGameStartHint(),
     );
   }
 
@@ -63,6 +65,11 @@ export default class GameBuilder {
       [],
       0,
       punishments,
+      this.makeGameStartHint(),
     );
+  }
+
+  makeGameStartHint(): string {
+    return "Welcome to CheezyD. Start out by swapping cards from your hand and vault. Stash away a few good cards for later, then click finish swapping when you're done."
   }
 }

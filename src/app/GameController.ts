@@ -11,6 +11,8 @@ import {
   generateClearHint,
   generateDevilsHandHint,
   generatePickUpHint,
+  generateSwapHint,
+  generateFinishedSwappingHint,
  } from "./hintHelper";
 
 export class GameController {
@@ -57,6 +59,7 @@ export class GameController {
   swap(cards: Card[], snapshot: GameSnapshot) {
     return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().swap(cards);
+      snapshot.lastTurnSummary = generateSwapHint(snapshot.currentPlayer().name, cards);
       return snapshot;
     });
   }
@@ -64,6 +67,7 @@ export class GameController {
   finishSwapping(snapshot: GameSnapshot) {
     return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().needsSwapping = false;
+      snapshot.lastTurnSummary = generateFinishedSwappingHint (snapshot.currentPlayer().name);
       return this.finishTurn(1, snapshot);
     });
   }
