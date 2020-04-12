@@ -93,7 +93,7 @@ export class GameController {
   forcePickUp(cards: Card[], snapshot: GameSnapshot): GameSnapshot {
     return this.mutate(snapshot, (snapshot) => {
       snapshot.currentPlayer().submit(cards);
-      snapshot.nextPlayer().pickUp(snapshot.inPlayPile);
+      snapshot.nextPlayer().pickUp(snapshot.inPlayPile.concat(cards));
       snapshot.inPlayPile = [];
       snapshot.lastTurnSummary = generateDevilsHandHint(snapshot.currentPlayer().name, snapshot.players[snapshot.playerIndexSkipping(1)].name,  cards);
       return this.finishTurn(2, snapshot);
