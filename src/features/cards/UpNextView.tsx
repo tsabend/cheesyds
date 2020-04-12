@@ -76,7 +76,7 @@ const UpNextView = ({ classes, upcomingPlayers }: UpNextViewProps) => {
       children={<div >
         <Typography variant="h6">{makeHeader(index)}</Typography>
       <Typography>{player.numberOfCards()} cards in hand</Typography>
-      <Typography>piles:</Typography>
+      <Typography>Vault:</Typography>
       <VaultView
         board={player.board}
         cardWasTapped={() => {}}
