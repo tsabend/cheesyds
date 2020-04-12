@@ -41,24 +41,28 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
 
   useEffect(() => {
     if (game.currentPlayer().name === me && needsFlashing) {
+      // Lol, refactor this
       setNeedsFlashing(false);
       setTimeout(() => {
-        console.log("BOOM")
         setIsFlashing(true);
         setTimeout(() => {
-          console.log("BAP")
           setIsFlashing(false);
-        }, 25);
-      }, 25);
+          setTimeout(() => {
+            setIsFlashing(true);
+            setTimeout(() => {
+              setIsFlashing(false);
+            }, 100);
+          }, 100);
+        }, 100);
+      }, 100);
     }
     else if (game.currentPlayer().name !== me) {
-      console.log("Re-arming")
       setNeedsFlashing(true);
     }
   })
 
   const [isFlashing, setIsFlashing] = useState(false);
-  const [needsFlashing, setNeedsFlashing] = useState(true);
+  const [needsFlashing, setNeedsFlashing] = useState(false);
 
   return (
     <Box className={[classes.root, isFlashing ? classes.flash : ""].join(" ")}>
