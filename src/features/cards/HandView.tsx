@@ -9,6 +9,7 @@ import {
   StyleRules,
   createStyles,
   WithStyles,
+  Tooltip,
 } from "@material-ui/core";
 
 const styles: (theme: Theme) => StyleRules<string> = _ =>
@@ -22,25 +23,36 @@ type HandViewProps = {
 } & WithStyles<typeof styles>;
 
 const HandView = ({ isSelected, cardWasTapped, hand }: HandViewProps) => {
+  const [open, setOpen] = React.useState(false);
 
   return (
+    <span
+    onMouseEnter={() => setOpen(true)}
+    onMouseLeave={() => setOpen(false)}
+    >
     <Grid container alignItems="center" justify="center" spacing={1}>
-    <Grid item xs={12}>
-    </Grid>
     {
-      hand.map(card => {
-        return <Grid item>
+      hand.map((card, idx) => {
+        const cardView = <Grid item>
           <CardView
           card={card}
           cardWasTapped={cardWasTapped}
           isSelected={isSelected(card)}
           key={card.index()}
           isEnabled={true}
+
           />
         </Grid>
+          if (idx === 0) {
+            return <Tooltip title="Your Hand" placement="left" open={open} arrow>
+            {cardView}
+            </Tooltip>
+          }
+          return cardView;
       })
     }
     </Grid>
+    </span>
   );
 };
 

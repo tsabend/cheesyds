@@ -14,6 +14,7 @@ import {
   createStyles,
   WithStyles,
   Box,
+  Tooltip,
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -61,7 +62,6 @@ const BoardView = ({ classes }: BoardViewProps) => {
   const me = useSelector(selectMyPlayer);
   const player = game.currentPlayer();
   const itIsMyTurn = player === me;
-
   const [selectedCards, setSelectedCards] = useState<Card[]>([]);
   const topOfInPlayPile = game.topOfInPlayPile();
   const cardWasTapped = (card: Card) => {
@@ -137,6 +137,7 @@ const BoardView = ({ classes }: BoardViewProps) => {
        isSelected={isSelected}
        isEnabled={me.isVaultEnabled()}
        width={me.board.hand.length === 0 ? 80 : 60}
+       showsHover={true}
        />
       <HandView
       hand={me.board.sortedHand()}
@@ -156,6 +157,8 @@ const BoardView = ({ classes }: BoardViewProps) => {
 
   const buildPlayingButtons = () => {
     return <Box className={classes.myTurnButtonsBox}>
+    <Tooltip title={selectedCards.length === 0 ? "Select Cards to Enable" : ""}>
+    <span>
     <Button
     className={classes.button}
     color={'primary'}
@@ -171,6 +174,10 @@ const BoardView = ({ classes }: BoardViewProps) => {
     >
     SUBMIT
     </Button>
+    </span>
+    </Tooltip>
+    <Tooltip title={topOfInPlayPile === undefined ? "No Cards In Play to Pick Up" : ""}>
+    <span>
     <Button
     className={classes.button}
     color={'primary'}
@@ -181,6 +188,8 @@ const BoardView = ({ classes }: BoardViewProps) => {
     >
     PICK UP
     </Button>
+    </span>
+    </Tooltip>
     </Box>
   }
 

@@ -83,6 +83,7 @@ const UpNextView = ({ classes, upcomingPlayers }: UpNextViewProps) => {
         isSelected={() => { return false }}
         isEnabled={false}
         width={50}
+        showsHover={false}
       />
       </div>
     }
