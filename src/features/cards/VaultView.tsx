@@ -18,9 +18,11 @@ const styles: (theme: Theme) => StyleRules<string> = _ =>
       marginTop: "-8px",
       marginLeft: "-8px",
       position: 'absolute',
+      zIndex: 0,
     },
     faceUp: {
       position: 'absolute',
+      zIndex: 1,
     },
     stackContainer: {
       position: 'relative',
@@ -31,7 +33,7 @@ const styles: (theme: Theme) => StyleRules<string> = _ =>
     },
     container: {
       width: '312px',
-      margin: '0 auto',
+      margin: '32px auto',
       position: 'relative',
     },
 
@@ -54,7 +56,7 @@ const VaultView = ({ cardWasTapped, isSelected, board, width, isEnabled, showsHo
     {board.vault().map(pile => {
 
       if (pile[1]) {
-        return <Box className={classes.stackContainer} key={pile.map(card => card.index()).join("_")}>
+        return <Box className={classes.stackContainer} key={pile.map(card => card?.index() || "").join("_")}>
         <div className={classes.faceDown}>
         <CardView
         card={pile[0]}
@@ -79,7 +81,7 @@ const VaultView = ({ cardWasTapped, isSelected, board, width, isEnabled, showsHo
         </Box>
       }
       if (pile[0]) {
-        return <Box className={classes.stackContainer} key={pile.map(card => card.index()).join("_")}>
+        return <Box className={classes.stackContainer} key={pile.map(card => card?.index() || "").join("_")}>
         <div className={classes.faceUp}>
         <CardView
         card={pile[0]}
