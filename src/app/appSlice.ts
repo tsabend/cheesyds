@@ -143,6 +143,24 @@ export const submitCards = (cards: Card[], state: RemoteGameState): AppThunk => 
   dispatch(writeState(newState));
 };
 
+export const swapCards = (cards: Card[], state: RemoteGameState): AppThunk => (dispatch) => {
+  const game = state.game as GameSnapshot;
+  if (!game) return;
+  let newState = copyRemoteGameState(state);
+  newState.game = gameController.swap(cards, game);
+  console.log(newState.game.lastTurnSummary || "first turn");
+  dispatch(writeState(newState));
+};
+
+export const finishSwapping = (state: RemoteGameState): AppThunk => (dispatch) => {
+  const game = state.game as GameSnapshot;
+  if (!game) return;
+  let newState = copyRemoteGameState(state);
+  newState.game = gameController.finishSwapping(game);
+  console.log(newState.game.lastTurnSummary || "first turn");
+  dispatch(writeState(newState));
+};
+
 export const pickUpCards = (state: RemoteGameState): AppThunk => (dispatch) => {
   const game = state.game as GameSnapshot;
   if (!game) return;

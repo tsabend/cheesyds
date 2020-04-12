@@ -54,17 +54,17 @@ export class GameController {
     }
   }
 
-  swap(handCard: Card, vaultCard: Card, snapshot: GameSnapshot) {
+  swap(cards: Card[], snapshot: GameSnapshot) {
     return this.mutate(snapshot, (snapshot) => {
-      snapshot.currentPlayer().swap(handCard, vaultCard);
+      snapshot.currentPlayer().swap(cards);
       return snapshot;
     });
   }
 
-  finishSwapping() {
+  finishSwapping(snapshot: GameSnapshot) {
     return this.mutate(snapshot, (snapshot) => {
-      snapshot.currentPlayer().swap(handCard, vaultCard);
-      return snapshot;
+      snapshot.currentPlayer().needsSwapping = false;
+      return this.finishTurn(1, snapshot);
     });
   }
 

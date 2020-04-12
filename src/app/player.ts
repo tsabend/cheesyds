@@ -1,6 +1,12 @@
 import Card from "./card";
 import { Deck } from "./deck";
-import { sample, zip } from "./utility";
+import {
+  sample,
+  zip,
+  intersection,
+  subtract,
+  replace,
+} from "./utility";
 import { canPlay } from "./rule";
 
 export class Player {
@@ -54,12 +60,16 @@ export class Player {
     }
   }
 
-  swap(handCard: Card, vaultCard: Card) {
-    this.board.swap(handCard, vaultCard)
+  swap(cards: Card[]) {
+    this.board.swap(cards)
   }
 
   pickUp(cards: Card[]) {
     this.board.pickUp(cards);
+  }
+
+  isVaultEnabled(): boolean {
+    return this.isEliminatingPiles() || this.needsSwapping;
   }
 
   isEliminatingPiles(): boolean {
@@ -149,11 +159,12 @@ export class PlayerBoard {
     this.hand = newHand;
   }
 
-  swap(handCard: Card, vaultCard: Card) {
-    this.hand = this.hand.filter((_card) => _card === handCard);
-    this.hand.push(vaultCard);
-    this.faceUpVault.filter((_card) => _card === vaultCard);
-    this.hand.push(handCard);
+  swap(cards: Card[]) {
+    const fromHandToVault: Card = intersection(cards, this.hand)[0];
+    const fromVaultToHand: Card = intersection(cards, this.faceUpVault)[0];
+    if (!fromHandToVault || !fromVaultToHand) return;
+    this.hand = replace(fromHandToVault, fromVaultToHand, this.hand);
+    this.faceUpVault = replace(fromVaultToHand, fromHandToVault, this.faceUpVault);
   }
 
   playablePileCards(): Card[] {

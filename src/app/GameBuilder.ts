@@ -15,7 +15,7 @@ export default class GameBuilder {
 
   makeGame(players: string[]): GameSnapshot {
     return new GameSnapshot(
-      players.map((name) => new Player(name)),
+      players.map((name) => new Player(name, undefined, false, true)),
       Deck.makeDeck(players.length),
       [],
       0,

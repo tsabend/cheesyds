@@ -4,6 +4,10 @@ import HandView from "./HandView"
 import VaultView from "./VaultView"
 import GameSnapshot from "../../app/GameSnapshot"
 import {
+  intersection,
+  subtract
+} from "../../app/utility";
+import {
   withStyles,
   Theme,
   StyleRules,
@@ -14,6 +18,8 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import {
   submitCards,
+  swapCards,
+  finishSwapping,
   selectMyPlayer,
   selectRemoteGame,
   selectGameSnapshot,
@@ -60,8 +66,11 @@ const BoardView = ({ classes }: BoardViewProps) => {
   const topOfInPlayPile = game.topOfInPlayPile();
   const cardWasTapped = (card: Card) => {
     if (!itIsMyTurn) return;
+    if (player.needsSwapping) {
+      cardWasTappedForSwapping(card);
+      return
+    }
     const isFaceDownVault = player.board.faceDownVault.includes(card);
-    debugger
     if (isFaceDownVault) {
       setSelectedCards([card]);
       return
@@ -83,6 +92,39 @@ const BoardView = ({ classes }: BoardViewProps) => {
     }
   }
 
+  const cardWasTappedForSwapping = (card: Card) => {
+    // handle de-selection
+    if (isSelected(card)) {
+      setSelectedCards(selectedCards.filter((_card) => card !== _card));
+      return;
+    }
+
+    if (selectedCards.length === 0) {
+      setSelectedCards([card]);
+      return;
+    }
+
+    const isInFaceUpVault = player.board.faceUpVault.includes(card);
+    const isInHand = player.board.hand.includes(card);
+
+    const alreadySelectedInHand = intersection(selectedCards, player.board.hand).length > 0;
+    const alreadySelectedInVault = intersection(selectedCards, player.board.faceUpVault).length > 0;
+
+    if (alreadySelectedInHand && isInHand) {
+      const newSelected = subtract(selectedCards, player.board.hand).concat([card])
+      setSelectedCards(newSelected)
+      return
+    }
+
+    if (alreadySelectedInVault && isInFaceUpVault) {
+      const newSelected = subtract(selectedCards, player.board.faceUpVault).concat([card])
+      setSelectedCards(newSelected)
+      return
+    }
+
+    setSelectedCards(selectedCards.concat([card]));
+  }
+
   const isSelected = (card: Card): boolean => {
     return selectedCards.includes(card);
   }
@@ -93,7 +135,7 @@ const BoardView = ({ classes }: BoardViewProps) => {
        board={me.board}
        cardWasTapped={cardWasTapped}
        isSelected={isSelected}
-       isEnabled={me.isEliminatingPiles()}
+       isEnabled={me.isVaultEnabled()}
        width={me.board.hand.length === 0 ? 80 : 60}
        />
       <HandView
@@ -101,38 +143,74 @@ const BoardView = ({ classes }: BoardViewProps) => {
       cardWasTapped={cardWasTapped}
       isSelected={isSelected}
       />
-      {itIsMyTurn &&
-        <Box className={classes.myTurnButtonsBox}>
-        <Button
-        className={classes.button}
-        color={'primary'}
-        variant={'contained'}
-        aria-label="Submit turn"
-        disabled={selectedCards.length === 0}
-        onClick={ () => {
-          if (remoteGame) {
-            dispatch(submitCards(selectedCards, remoteGame)) }
-            setSelectedCards([]);
-          }
-        }
-        >
-        SUBMIT
-        </Button>
-        <Button
-        className={classes.button}
-        color={'primary'}
-        disabled={topOfInPlayPile === undefined}
-        variant={'contained'}
-        aria-label="Forfeit turn"
-        onClick={ () => remoteGame && dispatch(pickUpCards(remoteGame)) }
-        >
-        PICK UP
-        </Button>
-        </Box>
-      }
-        </React.Fragment>
+      {buildButtons()}
+      </React.Fragment>
     }
     return <p>You're out</p>;
+  }
+
+  const buildButtons = () => {
+    if (!itIsMyTurn) return "";
+    return player.needsSwapping ? buildSwappingButtons() : buildPlayingButtons()
+  }
+
+  const buildPlayingButtons = () => {
+    return <Box className={classes.myTurnButtonsBox}>
+    <Button
+    className={classes.button}
+    color={'primary'}
+    variant={'contained'}
+    aria-label="Submit turn"
+    disabled={selectedCards.length === 0}
+    onClick={ () => {
+      if (remoteGame) {
+        dispatch(submitCards(selectedCards, remoteGame)) }
+        setSelectedCards([]);
+      }
+    }
+    >
+    SUBMIT
+    </Button>
+    <Button
+    className={classes.button}
+    color={'primary'}
+    disabled={topOfInPlayPile === undefined}
+    variant={'contained'}
+    aria-label="Forfeit turn"
+    onClick={ () => remoteGame && dispatch(pickUpCards(remoteGame)) }
+    >
+    PICK UP
+    </Button>
+    </Box>
+  }
+
+  const buildSwappingButtons = () => {
+    return <Box className={classes.myTurnButtonsBox}>
+    <Button
+    className={classes.button}
+    color={'primary'}
+    variant={'contained'}
+    aria-label="Swap Cards"
+    disabled={selectedCards.length !== 2}
+    onClick={ () => {
+      if (remoteGame) {
+        dispatch(swapCards(selectedCards, remoteGame)) }
+        setSelectedCards([]);
+      }
+    }
+    >
+    SWAP
+    </Button>
+    <Button
+    className={classes.button}
+    color={'primary'}
+    variant={'contained'}
+    aria-label="Finish Swapping"
+    onClick={ () => remoteGame && dispatch(finishSwapping(remoteGame)) }
+    >
+    FINISH SWAPPING
+    </Button>
+    </Box>
   }
 
   return (
