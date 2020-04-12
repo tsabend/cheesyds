@@ -10,6 +10,8 @@ import {
   createStyles,
   WithStyles,
   Tooltip,
+  useTheme,
+  useMediaQuery,
 } from "@material-ui/core";
 
 const styles: (theme: Theme) => StyleRules<string> = _ =>
@@ -24,6 +26,7 @@ type HandViewProps = {
 
 const HandView = ({ isSelected, cardWasTapped, hand }: HandViewProps) => {
   const [open, setOpen] = React.useState(false);
+  const sm = useMediaQuery(useTheme().breakpoints.down('sm'));
 
   return (
     <span
@@ -44,7 +47,7 @@ const HandView = ({ isSelected, cardWasTapped, hand }: HandViewProps) => {
           />
         </Grid>
           if (idx === 0) {
-            return <Tooltip title="Your Hand" placement="left" open={open} arrow key={card.index()}>
+            return <Tooltip title="Your Hand" placement={sm ? "top" : "left"} open={open} arrow key={card.index()}>
             {cardView}
             </Tooltip>
           }
