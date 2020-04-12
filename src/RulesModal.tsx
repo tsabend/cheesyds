@@ -65,7 +65,7 @@ const RulesModal = ({ open, onClose, classes }: RulesModalProps) => {
     </ListItem>
     <Divider />
     <ListItem >
-    <ListItemText primary='Game Play' secondary={`Players take turns rotating clockwise. On a player\'s turn, they play cards and then draw until they have at least 3 cards in their hand. If the player has no legal moves (or if they decide it's strategically adventageous), they pick up the pile of in play cards. When there are no more cards to draw, and a player's hand is empty, they play from the top of their vault. When all of the face up cards in their vault have been played, they play the face down cards without seeing them. When their vault and hand are both empty, they are out. The first person out is the winner and will pick a punishment for the loser (the last person to go out).`}/>
+    <ListItemText primary='Game Play' secondary={`Players take turns rotating clockwise. On a player's turn, they play cards and then draw until they have at least 3 cards in their hand. If the player has no legal moves (or if they decide it's strategically adventageous), they pick up the pile of in play cards. When there are no more cards to draw, and a player's hand is empty, they play from the top of their vault. When all of the face up cards in their vault have been played, they play the face down cards without seeing them. When their vault and hand are both empty, they are out. The first person out is the winner and will pick a punishment for the loser (the last person to go out).`}/>
     </ListItem>
     <Divider />
     <ListItem>

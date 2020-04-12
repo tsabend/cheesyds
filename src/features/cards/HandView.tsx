@@ -33,7 +33,7 @@ const HandView = ({ isSelected, cardWasTapped, hand }: HandViewProps) => {
     <Grid container alignItems="center" justify="center" spacing={1}>
     {
       hand.map((card, idx) => {
-        const cardView = <Grid item>
+        const cardView = <Grid item key={card.index()}>
           <CardView
           card={card}
           cardWasTapped={cardWasTapped}
@@ -44,7 +44,7 @@ const HandView = ({ isSelected, cardWasTapped, hand }: HandViewProps) => {
           />
         </Grid>
           if (idx === 0) {
-            return <Tooltip title="Your Hand" placement="left" open={open} arrow>
+            return <Tooltip title="Your Hand" placement="left" open={open} arrow key={card.index()}>
             {cardView}
             </Tooltip>
           }

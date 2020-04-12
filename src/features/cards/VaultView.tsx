@@ -54,7 +54,7 @@ const VaultView = ({ cardWasTapped, isSelected, board, width, isEnabled, showsHo
     {board.vault().map(pile => {
 
       if (pile[1]) {
-        return <Box className={classes.stackContainer}>
+        return <Box className={classes.stackContainer} key={pile.map(card => card.index()).join("_")}>
         <div className={classes.faceDown}>
         <CardView
         card={pile[0]}
@@ -79,7 +79,7 @@ const VaultView = ({ cardWasTapped, isSelected, board, width, isEnabled, showsHo
         </Box>
       }
       if (pile[0]) {
-        return <Box className={classes.stackContainer}>
+        return <Box className={classes.stackContainer} key={pile.map(card => card.index()).join("_")}>
         <div className={classes.faceUp}>
         <CardView
         card={pile[0]}

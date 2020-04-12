@@ -72,7 +72,7 @@ const UpNextView = ({ classes, upcomingPlayers }: UpNextViewProps) => {
           return player.name;
         }
       }
-      return <GridListTile className={classes.upNextListItem} cols={1}>
+      return <GridListTile className={classes.upNextListItem} cols={1} key={index}>
       children={<div >
         <Typography variant="h6">{makeHeader(index)}</Typography>
       <Typography>{player.numberOfCards()} cards in hand</Typography>
