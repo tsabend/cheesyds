@@ -37,7 +37,7 @@ const PlayingGameView = ({ classes }: PlayingGameViewProps) => {
   return (
     <Box className={classes.root}>
     <GameLogView />
-    <GamePilesView deck={game.deck.cards} topOfInPlayPile={game.topOfInPlayPile()} />
+    <GamePilesView deck={game.deck.cards} inPlayPile={game.inPlayPile} />
     <div>
     <BoardView />
     </div>

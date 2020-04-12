@@ -8,6 +8,7 @@ import {
   createStyles,
   WithStyles,
   Box,
+  Tooltip,
 } from "@material-ui/core";
 import Card from "../../app/card";
 
@@ -26,14 +27,32 @@ const styles: (theme: Theme) => StyleRules<string> = _ =>
 
 type GamePilesViewProps = {
   deck: Card[];
-  topOfInPlayPile: Card | undefined;
+  inPlayPile: Card[];
 } & WithStyles<typeof styles>;
 
-const GamePilesView = ({ classes, deck, topOfInPlayPile }: GamePilesViewProps) => {
-  const inPlayPile = () => {
-    if (topOfInPlayPile) {
+const GamePilesView = ({ classes, deck, inPlayPile }: GamePilesViewProps) => {
+
+  const estimateString = (cards: Card[]): string | undefined => {
+    if (cards.length === 0) return undefined;
+    if (cards.length < 10) return "Fewer than 10 cards.";
+    if (cards.length < 20) return "More than 10 cards.";
+    if (cards.length < 50) return "More than 20 cards.";
+    return "Too many cards to count.";
+  }
+  const drawPileTitle = estimateString(deck) || "Draw Pile (empty)";
+  const playPileTitle = estimateString(inPlayPile) || "Cards In Play (empty)";;
+  const topOfInPlayPile = (): Card | undefined => {
+    if (inPlayPile.length > 0) {
+      return inPlayPile[inPlayPile.length - 1];
+    }
+    return undefined;
+  }
+
+  const inPlayPileView = () => {
+    const topCard = topOfInPlayPile()
+    if (topCard) {
       return <div>
-      <CardView card={topOfInPlayPile}
+      <CardView card={topCard}
       cardWasTapped={() => {}}
       isSelected={false}
       isEnabled={false}
@@ -65,10 +84,14 @@ const GamePilesView = ({ classes, deck, topOfInPlayPile }: GamePilesViewProps) =
   return (
     <Box className={classes.gamePiles}><Grid container alignItems="center" justify="center" spacing={4}>
     <Grid item>
+    <Tooltip title={drawPileTitle}>
     {drawPile()}
+    </Tooltip>
     </Grid>
     <Grid item>
-    {inPlayPile()}
+    <Tooltip title={playPileTitle}>
+    {inPlayPileView()}
+    </Tooltip>
     </Grid>
     </Grid>
     </Box>
