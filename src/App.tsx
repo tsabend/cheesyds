@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   selectAppState,
   joinGameAsync,
+  startOpenHandedGame,
   quitGame,
 } from "./app/appSlice";
 import { AppProgress } from "./app/appState";
@@ -105,7 +106,12 @@ const App = ({ classes }: AppProps) => {
     if (appState.progress === AppProgress.Rejoining && game) {
       dispatch(joinGameAsync(game.gameId, appState.me));
     }
+    if (isDebug) {
+      setIsDebug(false);
+      dispatch(startOpenHandedGame())
+    }
   })
+  const [isDebug, setIsDebug] = useState(false)
 
   const dispatch = useDispatch();
   const appState = useSelector(selectAppState);
