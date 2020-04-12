@@ -71,6 +71,7 @@ export const generateDevilsHandHint = (playerName: string, nextPlayerName: strin
     return playerName +
     wordForPlayed() +
     formattedCards(cards) +
+    ". " +
     nextPlayerName +
     " picks up that devil's hand.";
 }

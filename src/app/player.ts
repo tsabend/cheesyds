@@ -4,7 +4,6 @@ import {
   sample,
   zip,
   intersection,
-  subtract,
   replace,
 } from "./utility";
 import { canPlay } from "./rule";

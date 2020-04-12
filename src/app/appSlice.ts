@@ -104,10 +104,11 @@ export const startPairingAsync = (playerName: string): AppThunk => (dispatch) =>
   });
 };
 
-export const startGameAsync = (state: RemoteGameState): AppThunk => (dispatch) => {
+export const startGameAsync = (state: RemoteGameState, punishments?: string[]): AppThunk => (dispatch) => {
   console.log("starting game async");
   dispatch(startLoading());
   const start = new GameBuilder().makeGame(state.players);
+  start.punishments = punishments || []
   const game = gameController.deal(start);
   let newState = copyRemoteGameState(state);
   newState.game = game;
@@ -199,8 +200,8 @@ export const savePunishment = (punishment: string, state: RemoteGameState): AppT
 };
 
 export const playAgain = (state: RemoteGameState): AppThunk => (dispatch) => {
-  // TODO...
-  dispatch(startGameVsCPU(state));
+  const punishments = state.game?.punishments;
+  dispatch(startGameAsync(state, punishments));
 };
 
 const writeState = (state: RemoteGameState): AppThunk => (dispatch) => {
