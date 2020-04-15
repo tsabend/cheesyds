@@ -102,9 +102,9 @@ type AppProps = {} & WithStyles<typeof styles>;
 
 const App = ({ classes }: AppProps) => {
   useEffect(() => {
-    const game = appState.game;
-    if (appState.progress === AppProgress.Rejoining && game) {
-      dispatch(joinGameAsync(game.gameId, appState.me));
+    const session = appState.session;
+    if (appState.progress === AppProgress.Rejoining && session) {
+      dispatch(joinGameAsync(session.id, appState.me));
     }
     if (isDebug) {
       setIsDebug(false);
@@ -115,7 +115,7 @@ const App = ({ classes }: AppProps) => {
 
   const dispatch = useDispatch();
   const appState = useSelector(selectAppState);
-  const gameId = appState.game?.gameId;
+  const id = appState.session?.id;
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
   const toggleDrawer = (open: boolean) => (event: any) => {
@@ -171,7 +171,7 @@ const App = ({ classes }: AppProps) => {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" className={classes.title}>CheezyD</Typography>
-        {gameId &&
+        {id &&
           <Button
           className={classes.navButton}
           variant="contained"
@@ -179,10 +179,10 @@ const App = ({ classes }: AppProps) => {
           disableRipple={true}
           disableElevation={true}
           >
-          {gameId}
+          {id}
           </Button>
         }
-        {gameId &&
+        {id &&
           <Button
           className={classes.quitButton}
           variant="contained"

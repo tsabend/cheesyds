@@ -22,7 +22,7 @@ import {
   swapCards,
   finishSwapping,
   selectMyPlayer,
-  selectRemoteGame,
+  selectSession,
   selectGameSnapshot,
   pickUpCards
 } from "../../app/appSlice";
@@ -58,7 +58,7 @@ type BoardViewProps = {
 const BoardView = ({ classes }: BoardViewProps) => {
   const dispatch = useDispatch();
   const game: GameSnapshot = useSelector(selectGameSnapshot);
-  const remoteGame = useSelector(selectRemoteGame);
+  const remoteGame = useSelector(selectSession);
   const me = useSelector(selectMyPlayer);
   const player = game.currentPlayer();
   const itIsMyTurn = player === me;

@@ -1,6 +1,6 @@
 import { err, ok, Result } from "neverthrow";
 import { v4 as generateUUID } from "uuid";
-import { RemoteGameState } from "./appState";
+import { Session } from "./appState";
 import { FBApp, fire } from "./fire";
 import GameSnapshot from "./GameSnapshot";
 import { Player } from "./player";
@@ -23,13 +23,12 @@ export class PairingController {
   // Open a brand new game
   openNewSession(
     playerName: string,
-    observer: (result: Result<RemoteGameState, Error>) => void,
+    observer: (result: Result<Session, Error>) => void,
   ) {
-    const gameId = this.makeUUID();
+    const id = this.makeUUID();
     const args = {
-      gameId,
+      id,
       players: [playerName],
-      fbGameId: undefined,
     };
     this.createGame(args, (result) => {
       // todo handle error
@@ -40,11 +39,11 @@ export class PairingController {
   // Join an existing game
   // TODO: should only succeed if the existing game isn't yet started
   joinExistingSession(
-    gameId: string,
+    id: string,
     playerName: string,
-    observer: (result: Result<RemoteGameState, Error>) => void,
+    observer: (result: Result<Session, Error>) => void,
   ) {
-    this.getGame(gameId, (result) => {
+    this.getGame(id, (result) => {
       if (result.isErr()) {
         observer(result);
         return;
@@ -59,7 +58,7 @@ export class PairingController {
             if (playingMatch?.isComputer) {
               this.markPlayerAsHuman(playerName, value);
             }
-            this.subscribeToGame(gameId, observer)
+            this.subscribeToGame(id, observer)
             return value;
           }
           else {
@@ -68,24 +67,23 @@ export class PairingController {
         }
         // add yourself to the game.
         const newGame = {
-          gameId,
-          fbGameId: value.fbGameId,
+          id,
           players: value.players.concat([playerName]),
         };
         this.updateGame(newGame);
-        this.subscribeToGame(gameId, observer);
+        this.subscribeToGame(id, observer);
         return value;
       });
     });
   }
 
-  writeGameState(
-    game: RemoteGameState,
+  writeSessionState(
+    session: Session,
   ) {
-    this.updateGame(game);
+    this.updateGame(session);
   }
 
-  quit(playerName: string, game?: RemoteGameState) {
+  quit(playerName: string, game?: Session) {
     this.cancel()
     if (game) {
       this.markPlayerAsComputer(playerName, game);
@@ -100,8 +98,8 @@ export class PairingController {
     }
   }
 
-  private markPlayerAsHuman(playerName: string, game: RemoteGameState) {
-    const newPlayers = game.game?.players.map(player => {
+  private markPlayerAsHuman(playerName: string, session: Session) {
+    const newPlayers = session.game?.players.map(player => {
       if (player.name === playerName) {
         return new Player(player.name, player.board, false);
       }
@@ -110,16 +108,16 @@ export class PairingController {
       }
     })
     fire.database()
-    .ref("games/" + game.fbGameId + "/game/players")
+    .ref("games/" + session.id + "/game/players")
     .set(replaceUndefined(newPlayers)).then(() => {
       fire.database()
-      .ref("games/" + game.fbGameId + "/game/lastTurnSummary")
+      .ref("games/" + session.id + "/game/lastTurnSummary")
       .set(playerName + " rejoined the game. Welcome home " + playerName + ".");
     });
   }
 
-  private markPlayerAsComputer(playerName: string, game: RemoteGameState) {
-    const newPlayers = game.game?.players.map(player => {
+  private markPlayerAsComputer(playerName: string, session: Session) {
+    const newPlayers = session.game?.players.map(player => {
       if (player.name === playerName) {
         return new Player(player.name, player.board, true);
       }
@@ -128,36 +126,41 @@ export class PairingController {
       }
     })
     fire.database()
-    .ref("games/" + game.fbGameId + "/game/players")
+    .ref("games/" + session.id + "/game/players")
     .set(replaceUndefined(newPlayers)).then(() => {
       fire.database()
-      .ref("games/" + game.fbGameId + "/game/lastTurnSummary")
+      .ref("games/" + session.id + "/game/lastTurnSummary")
       .set(playerName + " left the game. They will be replaced by a computer until they rejoin.")
     });
   }
 
-  private createGame(action: RemoteGameState, observer: (result: Result<RemoteGameState, Error>) => void) {
-    fire.database().ref("games").push({
-      gameId: action.gameId,
+  private createGame(action: Session, observer: (result: Result<Session, Error>) => void) {
+    fire.database().ref("games").child(action.id).set({
+      id: action.id,
       players: action.players,
     }).then(() => {
-      this.subscribeToGame(action.gameId, observer);
+      this.subscribeToGame(action.id, observer);
     });
   }
 
-  private updateGame(newGame: RemoteGameState) {
-    fire.database().ref("games/" + newGame.fbGameId).set(replaceUndefined(newGame));
+  private updateGame(session: Session) {
+    fire.database().ref("games/" + session.id).set(replaceUndefined(session));
   }
 
-  private getGame(gameId: string, completion: (result: Result<RemoteGameState, Error>) => void) {
-    console.log("Querying fire db for game with id", gameId);
-    this.buildQuery(gameId)
+  private getGame(id: string, completion: (result: Result<Session, Error>) => void) {
+    console.log("Querying fire db for game with id", id);
+    fire.database()
+    .ref("games")
+    .child(id)
     .once("value", (snapshot) => completion(this.unpackSnapshot(snapshot)));
   }
 
-  private subscribeToGame(gameId: string, observer: (result: Result<RemoteGameState, Error>) => void) {
-    console.log("Subscribing to fire db for game with id", gameId);
-    const ref = this.buildQuery(gameId)
+  private subscribeToGame(id: string, observer: (result: Result<Session, Error>) => void) {
+    console.log("Subscribing to fire db for game with id", id);
+
+    const ref = fire.database()
+    .ref("games")
+    .child(id)
     .on("value", (snapshot) => observer(this.unpackSnapshot(snapshot)));
     // cancel any existing sub
     this.cancel();
@@ -167,38 +170,18 @@ export class PairingController {
     };
   }
 
-  private unpackSnapshot(snapshot: firebase.database.DataSnapshot): Result<RemoteGameState, Error> {
-    if (snapshot.numChildren() > 1) return err(new Error("too many games. should be 1."));
-    let out: Result<RemoteGameState, Error> = err(new Error("never found child"));
-    snapshot.forEach((child) => {
-      const key = child.key as string;
-      if (!key) out = err(new Error("failed to get key"));
-      const gameData = child.val().game;
-      let game;
-      if (gameData) {
-        game = GameSnapshot.from(gameData);
-      }
-      console.log("parsed", game, "from", gameData);
-      out = ok({
-        gameId: child.val().gameId,
-        players: child.val().players,
-        game,
-        fbGameId: key,
-      });
+  private unpackSnapshot(snapshot: firebase.database.DataSnapshot): Result<Session, Error> {
+    const sessionData = snapshot.val();
+    if (!sessionData) return err(new Error("never found child"));
+    return ok({
+      id: sessionData.id,
+      players: sessionData.players,
+      game: GameSnapshot.from(sessionData.game),
     });
-    console.log("unpacking response", out);
-    return out;
   }
 
   private dbRef(): firebase.database.Reference {
     return fire.database().ref("games");
-  }
-
-  private buildQuery(gameId: string): firebase.database.Query {
-    return this.dbRef()
-      .orderByChild("gameId")
-      .equalTo(gameId)
-      .limitToLast(1);
   }
 }
 

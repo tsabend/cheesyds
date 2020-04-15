@@ -12,39 +12,37 @@ export enum AppProgress {
   Rejoining,
 }
 
-export interface RemoteGameState {
+export interface Session {
   players: string[];
-  gameId: string;
-  fbGameId?: string;
+  id: string;
   game?: GameSnapshot;
 }
 
-export const copyRemoteGameState = (state: RemoteGameState) => {
+export const copySession = (state: Session) => {
   return  {
     players: Array.from(state.players),
-    gameId: state.gameId,
-    fbGameId: state.fbGameId,
+    id: state.id,
     game: state.game?.copy(),
   };
 };
 
 export interface AppState {
   progress: AppProgress;
-  game?: RemoteGameState;
+  session?: Session;
   me: string;
 }
 
 const appStateFromJSON = (json: any): AppState | undefined => {
   const progress = json.progress;
-  const game = json.game;
+  const session = json.session;
   const me = json.me;
-  if (!progress || !game || !me) return undefined;
-  if (game.game) {
-    game.game = GameSnapshot.from(game.game);
+  if (!progress || !session || !me) return undefined;
+  if (session.game) {
+    session.game = GameSnapshot.from(session.game);
   }
   return {
     progress: progress,
-    game: game,
+    session: session,
     me: me
   }
 }
@@ -65,9 +63,9 @@ export const makeInitialAppState = (): AppState => {
   // const startedGame = {
   //   progress: AppProgress.GameStarted,
   //   game: {
-  //     gameId: "0247",
+  //     id: "0247",
   //     players: players,
-  //     fbGameId: "-M3MS5UkhTtrhpUlhVli",
+  //     fbid: "-M3MS5UkhTtrhpUlhVli",
   //     game: game
   //   },
   //   me: "thomas"
@@ -92,7 +90,7 @@ export const makeInitialAppState = (): AppState => {
   catch {}
   return {
     progress: AppProgress.Landing,
-    game: undefined,
+    session: undefined,
     me: "",
   };
 };

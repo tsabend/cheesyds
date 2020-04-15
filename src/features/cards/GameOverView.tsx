@@ -20,7 +20,7 @@ import {
   selectMe,
   savePunishment,
   playAgain,
-  selectRemoteGame,
+  selectSession,
 } from "../../app/appSlice";
 
 const styles: (theme: Theme) => StyleRules<string> = _ =>
@@ -42,7 +42,7 @@ type GameOverViewProps = {
 
 const GameOverView = ({ classes }: GameOverViewProps) => {
   const dispatch = useDispatch();
-  const remoteGame = useSelector(selectRemoteGame);
+  const remoteGame = useSelector(selectSession);
   const game: GameSnapshot = useSelector(selectGameSnapshot);
   const myName = useSelector(selectMe);
   const iWon = game.winner?.name === myName;

@@ -2,11 +2,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import {
   AppProgress,
-  copyRemoteGameState,
+  copySession,
   gameController,
   makeInitialAppState,
   pairingController,
-  RemoteGameState,
+  Session,
 } from "./appState";
 import Card from "./card";
 import GameBuilder from "./GameBuilder";
@@ -46,17 +46,17 @@ export const slice = createSlice({
     },
     restart: (state) => {
       console.log("restarting game");
-      state.game = undefined;
+      state.session = undefined;
       state.progress = AppProgress.Landing;
       state.me = "";
     },
     // Game play logic
-    updateGameState: (state, action: PayloadAction<RemoteGameState>) => {
+    updateGameState: (state, action: PayloadAction<Session>) => {
       console.log("UPDATING GAME STATE TO:", action.payload);
-      state.game = action.payload;
+      state.session = action.payload;
       const isOpenHanded = false;
       if (isOpenHanded) {
-        state.me = state.game.game?.currentPlayer().name || "";
+        state.me = state.session?.game?.currentPlayer().name || "";
       }
     },
   },
@@ -64,22 +64,22 @@ export const slice = createSlice({
 
 // functions exposed to react
 
-export const joinGameAsync = (gameId: string, playerName: string): AppThunk => (dispatch) => {
+export const joinGameAsync = (id: string, playerName: string): AppThunk => (dispatch) => {
   dispatch(startLoading());
   let hasJoined = false;
   let gameStarted = false;
-  pairingController.joinExistingSession(gameId.toUpperCase(), playerName, (result) => {
+  pairingController.joinExistingSession(id.toUpperCase(), playerName, (result) => {
     if (result.isOk()) {
       if (!hasJoined) {
         hasJoined = true;
         dispatch(joinGame(playerName));
       }
-      const game = result._unsafeUnwrap();
-      if (!gameStarted && game.game != null) {
+      const session = result._unsafeUnwrap();
+      if (!gameStarted && session.game != null) {
         gameStarted = true;
         dispatch(startGame());
       }
-      dispatch(updateGameState(game));
+      dispatch(updateGameState(session));
     }
     else {
       dispatch(restart());
@@ -104,29 +104,29 @@ export const startPairingAsync = (playerName: string): AppThunk => (dispatch) =>
   });
 };
 
-export const startGameAsync = (state: RemoteGameState, punishments?: string[]): AppThunk => (dispatch) => {
+export const startGameAsync = (state: Session, punishments?: string[]): AppThunk => (dispatch) => {
   console.log("starting game async");
   dispatch(startLoading());
   const start = new GameBuilder().makeGame(state.players);
   start.punishments = punishments || []
   const game = gameController.deal(start);
-  let newState = copyRemoteGameState(state);
+  let newState = copySession(state);
   newState.game = game;
-  pairingController.writeGameState(newState);
+  pairingController.writeSessionState(newState);
   dispatch(startGame());
 };
 
-export const startGameVsCPU = (state?: RemoteGameState): AppThunk => (dispatch) => {
+export const startGameVsCPU = (state?: Session): AppThunk => (dispatch) => {
   dispatch(startLoading());
   const punishments = state?.game?.punishments || [];
-  let newState: RemoteGameState = {
+  let newState: Session = {
     players: ["Human"],
-    gameId: "1234",
+    id: "1234",
   };
 
   const start = new GameBuilder().makeSoloGame(newState.players, punishments);
   const game = gameController.deal(start);
-  newState = copyRemoteGameState(newState);
+  newState = copySession(newState);
   newState.game = game;
   dispatch(startGameVsComputer("Human"));
   dispatch(updateGameState(newState));
@@ -134,80 +134,80 @@ export const startGameVsCPU = (state?: RemoteGameState): AppThunk => (dispatch) 
   dispatch(pickUpCards(newState));
 };
 
-export const startOpenHandedGame = (state?: RemoteGameState): AppThunk => (dispatch) => {
+export const startOpenHandedGame = (state?: Session): AppThunk => (dispatch) => {
   dispatch(startLoading());
   const punishments = state?.game?.punishments || [];
-  let newState: RemoteGameState = {
+  let newState: Session = {
     players: ["Human"],
-    gameId: "1234",
+    id: "1234",
   };
 
   const start = new GameBuilder().makeOpenHandedGame(newState.players, punishments);
   const game = gameController.deal(start);
-  newState = copyRemoteGameState(newState);
+  newState = copySession(newState);
   newState.game = game;
   dispatch(startGameVsComputer("Human"));
   dispatch(updateGameState(newState));
 };
 
 export const quitGame = (state: AppState): AppThunk => (dispatch) => {
-  pairingController.quit(state.me, state.game);
+  pairingController.quit(state.me, state.session);
   dispatch(restart());
 };
 
-export const submitCards = (cards: Card[], state: RemoteGameState): AppThunk => (dispatch) => {
+export const submitCards = (cards: Card[], state: Session): AppThunk => (dispatch) => {
   const game = state.game as GameSnapshot;
   if (!game) return;
-  let newState = copyRemoteGameState(state);
+  let newState = copySession(state);
   newState.game = gameController.submit(cards, game);
   console.log(newState.game.lastTurnSummary || "first turn");
   dispatch(writeState(newState));
 };
 
-export const swapCards = (cards: Card[], state: RemoteGameState): AppThunk => (dispatch) => {
+export const swapCards = (cards: Card[], state: Session): AppThunk => (dispatch) => {
   const game = state.game as GameSnapshot;
   if (!game) return;
-  let newState = copyRemoteGameState(state);
+  let newState = copySession(state);
   newState.game = gameController.swap(cards, game);
   console.log(newState.game.lastTurnSummary || "first turn");
   dispatch(writeState(newState));
 };
 
-export const finishSwapping = (state: RemoteGameState): AppThunk => (dispatch) => {
+export const finishSwapping = (state: Session): AppThunk => (dispatch) => {
   const game = state.game as GameSnapshot;
   if (!game) return;
-  let newState = copyRemoteGameState(state);
+  let newState = copySession(state);
   newState.game = gameController.finishSwapping(game);
   console.log(newState.game.lastTurnSummary || "first turn");
   dispatch(writeState(newState));
 };
 
-export const pickUpCards = (state: RemoteGameState): AppThunk => (dispatch) => {
+export const pickUpCards = (state: Session): AppThunk => (dispatch) => {
   const game = state.game as GameSnapshot;
   if (!game) return;
-  let newState = copyRemoteGameState(state);
+  let newState = copySession(state);
   newState.game = gameController.pickUp(game);
   dispatch(writeState(newState));
 };
 
-export const savePunishment = (punishment: string, state: RemoteGameState): AppThunk => (dispatch) => {
+export const savePunishment = (punishment: string, state: Session): AppThunk => (dispatch) => {
   const game = state.game as GameSnapshot;
   if (!game) return;
-  let newState = copyRemoteGameState(state);
+  let newState = copySession(state);
   const finalPunishment = "" + (game.winner?.name || "") + " has punished " + (game.loser()?.name || "") + ": " + punishment;
   newState.game?.punishments.push(finalPunishment);
   dispatch(writeState(newState));
 };
 
-export const playAgain = (state: RemoteGameState): AppThunk => (dispatch) => {
+export const playAgain = (state: Session): AppThunk => (dispatch) => {
   const punishments = state.game?.punishments;
   dispatch(startGameAsync(state, punishments));
 };
 
-const writeState = (state: RemoteGameState): AppThunk => (dispatch) => {
+const writeState = (state: Session): AppThunk => (dispatch) => {
   // it's a multiplayer game
-  if (state.fbGameId) {
-    pairingController.writeGameState(state);
+  if (state.id !== "1234") {
+    pairingController.writeSessionState(state);
   }
   // it's a local game
   else {
@@ -215,7 +215,7 @@ const writeState = (state: RemoteGameState): AppThunk => (dispatch) => {
   }
 };
 
-const updateStateAndRunComputersTurn  = (state: RemoteGameState): AppThunk => (dispatch) => {
+const updateStateAndRunComputersTurn  = (state: Session): AppThunk => (dispatch) => {
   // update local state
   dispatch(updateGameState(state));
   const newGame = state.game;
@@ -257,13 +257,13 @@ export const {
 // Properties
 
 export const selectAppProgress = (state: RootState) => state.app.progress;
-export const selectPairingPlayers = (state: RootState) => state.app.game?.players || [];
-export const selectRemoteGame = (state: RootState) => state.app.game;
-export const selectRemoteGameId = (state: RootState) => state.app.game?.gameId || "";
-export const selectGameSnapshot = (state: RootState) => state.app.game?.game || new GameBuilder().makeFakeGame(); // FIXME
+export const selectPairingPlayers = (state: RootState) => state.app.session?.players || [];
+export const selectSession = (state: RootState) => state.app.session;
+export const selectRemoteid = (state: RootState) => state.app.session?.id || "";
+export const selectGameSnapshot = (state: RootState) => state.app.session?.game || new GameBuilder().makeFakeGame(); // FIXME
 export const selectMe = (state: RootState) => state.app.me;
-export const selectMyPlayer = (state: RootState) => state.app.game?.game?.players?.find((player) => player.name === state.app.me);
-export const selectLastTurnSummary = (state: RootState) => state.app.game?.game?.lastTurnSummary;
+export const selectMyPlayer = (state: RootState) => state.app.session?.game?.players?.find((player) => player.name === state.app.me);
+export const selectLastTurnSummary = (state: RootState) => state.app.session?.game?.lastTurnSummary;
 export const selectAppState = (state: RootState) => state.app;
 
 export default slice.reducer;

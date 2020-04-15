@@ -17,8 +17,8 @@ import {
   quitGame,
   startGameAsync,
   selectPairingPlayers,
-  selectRemoteGameId,
-  selectRemoteGame,
+  selectRemoteid,
+  selectSession,
   selectAppState,
 } from "../../app/appSlice";
 
@@ -33,8 +33,8 @@ type WaitingViewProps = {
 const WaitingView = ({ isOwner }: WaitingViewProps) => {
   const dispatch = useDispatch();
   const players = useSelector(selectPairingPlayers);
-  const gameId = useSelector(selectRemoteGameId);
-  const game = useSelector(selectRemoteGame);
+  const id = useSelector(selectRemoteid);
+  const session = useSelector(selectSession);
   const appState = useSelector(selectAppState);
 
   const playerList = () => {
@@ -48,7 +48,7 @@ const WaitingView = ({ isOwner }: WaitingViewProps) => {
     return <Button
       type="submit"
       disabled={!canStartGame}
-      onClick={ () => { game && dispatch(startGameAsync(game)) }}
+      onClick={ () => { session && dispatch(startGameAsync(session)) }}
       >
       {canStartGame ? "Start Game" : "Waiting for at least 2 players"}
     </Button>
@@ -61,7 +61,7 @@ const WaitingView = ({ isOwner }: WaitingViewProps) => {
       <Grid item xs={12}>
       <FormControl>
       <Typography>Invite Friends by Sharing This Code</Typography>
-      <Typography>{gameId}</Typography>
+      <Typography>{id}</Typography>
       </FormControl>
       </Grid>
       <Grid item xs={12}>

@@ -11,7 +11,8 @@ export default class GameSnapshot {
   lastTurnSummary?: string;
   winner?: Player;
 
-  static from(data: any): GameSnapshot {
+  static from(data: any): GameSnapshot | undefined {
+    if (!data) return undefined;
     const players = data.players.map((playerData: any) => Player.from(playerData));
     const deck = Deck.from(data.deck);
     const rawInPlayPile = data.inPlayPile;
